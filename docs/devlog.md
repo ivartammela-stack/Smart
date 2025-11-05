@@ -536,6 +536,35 @@ router.delete('/:id', authenticateJWT, removeCompany);      // Kaitstud
 
 ---
 
+## 💡 Lessons Learned (Õppetunnid)
+
+### 1. **PostgreSQL 18+ nõuab teistsugust volume struktuuri**
+- **Probleem:** Konteiner restartimine - volume path viga
+- **Lahendus:** Kasuta `/var/lib/postgresql` (mitte `/var/lib/postgresql/data`)
+- **Õppetund:** Loe alati uusimate versioonide release notes'e!
+
+### 2. **TypeScript import/export konsistentsus on kriitilise tähtsusega**
+- **Probleem:** `Module has no exported member 'router'`
+- **Lahendus:** Vali üks variant (`export default` VÕI `export { ... }`) ja kasuta kõikjal sama
+- **Õppetund:** Named vs default exports - ole järjepidev kogu projektis
+
+### 3. **Sequelize timestamps + PostgreSQL = snake_case**
+- **Probleem:** Sequelize kasutab camelCase (`createdAt`), PostgreSQL ootab snake_case (`created_at`)
+- **Lahendus:** Määra Sequelize config'is `createdAt: 'created_at'`
+- **Õppetund:** ORM ja andmebaasi nimereeglid peavad sobima kokku
+
+### 4. **JWT middleware vajab custom TypeScript interface'i**
+- **Probleem:** `req.user` pole Express Request'il olemas
+- **Lahendus:** Loo `AuthRequest extends Request` interface
+- **Õppetund:** TypeScript type safety on oluline - ära kasuta `any`!
+
+### 5. **bcrypt on asünkroonne - kasuta ALATI await**
+- **Probleem:** Sync versioonid blokeerivad event loop'i
+- **Lahendus:** `await bcrypt.hash()` ja `await bcrypt.compare()`
+- **Õppetund:** Node.js-is on async/await eelistatud praktika
+
+---
+
 ## 📌 Märkmed & Ideed
 
 - [ ] Kaaluda `createdAt` ja `updatedAt` eestikeelsete nimedega (`loodud`, `uuendatud`)
@@ -543,10 +572,84 @@ router.delete('/:id', authenticateJWT, removeCompany);      // Kaitstud
 - [ ] Lisa pagination Company GET päringule (kui kliente on palju)
 - [ ] Kaaluda GraphQL'i kasutamist REST API asemel (tulevikus)
 - [ ] Frontend (Electron) alustamine - järgmine suur samm
+- [ ] **Lisa Postman testide screenshot'id** → `docs/screenshots/`
+- [ ] **Dokumenteeri API errorid** (4xx, 5xx response format)
 
 ---
 
-**Viimati uuendatud:** 2025-11-05, 19:45  
+## 📸 Visuaalne Dokumentatsioon
+
+### Screenshot'ide struktuur:
+```
+docs/screenshots/
+├── 2025-11-05_health_check.png
+├── 2025-11-05_register_success.png
+├── 2025-11-05_login_jwt_token.png
+├── 2025-11-05_company_create_protected.png
+└── 2025-11-05_company_create_no_token_fails.png
+```
+
+> **Järgmises sessioonis:** Lisa Postman testide ekraanipildid!
+
+---
+
+**Viimati uuendatud:** 2025-11-05, 20:15  
 **Autor:** AI Assistant + Kasutaja  
-**Versioon:** 1.0 - Backend MVP
+**Versioon:** 1.1 - Backend MVP + Lessons Learned
+
+---
+---
+
+# 📅 Template - Järgmise Sessiooni Jaoks
+
+---
+
+## 📅 Sessioon: [KUUPÄEV]
+### 🎯 Teema: [TEEMA NIMI]
+
+---
+
+## ✅ Tänase Töö Kokkuvõte
+
+### 1. **[Moodul/Feature Nimi]**
+- ✅ [Konkreetne saavutus 1]
+- ✅ [Konkreetne saavutus 2]
+
+---
+
+## 🚀 Järgmise Sammu Plaan
+
+### Prioriteet 1: [Feature]
+- ⬜ [Ülesanne 1]
+- ⬜ [Ülesanne 2]
+
+---
+
+## 🧪 Testitud Funktsioonid
+
+| Test | Endpoint | Tulemus |
+|------|----------|---------|
+| ✅ | GET /api/... | Töötab |
+| ❌ | POST /api/... | Viga leitud |
+
+---
+
+## 💡 Lessons Learned
+
+### 1. **[Õppetund 1]**
+- **Probleem:** [Kirjeldus]
+- **Lahendus:** [Kuidas lahendasin]
+- **Õppetund:** [Mis õppisin]
+
+---
+
+## 📸 Screenshot'id
+
+![Postman test - Success](screenshots/[KUUPÄEV]_[NIMI].png)
+
+---
+
+**Viimati uuendatud:** [KUUPÄEV], [KL]  
+**Autor:** AI Assistant + Kasutaja  
+**Versioon:** [X.X] - [Kirjeldus]
 
