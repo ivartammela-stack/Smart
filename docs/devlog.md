@@ -28,13 +28,13 @@
 - ✅ Company routes (`src/routes/companyRoutes.ts`)
 - ✅ CRUD operatsioonid: GET, POST, PUT, DELETE
 
-### 4. **JWT Autentimine**
-- ✅ User mudel koos `role` väljaga (`src/models/userModel.ts`)
+### 4. **JWT Autentimine** 🔐
+- ✅ User mudel koos `role` ja `username` väljadega (`src/models/userModel.ts`)
 - ✅ Auth controller: `register` ja `login` (`src/controllers/authController.ts`)
 - ✅ Auth middleware: `authenticateJWT` (`src/middleware/authMiddleware.ts`)
 - ✅ Auth routes: `/api/auth/register`, `/api/auth/login`
-- ✅ bcrypt password hashing
-- ✅ JWT token genereerimine (2h kehtivus)
+- ✅ bcrypt password hashing (salt rounds: 10)
+- ✅ JWT token genereerimine (kehtivus: **2 tundi**)
 
 ### 5. **Company API Kaitse**
 - ✅ POST/PUT/DELETE kaitstud JWT'ga
@@ -152,6 +152,8 @@ Content-Type: application/json
   "password": "123456"
 }
 ```
+
+> **NB!** Kasutame `username` (mitte `name`) - see on kooskõlas User mudeliga!
 
 **Expected Response (201 Created):**
 ```json
@@ -471,6 +473,18 @@ const sequelize = new Sequelize(
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
   }
 );
+
+// Test connection
+export const testConnection = async (): Promise<boolean> => {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Database connection established successfully.');
+    return true;
+  } catch (error) {
+    console.error('❌ Unable to connect to the database:', error);
+    return false;
+  }
+};
 
 export default sequelize;
 ```
