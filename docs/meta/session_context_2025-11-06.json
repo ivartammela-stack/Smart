@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "file_name": "session_context_2025-11-06.json",
+    "project_name": "SmartFollow CRM",
+    "project_description": "Desktop CRM application for small businesses (1-30 employees)",
+    "created_at": "2025-11-05T21:00:00+02:00",
+    "purpose": "Session context restoration and planning for Session #2",
+    "version": "v0.7.0",
+    "session_number": 2
+  },
+  
+  "project_info": {
+    "repository": "https://github.com/ivartammela-stack/Smart.git",
+    "branch": "main",
+    "workspace_path": "C:\\Users\\koolitööd\\Desktop\\smartfollow-desktop",
+    "structure": "monorepo (apps/desktop, apps/server, packages/shared)",
+    "package_manager": "npm (local), pnpm (workspace config exists)"
+  },
+
+  "technical_stack": {
+    "backend": {
+      "runtime": "Node.js",
+      "framework": "Express.js",
+      "language": "TypeScript",
+      "orm": "Sequelize",
+      "database": "PostgreSQL 18+",
+      "authentication": "JWT (jsonwebtoken)",
+      "password_hashing": "bcrypt (salt rounds: 10)",
+      "containerization": "Docker + docker-compose"
+    },
+    "frontend": {
+      "framework": "Electron + React",
+      "language": "TypeScript",
+      "status": "Not started yet"
+    }
+  },
+
+  "previous_session": {
+    "date": "2025-11-05",
+    "duration_hours": 4.5,
+    "theme": "Backend MVP + JWT Authentication + Testing",
+    "commits": 6,
+    "files_created": 18,
+    "files_modified": 8,
+    "documentation_lines": 1060,
+    "tests_completed": "8/8 passing (100%)",
+    "git_tag": "v0.7.0",
+    
+    "achievements": [
+      "PostgreSQL Docker setup (docker-compose.yml)",
+      "Sequelize database connection (apps/server/src/config/database.ts)",
+      "Health endpoint working (/health)",
+      "User model with role and bcrypt",
+      "JWT authentication (register + login)",
+      "Auth middleware (authenticateJWT)",
+      "Company CRUD API (full: GET, POST, PUT, DELETE)",
+      "Protected routes (POST/PUT/DELETE require JWT)",
+      "Auto-fill created_by from JWT token",
+      "Comprehensive devlog.md (680+ lines)",
+      "Session template (devlog_template.md)",
+      "All tests passing (8/8)"
+    ],
+
+    "bugs_fixed": [
+      {
+        "bug": "PostgreSQL 18+ volume path error",
+        "solution": "Changed volume to /var/lib/postgresql (not /data)",
+        "commit": "Docker setup"
+      },
+      {
+        "bug": "Column 'createdAt' does not exist",
+        "solution": "Added underscored: true to Company model",
+        "commit": "e06dda8"
+      },
+      {
+        "bug": "Module has no exported member 'router'",
+        "solution": "Used default export consistently",
+        "commit": "Multiple fixes"
+      }
+    ],
+
+    "lessons_learned": [
+      "PostgreSQL 18+ requires new volume structure",
+      "TypeScript import/export consistency is critical",
+      "Sequelize timestamps need snake_case mapping",
+      "JWT middleware needs custom TypeScript interface",
+      "bcrypt must always use async/await"
+    ]
+  },
+
+  "current_state": {
+    "backend_progress": "70%",
+    "testing_coverage": "80%",
+    "documentation": "100%",
+    
+    "completed_modules": [
+      "Health Check",
+      "Authentication (JWT)",
+      "Company CRUD",
+      "Database Setup"
+    ],
+    
+    "pending_modules": [
+      "Contacts CRUD",
+      "Deals CRUD",
+      "Tasks CRUD + 'Today' view",
+      "Desktop app (Electron)"
+    ],
+
+    "database_tables": {
+      "created": ["users", "companies", "contacts", "deals", "tasks"],
+      "models_implemented": ["User", "Company"],
+      "models_pending": ["Contact", "Deal", "Task"]
+    },
+
+    "api_endpoints": {
+      "implemented": [
+        "GET /health",
+        "POST /api/auth/register",
+        "POST /api/auth/login",
+        "GET /api/companies",
+        "GET /api/companies/:id",
+        "POST /api/companies (protected)",
+        "PUT /api/companies/:id (protected)",
+        "DELETE /api/companies/:id (protected)"
+      ],
+      "pending": [
+        "/api/contacts/* (CRUD)",
+        "/api/deals/* (CRUD)",
+        "/api/tasks/* (CRUD)",
+        "/api/tasks/today (filtered view)"
+      ]
+    },
+
+    "server_running": {
+      "command": "cd apps/server && npm run dev",
+      "port": 3000,
+      "database_port": 5432,
+      "docker_container": "smartfollow_postgres"
+    }
+  },
+
+  "next_session": {
+    "session_number": 2,
+    "planned_date": "2025-11-06",
+    "theme": "Contacts CRUD Development",
+    "estimated_duration_hours": 2.5,
+    
+    "goals": [
+      "Create Contact model (contactModel.ts)",
+      "Implement Contact service layer",
+      "Create Contact controller",
+      "Set up Contact routes with JWT protection",
+      "Add company_id foreign key relationship",
+      "Test all Contact CRUD operations (6-8 tests)",
+      "Add screenshot documentation",
+      "Update devlog with Session #2 entry"
+    ],
+
+    "starting_checklist": [
+      "Ensure server is running (npm run dev)",
+      "Ensure PostgreSQL container is running (docker ps)",
+      "Copy devlog_template.md to devlog.md bottom",
+      "Fill session header: 2025-11-06 - Contacts CRUD",
+      "Review Company model as reference",
+      "Have Postman/Thunder Client ready for testing"
+    ],
+
+    "files_to_create": [
+      "apps/server/src/models/contactModel.ts",
+      "apps/server/src/services/contactService.ts",
+      "apps/server/src/controllers/contactController.ts",
+      "apps/server/src/routes/contactRoutes.ts"
+    ],
+
+    "files_to_modify": [
+      "apps/server/src/routes/index.ts (add Contact routes)",
+      "docs/devlog.md (add Session #2 entry)"
+    ],
+
+    "contact_model_fields": {
+      "id": "INTEGER (PK, autoIncrement)",
+      "company_id": "INTEGER (FK to companies)",
+      "first_name": "STRING (required)",
+      "last_name": "STRING (required)",
+      "position": "STRING (optional)",
+      "phone": "STRING (optional)",
+      "email": "STRING (optional, validate email)",
+      "notes": "TEXT (optional)",
+      "created_at": "TIMESTAMP",
+      "updated_at": "TIMESTAMP"
+    },
+
+    "api_endpoints_to_implement": [
+      "GET /api/contacts - list all contacts",
+      "GET /api/contacts/:id - get single contact",
+      "GET /api/contacts/company/:companyId - get contacts by company",
+      "POST /api/contacts (protected) - create contact",
+      "PUT /api/contacts/:id (protected) - update contact",
+      "DELETE /api/contacts/:id (protected) - delete contact"
+    ],
+
+    "testing_scenarios": [
+      "Create contact linked to existing company",
+      "List all contacts",
+      "Get contacts by company_id",
+      "Update contact details",
+      "Delete contact",
+      "Try create contact without token (should fail 401)",
+      "Try create contact with non-existent company_id (should fail)"
+    ]
+  },
+
+  "important_notes": {
+    "env_file": "apps/server/.env (NOT in git, local only)",
+    "jwt_secret": "JWT_SECRET in .env (change in production!)",
+    "database_credentials": {
+      "user": "smartfollow",
+      "password": "yourpassword",
+      "database": "smartfollow_db"
+    },
+    "test_user": {
+      "username": "testkasutaja",
+      "email": "test@example.com",
+      "password": "123456",
+      "id": 2
+    }
+  },
+
+  "documentation_files": {
+    "main_devlog": "docs/devlog.md (736 lines)",
+    "session_template": "docs/devlog_template.md (380 lines)",
+    "readme_english": "README.md",
+    "readme_estonian": "README_et.md"
+  },
+
+  "common_commands": {
+    "start_server": "cd apps/server && npm run dev",
+    "start_database": "docker-compose up -d",
+    "stop_database": "docker-compose down",
+    "check_database": "docker exec smartfollow_postgres psql -U smartfollow -d smartfollow_db -c \"\\dt\"",
+    "git_status": "git status",
+    "run_tests": "PowerShell API tests (manual)"
+  },
+
+  "known_issues": {
+    "resolved": [
+      "PostgreSQL volume path (fixed with /var/lib/postgresql)",
+      "createdAt column error (fixed with underscored: true)",
+      "TypeScript import/export mismatches (standardized)"
+    ],
+    "pending": [
+      "No automated tests yet (only manual PowerShell tests)",
+      "No input validation layer (add express-validator)",
+      "No centralized error handling middleware",
+      "No API documentation (consider Swagger)"
+    ]
+  },
+
+  "quick_reference": {
+    "health_check": "http://localhost:3000/health",
+    "api_base_url": "http://localhost:3000/api",
+    "database_url": "postgresql://smartfollow:yourpassword@localhost:5432/smartfollow_db",
+    "jwt_expiration": "2 hours"
+  }
+}
+
