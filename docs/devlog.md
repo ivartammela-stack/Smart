@@ -593,9 +593,89 @@ docs/screenshots/
 
 ---
 
-**Viimati uuendatud:** 2025-11-05, 20:15  
+---
+
+## 🧪 Testitud Funktsioonid (2025-11-05, ~18:00)
+
+| # | Test | Endpoint | Meetod | Token | Tulemus | Märkused |
+|---|------|----------|--------|-------|---------|----------|
+| 1 | Health Check | `/health` | GET | Ei | ✅ 200 | Töötab |
+| 2 | Register | `/api/auth/register` | POST | Ei | ✅ 201 | User ID=2 loodud |
+| 3 | Login | `/api/auth/login` | POST | Ei | ✅ 200 | JWT token saadud (2h) |
+| 4 | Companies List | `/api/companies` | GET | Ei | ✅ 200 | Avalik endpoint |
+| 5 | Create Company | `/api/companies` | POST | Jah | ✅ 201 | `created_by=2` auto-filled ⭐ |
+| 6 | Create (no token) | `/api/companies` | POST | Ei | ✅ 401 | Turvaline 🔒 |
+| 7 | Update Company | `/api/companies/2` | PUT | Jah | ✅ 200 | Uuendatud |
+| 8 | Delete Company | `/api/companies/2` | DELETE | Jah | ✅ 200 | Kustutatud + kontrollitud |
+
+**Testide tulemus:** 8/8 edukas (100% pass rate) ✅
+
+---
+
+## 🐛 Testimise Käigus Leitud ja Parandatud Vead
+
+### **Bug #1: Column "createdAt" does not exist**
+- **Probleem:** Sequelize otsib `createdAt`, aga PostgreSQL tabelis on `created_at`
+- **Põhjus:** Company mudelis puudus `underscored: true` konfiguratsioon
+- **Lahendus:** Lisa `underscored: true` Sequelize init'i
+- **Commit:** `e06dda8` - "fix: Add underscored option to Company model"
+- **Staatus:** ✅ Parandatud ja testitud
+
+---
+
+## 🔜 Järgmised Testid (Future Test Plan)
+
+### Auth Edge Cases
+- [ ] **Vale parool** → Peab tagastama 401
+- [ ] **Vale email** (olematuks kasutajaks) → 401
+- [ ] **Duplikaat kasutaja** (sama email/username) → 409 Conflict
+- [ ] **Rikutud JWT token** (valesti signeeritud) → 403 Invalid token
+- [ ] **Aegunud token** (exp minevikus) → 403
+- [ ] **Token kustutatud kasutajaga** → 401/403
+
+### Validation Tests
+- [ ] **Tühi `name` field** → 400 Bad Request
+- [ ] **Liiga pikk `name`** (üle 200 tähemärgi) → 400
+- [ ] **Valed tüübid** (nt `name: 123`) → 400
+- [ ] **Puuduv kohustuslik väli** (`registration_code` puudu) → Peaks õnnestuma (optional)
+
+### Security Tests
+- [ ] **SQL Injection katse** (Sequelize peaks kaitsma, aga testida sanity check'i)
+- [ ] **Lisavälja ignoreerimine** (üritan muuta `id` või `created_by` request body's)
+- [ ] **XSS katse** (HTML/script tagid `notes` väljal)
+
+### Robustness Tests
+- [ ] **Health endpoint kui DB on maas** (praegu ei kontrolli DB staatust)
+- [ ] **Pagination** (kui palju companies't GET tagastab - performance test)
+- [ ] **Race condition** (2 samaaegselt POST sama `registration_code`'ga)
+
+### Integration Tests
+- [ ] **Company → Contacts seos** (kui Contacts lisatakse)
+- [ ] **Cascade delete** (kui Company kustutada, kas Contacts kustutatakse?)
+- [ ] **created_by → User seos** (kas saab päringuga tuua ka User info?)
+
+---
+
+## 🎯 Testimise Järeldused
+
+### Mis Töötab Hästi
+✅ JWT autentimine on turvaline ja töötab  
+✅ Auth middleware kaitseb endpoint'e korralikult  
+✅ `created_by` automaatne täitmine tokenist  
+✅ CRUD operatsioonid on täielikult funktsionaalsed  
+✅ Sequelize ↔ PostgreSQL mapping töötab (`underscored: true`)  
+
+### Järgmised Sammud
+1. **Contacts CRUD** - sama struktuur, company_id FK
+2. **Validation layer** - kasuta Sequelize validators või express-validator
+3. **Error handling middleware** - ühtne error format
+4. **API documentation** - kaaluda Swagger/OpenAPI
+
+---
+
+**Viimati uuendatud:** 2025-11-05, 21:00  
 **Autor:** AI Assistant + Kasutaja  
-**Versioon:** 1.1 - Backend MVP + Lessons Learned
+**Versioon:** 1.2 - Backend MVP + Tested (8/8 passing)
 
 ---
 ---
