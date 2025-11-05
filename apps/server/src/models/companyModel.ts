@@ -55,6 +55,7 @@ Company.init(
     sequelize,
     tableName: 'companies',
     timestamps: true,
+    underscored: true, // Use snake_case for all fields
   }
 );
 
