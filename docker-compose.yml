@@ -1,0 +1,23 @@
+services:
+  postgres:
+    build: ./docker/postgres
+    container_name: smartfollow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: smartfollow
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: smartfollow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - smartfollow_network
+
+volumes:
+  postgres_data:
+
+networks:
+  smartfollow_network:
+    driver: bridge
+
