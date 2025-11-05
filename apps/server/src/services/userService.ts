@@ -1,45 +1,36 @@
 // userService.ts
-import { User } from '../models/userModel';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+import User from '../models/userModel';
 
 // Create a new user
-export const createUser = async (userData: Omit<User, 'id'>): Promise<User> => {
-    const { name, email, password } = userData;
-    const result = await pool.query(
-        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-        [name, email, password]
-    );
-    return result.rows[0];
+export const createUser = async (userData: any): Promise<User> => {
+    const user = await User.create(userData);
+    return user;
 };
 
 // Get a user by ID
 export const getUserById = async (id: number): Promise<User | null> => {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    return result.rows.length ? result.rows[0] : null;
+    const user = await User.findByPk(id);
+    return user;
 };
 
 // Get all users
 export const getAllUsers = async (): Promise<User[]> => {
-    const result = await pool.query('SELECT * FROM users');
-    return result.rows;
+    const users = await User.findAll();
+    return users;
 };
 
 // Update a user
-export const updateUser = async (id: number, userData: Partial<User>): Promise<User | null> => {
-    const { name, email, password } = userData;
-    const result = await pool.query(
-        'UPDATE users SET name = COALESCE($1, name), email = COALESCE($2, email), password = COALESCE($3, password) WHERE id = $4 RETURNING *',
-        [name, email, password, id]
-    );
-    return result.rows.length ? result.rows[0] : null;
+export const updateUser = async (id: number, userData: any): Promise<User | null> => {
+    const user = await User.findByPk(id);
+    if (!user) return null;
+    await user.update(userData);
+    return user;
 };
 
 // Delete a user
 export const deleteUser = async (id: number): Promise<boolean> => {
-    const result = await pool.query('DELETE FROM users WHERE id = $1', [id]);
-    return result.rowCount > 0;
+    const user = await User.findByPk(id);
+    if (!user) return false;
+    await user.destroy();
+    return true;
 };

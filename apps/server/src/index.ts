@@ -1,21 +1,47 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
-import { json, urlencoded } from 'body-parser';
-import { router as apiRouter } from './routes/index';
+import dotenv from 'dotenv';
+import apiRouter from './routes/index';
+import { testConnection } from './config/database';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(json());
-app.use(urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Health-check endpoint
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', message: 'SmartFollow server is running 🚀' });
+});
 
 // Routes
 app.use('/api', apiRouter);
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Start server with database connection test
+const startServer = async () => {
+  try {
+    // Test database connection
+    const dbConnected = await testConnection();
+    
+    if (!dbConnected) {
+      console.error('❌ Failed to connect to database. Server will not start.');
+      process.exit(1);
+    }
+
+    // Start Express server
+    app.listen(PORT, () => {
+      console.log(`✅ Server is running on http://localhost:${PORT}`);
+      console.log(`📊 Database: Connected to smartfollow_db`);
+    });
+  } catch (error) {
+    console.error('❌ Error starting server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

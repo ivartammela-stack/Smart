@@ -1,26 +1,14 @@
-// This file defines the user model, including the schema and methods for interacting with the PostgreSQL database.
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/database';
 
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../db'; // Adjust the import based on your db setup
-
-interface UserAttributes {
-  id: number;
-  username: string;
-  email: string;
-  password: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
-
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+export class User extends Model {
   public id!: number;
   public username!: string;
   public email!: string;
   public password!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
+  public role!: string;
+  public readonly created_at!: Date;
+  public readonly updated_at!: Date;
 }
 
 User.init(
@@ -39,27 +27,22 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        isEmail: true,
-      },
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'user',
     },
   },
   {
     sequelize,
     tableName: 'users',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   }
 );
 

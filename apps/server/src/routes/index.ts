@@ -1,10 +1,13 @@
 import { Router } from 'express';
-import { login, register } from '../controllers/authController';
+import authRoutes from './authRoutes';
+import companyRoutes from './companyRoutes';
 
 const router = Router();
 
 // Authentication routes
-router.post('/login', login);
-router.post('/register', register);
+router.use('/auth', authRoutes);
+
+// Company routes
+router.use('/companies', companyRoutes);
 
 export default router;
