@@ -43,7 +43,7 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
     try {
       setLoading(true);
       const data = await api.get('/companies');
-      setCompanies(data);
+      setCompanies(Array.isArray(data) ? data : []); // Safety check
       setError('');
     } catch (err) {
       setError('Ettevõtete laadimine ebaõnnestus');

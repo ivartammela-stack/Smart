@@ -3,7 +3,7 @@ import api from '../utils/api';
 
 interface DashboardProps {
   onLogout: () => void;
-  onNavigate: (view: 'companies') => void;
+  onNavigate: (view: 'dashboard' | 'companies') => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
