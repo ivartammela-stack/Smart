@@ -776,34 +776,207 @@ docs/screenshots/
 
 ## 🚀 Järgmise Sammu Plaan
 
-### Prioriteet 1: Contact CRUD valmis
-- ⬜ Model → Service → Controller → Routes
-- ⬜ JWT kaitse POST/PUT/DELETE endpoint'idele
-- ⬜ GET /api/contacts/company/:companyId endpoint
+### ✅ COMPLETED IN SESSION #2:
+- ✅ Contact CRUD - täielikult valmis
+- ✅ Deals CRUD - täielikult valmis
+- ✅ CASCADE delete töötab mõlemal
 
-### Prioriteet 2: Deals CRUD
-- ⬜ Deal mudel (järgmine sessioon)
+### Prioriteet järgmiseks (Session #3):
+- ⬜ Tasks CRUD + "Täna" vaade
+- ⬜ Frontend alustamine (Electron app)
 
 ---
 
 ## 📝 Arendus Checklist
 
 ### Contact Mudel
-- [ ] contactModel.ts loodud
-- [ ] company_id FK defineeritud
-- [ ] CASCADE delete seadistatud
-- [ ] Email validation
-- [ ] underscored: true
+- [x] contactModel.ts loodud
+- [x] company_id FK defineeritud
+- [x] CASCADE delete seadistatud
+- [x] Email validation
+- [x] underscored: true
+- [x] Contact.init() otse failis (removed initContactModel pattern)
 
 ### Contact API Endpoints
-- [ ] GET /api/contacts (list all)
-- [ ] GET /api/contacts/:id (single)
-- [ ] GET /api/contacts/company/:companyId (by company)
-- [ ] POST /api/contacts (protected)
-- [ ] PUT /api/contacts/:id (protected)
-- [ ] DELETE /api/contacts/:id (protected)
+- [x] GET /api/contacts (list all)
+- [x] GET /api/contacts/:id (single)
+- [x] GET /api/contacts/company/:companyId (by company)
+- [x] POST /api/contacts (protected)
+- [x] PUT /api/contacts/:id (protected)
+- [x] DELETE /api/contacts/:id (protected)
+
+### Deal Mudel
+- [x] dealModel.ts loodud
+- [x] company_id FK defineeritud
+- [x] CASCADE delete seadistatud
+- [x] Aligned with PostgreSQL schema (value, not amount)
+- [x] Status VARCHAR (new/offer/won/lost)
+- [x] underscored: true
+
+### Deal API Endpoints
+- [x] GET /api/deals (list all)
+- [x] GET /api/deals/:id (single)
+- [x] GET /api/deals/company/:companyId (by company)
+- [x] POST /api/deals (protected)
+- [x] PUT /api/deals/:id (protected)
+- [x] DELETE /api/deals/:id (protected)
+
+### Models Integration
+- [x] models/index.ts created and cleaned
+- [x] Company ↔ Contacts associations
+- [x] Company ↔ Deals associations
 
 ---
 
-_Täidame sessiooni käigus..._
+## 🧪 Testitud Funktsioonid (Session #2)
+
+### Contacts API (7/7 ✅)
+
+| # | Test | Endpoint | Meetod | Token | Tulemus | Märkused |
+|---|------|----------|--------|-------|---------|----------|
+| 1 | List Contacts | `/api/contacts` | GET | Ei | ✅ 200 | Tühi massiiv |
+| 2 | Create Company | `/api/companies` | POST | Jah | ✅ 201 | ID=3 testimiseks |
+| 3 | Create Contact | `/api/contacts` | POST | Jah | ✅ 201 | ID=1, company_id=3 |
+| 4 | Get by Company | `/api/contacts/company/3` | GET | Ei | ✅ 200 | FK filter töötab |
+| 5 | Update Contact | `/api/contacts/1` | PUT | Jah | ✅ 200 | Position+phone uuendatud |
+| 6 | Delete Contact | `/api/contacts/1` | DELETE | Jah | ✅ 204 | Kustutatud |
+| 7 | **CASCADE Delete** | `/api/companies/4` | DELETE | Jah | ✅ 200 | Contact ka kustus! ⭐ |
+
+### Deals API (7/7 ✅)
+
+| # | Test | Endpoint | Meetod | Token | Tulemus | Märkused |
+|---|------|----------|--------|-------|---------|----------|
+| 1 | List Deals | `/api/deals` | GET | Ei | ✅ 200 | Tühi massiiv |
+| 2 | Create Deal | `/api/deals` | POST | Jah | ✅ 201 | ID=1, value=1500.50 |
+| 3 | Get by Company | `/api/deals/company/3` | GET | Ei | ✅ 200 | FK filter töötab |
+| 4 | Update Deal | `/api/deals/1` | PUT | Jah | ✅ 200 | Status→won, value→2000 |
+| 5 | Delete Deal | `/api/deals/1` | DELETE | Jah | ✅ 204 | Kustutatud |
+| 6 | **CASCADE Delete** | `/api/companies/5` | DELETE | Jah | ✅ 200 | Deal ka kustus! ⭐ |
+| 7 | Create (no token) | `/api/deals` | POST | Ei | ✅ 401 | Turvaline 🔒 |
+
+**Session #2 testid kokku:** 14/14 edukas (100% pass rate) ✅✅✅
+
+---
+
+## 🐛 Session #2 käigus leitud ja parandatud vead
+
+### **Bug #8: 'Contact' refers to a value, but is being used as a type**
+- **Probleem:** TypeScript class vs type confusion in contactService.ts
+- **Põhjus:** Import from models/index.ts instead of contactModel.ts
+- **Lahendus:** `import Contact from '../models/contactModel'`
+- **Õppetund:** Sequelize classes are both types and values in TypeScript
+- **Staatus:** ✅ Parandatud
+
+### **Bug #9: Cannot convert undefined or null to object - Contact not initialized**
+- **Probleem:** Contact.findAll() called before Contact.init()
+- **Põhjus:** initContactModel() was defined but not properly called
+- **Lahendus:** Changed to Contact.init() directly in contactModel.ts (same pattern as Company)
+- **Õppetund:** Sequelize models must be initialized before use
+- **Staatus:** ✅ Parandatud
+
+### **Bug #10: Deal model fields mismatch with PostgreSQL schema**
+- **Probleem:** Model used 'amount', 'currency', 'expected_close_date' - DB has 'value', 'created_by'
+- **Põhjus:** Assumed schema instead of checking actual DB structure
+- **Lahendus:** Checked DB with `docker exec psql` and aligned model fields
+- **Õppetund:** Always verify ORM models match actual database schema
+- **Staatus:** ✅ Parandatud
+
+### **Bug #11: initContactModel pattern inconsistency**
+- **Probleem:** Mixed pattern - Contact used initContactModel(), Deal used Model.init() directly
+- **Põhjus:** Copy-paste from different source
+- **Lahendus:** Standardized all models to use Model.init() directly in model file
+- **Õppetund:** Consistency across codebase is more important than clever patterns
+- **Staatus:** ✅ Parandatud (refactor commit: 2896dad)
+
+---
+
+## 💡 Session #2 Lessons Learned
+
+### 1. **Sequelize Model Initialization Patterns**
+- **Probleem:** Confusion between `initModel(sequelize)` function vs `Model.init()` directly
+- **Lahendus:** Use `Model.init(schema, { sequelize, ... })` directly in model file
+- **Õppetund:** Simpler is better - direct initialization is clearer and less error-prone
+- **Praktiline väärtus:** All models now follow same pattern (User, Company, Contact, Deal)
+
+### 2. **PostgreSQL Schema Discovery is Critical**
+- **Probleem:** Made assumptions about DB schema (amount vs value, currency, etc.)
+- **Lahendus:** Always check with `docker exec psql -c "\\d+ table_name"`
+- **Õppetund:** Never assume schema - always verify with actual database
+- **Praktiline väärtus:** Saved hours of debugging by checking DB first
+
+### 3. **Express Route Order Matters**
+- **Probleem:** `GET /company/:companyId` would match after `GET /:id` and fail
+- **Lahendus:** Place more specific routes (`/company/:id`) BEFORE generic routes (`/:id`)
+- **Õppetund:** Express matches routes in order - specificity matters
+- **Praktiline väärtus:** Applied to both Contacts and Deals routes
+
+### 4. **CASCADE Delete is Powerful and Works Perfectly**
+- **Probleem:** None - just verification needed
+- **Lahendus:** Properly configured FK with `onDelete: 'CASCADE'`
+- **Õppetund:** Sequelize + PostgreSQL CASCADE works flawlessly when configured correctly
+- **Praktiline väärtus:** Data integrity maintained - orphan records prevented
+
+### 5. **204 No Content is REST Best Practice for DELETE**
+- **Probleem:** Initially returned 200 with success message
+- **Lahendus:** Return 204 with empty body for successful DELETE
+- **Õppetund:** Follow REST standards for better API design
+- **Praktiline väärtus:** Consistent with industry standards, cleaner responses
+
+---
+
+## 📊 Session #2 Statistika
+
+- ⏱️ **Sessiooni kestus:** ~1.5 tundi
+- 📝 **Commits:** 3 (d0ed78b, d31ffbb, 2896dad)
+- 🎯 **Backend progress:** 70% → 90% (+20%)
+- ✅ **Testid:** 14/14 läbitud (100%)
+- 📄 **Uued failid:** 10
+- ✏️ **Muudetud failid:** 6
+- 🐛 **Bugs parandatud:** 4
+- 💡 **Õppetunnid:** 5
+
+---
+
+## 📂 Session #2 Loodud Failid
+
+```
+apps/server/src/
+├── models/
+│   ├── contactModel.ts          # Contact mudel + init
+│   ├── dealModel.ts             # Deal mudel + init  
+│   └── index.ts                 # Associations (cleaned)
+├── services/
+│   ├── contactService.ts        # 6 funktsiooni
+│   └── dealService.ts           # 6 funktsiooni
+├── controllers/
+│   ├── contactController.ts     # NaN validation + NextFunction
+│   └── dealController.ts        # Numeric validation
+└── routes/
+    ├── contactRoutes.ts         # 6 endpoints + JWT
+    └── dealRoutes.ts            # 6 endpoints + JWT
+
+docs/meta/
+└── sessions_summary_2025-11-05-06.json  # 503 rida kokkuvõtet
+```
+
+---
+
+## 🎯 Järgmise Sessiooni Eesmärgid (#3)
+
+### Prioriteet 1: Tasks CRUD
+- ⬜ Task mudel (company_id FK, deal_id FK, due_date, completed, assigned_to)
+- ⬜ Task service + controller + routes
+- ⬜ "Täna" vaade: GET /api/tasks/today (filter by due_date = today)
+- ⬜ Tests (7-8 testid)
+
+### Prioriteet 2: Frontend Setup
+- ⬜ Electron app põhiseadistus
+- ⬜ Login screen
+- ⬜ Companies list view
+
+---
+
+**Viimati uuendatud:** 2025-11-06, 16:45  
+**Autor:** AI Assistant + Kasutaja  
+**Versioon:** 2.0 - Backend CRM CRUD Complete (Contacts + Deals)
 
