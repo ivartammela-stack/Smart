@@ -733,3 +733,68 @@ docs/screenshots/
 **Autor:** AI Assistant + Kasutaja  
 **Versioon:** [X.X] - [Kirjeldus]
 
+---
+---
+
+## 📅 Sessioon #2: 2025-11-06
+### 🎯 Teema: Contacts CRUD arendus
+
+---
+
+## ✅ Tänase Töö Kokkuvõte
+
+### 1. **Contact Mudel**
+- ✅ Contact Sequelize mudel loodud (`contactModel.ts`)
+- ✅ FK seos Company'ga (company_id, CASCADE delete)
+- ✅ Validatsioonid (email, kohustuslikud väljad)
+- ✅ Models integratsiooni fail (`models/index.ts`)
+- ✅ Seosed: Company.hasMany(Contact), Contact.belongsTo(Company)
+
+### 2. **Contact API**
+- ✅ Contact service layer (`contactService.ts` - 6 funktsiooni)
+- ✅ Contact controller (`contactController.ts` - validation + error handling)
+- ✅ Contact routes (`contactRoutes.ts` - 6 endpoint'i)
+- ✅ JWT kaitse POST/PUT/DELETE endpoint'idele
+- ✅ Route järjekord parandatud (`/company/:id` enne `/:id`)
+- ✅ Routes registreeritud (`routes/index.ts`)
+
+### 3. **Testimine**
+- ✅ 7 API testi (100% pass rate)
+- ✅ FK seose testimine (company_id filter töötab)
+- ✅ **CASCADE delete testimine** (Company kustutamisel kustutatakse Contacts!) ⭐
+
+---
+
+## 🚀 Järgmise Sammu Plaan
+
+### Prioriteet 1: Contact CRUD valmis
+- ⬜ Model → Service → Controller → Routes
+- ⬜ JWT kaitse POST/PUT/DELETE endpoint'idele
+- ⬜ GET /api/contacts/company/:companyId endpoint
+
+### Prioriteet 2: Deals CRUD
+- ⬜ Deal mudel (järgmine sessioon)
+
+---
+
+## 📝 Arendus Checklist
+
+### Contact Mudel
+- [ ] contactModel.ts loodud
+- [ ] company_id FK defineeritud
+- [ ] CASCADE delete seadistatud
+- [ ] Email validation
+- [ ] underscored: true
+
+### Contact API Endpoints
+- [ ] GET /api/contacts (list all)
+- [ ] GET /api/contacts/:id (single)
+- [ ] GET /api/contacts/company/:companyId (by company)
+- [ ] POST /api/contacts (protected)
+- [ ] PUT /api/contacts/:id (protected)
+- [ ] DELETE /api/contacts/:id (protected)
+
+---
+
+_Täidame sessiooni käigus..._
+
