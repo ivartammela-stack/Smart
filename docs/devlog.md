@@ -829,6 +829,61 @@ docs/screenshots/
 
 ---
 
+## 🎯 Next Session – Contacts / Deals / Tasks UI (Session #3)
+
+**Eesmärk:** Tuua backendist Contacts, Deals ja Tasks andmed desktopisse ning luua minimaalne, kuid kasutatav töövoog müügitöö jaoks.
+
+### 1. Contacts UI
+
+- [ ] Ettevõtte detailvaade (Company → Contacts)
+- [ ] Kontaktide list:
+  - Nimi, amet, telefon, e-mail
+  - Filtrid: ainult aktiivse ettevõtte kontaktid
+- [ ] Kontaktide CRUD:
+  - [ ] Lisa uus kontakt (POST /api/contacts)
+  - [ ] Muuda kontaktandmeid (PUT /api/contacts/:id)
+  - [ ] Kustuta kontakt (DELETE /api/contacts/:id)
+- [ ] UX:
+  - [ ] Inline vorm või eraldi pane (sarnane Companies vormiga)
+  - [ ] Vähemalt 1 "happy path" test reaalse backendiga
+
+### 2. Deals UI
+
+- [ ] Tehingute list aktiivsele ettevõttele:
+  - Pealkiri, staatus (new/offer/won/lost), väärtus
+- [ ] Värvikoodiga staatus (nt hall = new, sinine = offer, roheline = won, punane = lost)
+- [ ] Tehingu loomine/muutmine:
+  - [ ] POST /api/deals
+  - [ ] PUT /api/deals/:id
+- [ ] Võimalus märgistada tehing "won" või "lost" ühe klikiga
+
+### 3. Tasks UI
+
+- [ ] "Today" kaardi laiendus:
+  - [ ] Klikk "Täna tähtaeg" kaardil avab Tasks list vaate
+- [ ] Tasks list:
+  - Pealkiri, seotud ettevõte/deal, tähtaeg, staatus (completed)
+- [ ] Märgi completed otse listist (checkbox → PUT /api/tasks/:id)
+- [ ] Võimalus lisada uus task konkreetsele company/deal-ile
+
+### 4. Tehniline / arhitektuuriline
+
+- [ ] Lihtne "view router" App.tsx-s:
+  - `view: 'dashboard' | 'companies' | 'companyDetail' | 'tasks'`
+- [ ] Ühtne API kiht (api.ts) kasutusel kõikides uutes vaadetes
+- [ ] Minimaalsed veakäsitlused (error banner komponendina)
+
+### 5. Done Criteria
+
+- [ ] Desktop app-ist on võimalik:
+  - [ ] Logida sisse
+  - [ ] Vaadata Companies listi
+  - [ ] Avada ettevõte ja näha tema kontakte/tehinguid
+  - [ ] Luua vähemalt 1 deal ja 1 task ning näha seda Today vaates
+- [ ] Sessioon dokumenteeritud devlog.md-s
+
+---
+
 ## 📝 Arendus Checklist
 
 ### Contact Mudel
