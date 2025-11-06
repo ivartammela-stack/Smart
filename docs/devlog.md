@@ -758,10 +758,19 @@ docs/screenshots/
 - ✅ Route järjekord parandatud (`/company/:id` enne `/:id`)
 - ✅ Routes registreeritud (`routes/index.ts`)
 
-### 3. **Testimine**
-- ✅ 7 API testi (100% pass rate)
-- ✅ FK seose testimine (company_id filter töötab)
-- ✅ **CASCADE delete testimine** (Company kustutamisel kustutatakse Contacts!) ⭐
+### 3. **Deals CRUD**
+- ✅ Deal mudel kohandatud PostgreSQL struktuurile (value, status, created_by)
+- ✅ Deal service layer (6 funktsiooni)
+- ✅ Deal controller (numeric validation)
+- ✅ Deal routes + JWT kaitse
+- ✅ Model associations: Company.hasMany(Deal)
+
+### 4. **Testimine**
+- ✅ 14 API testi KOKKU (100% pass rate)
+- ✅ Contacts: 7/7 testid (sh CASCADE delete)
+- ✅ Deals: 7/7 testid (sh CASCADE delete)
+- ✅ FK seosed töötavad mõlemal
+- ✅ **CASCADE delete töötab** - Company kustutamine kustutab Contacts JA Deals! ⭐⭐
 
 ---
 

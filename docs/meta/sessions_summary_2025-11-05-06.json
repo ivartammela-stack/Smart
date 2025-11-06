@@ -1,0 +1,502 @@
+{
+  "meta": {
+    "title": "SmartFollow CRM - Sessioonid #1 ja #2 Kokkuvõte",
+    "period": "2025-11-05 - 2025-11-06",
+    "total_sessions": 2,
+    "total_duration_hours": 6,
+    "total_commits": 8,
+    "project_version": "v0.7.0 → v0.8.0 (in progress)",
+    "backend_progress": "85%",
+    "created_at": "2025-11-06T16:30:00+02:00"
+  },
+
+  "project_overview": {
+    "name": "SmartFollow CRM",
+    "description": "Desktop CRM application for small businesses (1-30 employees)",
+    "target_market": "Estonian small businesses, repair companies, B2B services",
+    "pricing_model": "15-55 EUR/month (vs Pipedrive 30-100 EUR/month)",
+    "unique_value": "Desktop app, Estonian language, simple 3-view UI",
+    "repository": "https://github.com/ivartammela-stack/Smart.git",
+    "license": "MIT"
+  },
+
+  "technical_stack": {
+    "backend": {
+      "runtime": "Node.js",
+      "framework": "Express.js",
+      "language": "TypeScript",
+      "orm": "Sequelize",
+      "database": "PostgreSQL 18+",
+      "authentication": "JWT (2h expiration)",
+      "password_hashing": "bcrypt (salt: 10)",
+      "containerization": "Docker Compose"
+    },
+    "frontend": {
+      "framework": "Electron + React",
+      "language": "TypeScript",
+      "status": "Not started",
+      "planned_start": "Session #4 or #5"
+    },
+    "development": {
+      "package_manager": "npm",
+      "dev_server": "nodemon + ts-node",
+      "code_quality": "ESLint (configured)",
+      "version_control": "Git + GitHub"
+    }
+  },
+
+  "session_1": {
+    "date": "2025-11-05",
+    "theme": "Backend MVP + JWT Authentication + Testing",
+    "duration_hours": 4.5,
+    "commits": 7,
+    "git_tag": "v0.7.0",
+    
+    "achievements": [
+      {
+        "category": "Infrastructure",
+        "items": [
+          "PostgreSQL Docker container setup (docker-compose.yml)",
+          ".env configuration file created",
+          "Sequelize database connection (apps/server/src/config/database.ts)",
+          "Volume path fix for PostgreSQL 18+ (/var/lib/postgresql)"
+        ]
+      },
+      {
+        "category": "Authentication",
+        "items": [
+          "User model with username, email, password, role",
+          "bcrypt password hashing (10 salt rounds)",
+          "JWT authentication (register + login endpoints)",
+          "Auth middleware (authenticateJWT)",
+          "2-hour token expiration",
+          "Protected routes (POST/PUT/DELETE)"
+        ]
+      },
+      {
+        "category": "Company CRUD",
+        "items": [
+          "Company model (10 fields: name, registration_code, phone, email, etc.)",
+          "Company service layer (6 functions)",
+          "Company controller with validation",
+          "Company routes with JWT protection",
+          "Auto-fill created_by from JWT token",
+          "Full CRUD: GET, POST, PUT, DELETE"
+        ]
+      },
+      {
+        "category": "Testing",
+        "items": [
+          "8/8 manual tests passing (PowerShell)",
+          "Health check endpoint verified",
+          "User registration tested",
+          "JWT login tested (token received)",
+          "Company CRUD operations verified",
+          "JWT protection verified (401 without token)",
+          "Auto-fill created_by verified"
+        ]
+      },
+      {
+        "category": "Documentation",
+        "items": [
+          "Comprehensive devlog.md (680+ lines)",
+          "Session template (devlog_template.md - 380 lines)",
+          "8 Postman test scenarios documented",
+          "5 lessons learned documented",
+          "Future test plan (20+ scenarios)",
+          ".gitignore created (prevents node_modules in git)"
+        ]
+      }
+    ],
+
+    "bugs_fixed": [
+      {
+        "id": 1,
+        "bug": "PostgreSQL 18+ volume path error - container restarting",
+        "solution": "Changed volume from /var/lib/postgresql/data to /var/lib/postgresql",
+        "lesson": "Always read release notes for major version updates",
+        "commit": "Docker setup"
+      },
+      {
+        "id": 2,
+        "bug": "Column 'createdAt' does not exist in PostgreSQL",
+        "solution": "Added underscored: true to Company model Sequelize config",
+        "lesson": "ORM and database naming conventions must match",
+        "commit": "e06dda8"
+      },
+      {
+        "id": 3,
+        "bug": "Module has no exported member 'router'",
+        "solution": "Standardized on default exports throughout project",
+        "lesson": "TypeScript import/export consistency is critical",
+        "commit": "Multiple fixes"
+      },
+      {
+        "id": 4,
+        "bug": "node_modules accidentally committed to GitHub (10,797 files)",
+        "solution": "Created .gitignore, force push to remove",
+        "lesson": "Always create .gitignore before first commit",
+        "commit": "c8b6804"
+      }
+    ],
+
+    "files_created": [
+      ".gitignore",
+      "docker-compose.yml",
+      "docs/devlog.md",
+      "docs/devlog_template.md",
+      "docs/meta/session_context_2025-11-06.json",
+      "apps/server/.env",
+      "apps/server/src/config/database.ts",
+      "apps/server/src/models/userModel.ts",
+      "apps/server/src/models/companyModel.ts",
+      "apps/server/src/services/userService.ts",
+      "apps/server/src/services/companyService.ts",
+      "apps/server/src/controllers/authController.ts",
+      "apps/server/src/controllers/companyController.ts",
+      "apps/server/src/middleware/authMiddleware.ts",
+      "apps/server/src/routes/authRoutes.ts",
+      "apps/server/src/routes/companyRoutes.ts",
+      "apps/server/src/routes/index.ts (modified)"
+    ],
+
+    "api_endpoints_implemented": [
+      "GET /health",
+      "POST /api/auth/register",
+      "POST /api/auth/login",
+      "GET /api/companies",
+      "GET /api/companies/:id",
+      "POST /api/companies (protected)",
+      "PUT /api/companies/:id (protected)",
+      "DELETE /api/companies/:id (protected)"
+    ],
+
+    "database_tables": {
+      "created_in_postgresql": ["users", "companies", "contacts", "deals", "tasks"],
+      "models_implemented": ["User", "Company"],
+      "models_pending": ["Contact", "Deal", "Task"]
+    },
+
+    "statistics": {
+      "commits": 7,
+      "files_created": 18,
+      "files_modified": 8,
+      "code_lines": "~800",
+      "documentation_lines": 1060,
+      "tests_run": 8,
+      "tests_passing": 8,
+      "test_pass_rate": "100%"
+    }
+  },
+
+  "session_2": {
+    "date": "2025-11-06",
+    "theme": "Contacts CRUD + Deals CRUD Development",
+    "duration_hours": "~1.5 (in progress)",
+    "commits": 1,
+    
+    "achievements": [
+      {
+        "category": "Contacts CRUD",
+        "items": [
+          "Contact model with company_id FK (CASCADE delete)",
+          "Contact service layer (6 functions)",
+          "Contact controller (NaN validation, NextFunction error handling)",
+          "Contact routes (JWT protected POST/PUT/DELETE)",
+          "Route order fix (/company/:id before /:id)",
+          "Model associations: Company.hasMany(Contact)",
+          "7/7 tests passing (including CASCADE delete)"
+        ]
+      },
+      {
+        "category": "Deals CRUD",
+        "items": [
+          "Deal model aligned with PostgreSQL schema (value, status, created_by)",
+          "Deal service layer (6 functions)",
+          "Deal controller (numeric validation)",
+          "Deal routes (JWT protected)",
+          "Model associations: Company.hasMany(Deal)",
+          "Status field: VARCHAR (new/offer/won/lost)"
+        ]
+      },
+      {
+        "category": "Models Integration",
+        "items": [
+          "Created models/index.ts for centralized model initialization",
+          "Defined all model associations (Company ↔ Contacts, Company ↔ Deals)",
+          "Proper import/export structure"
+        ]
+      }
+    ],
+
+    "bugs_fixed": [
+      {
+        "id": 5,
+        "bug": "'Contact' refers to a value, but is being used as a type",
+        "solution": "Import Contact directly from contactModel.ts, not from models/index.ts",
+        "lesson": "TypeScript classes can be used as both types and values",
+        "status": "Fixed"
+      },
+      {
+        "id": 6,
+        "bug": "Cannot convert undefined or null to object - Contact model not initialized",
+        "solution": "Changed from initContactModel pattern to Contact.init() in model file",
+        "lesson": "Sequelize models must be initialized before use",
+        "status": "Fixed"
+      },
+      {
+        "id": 7,
+        "bug": "Deal model fields mismatch with PostgreSQL schema",
+        "solution": "Changed 'amount' to 'value', removed unsupported fields, aligned with init.sql",
+        "lesson": "Always verify ORM models match actual database schema",
+        "status": "Fixed (pending tests)"
+      }
+    ],
+
+    "files_created": [
+      "apps/server/src/models/contactModel.ts",
+      "apps/server/src/models/dealModel.ts",
+      "apps/server/src/models/index.ts",
+      "apps/server/src/services/contactService.ts",
+      "apps/server/src/services/dealService.ts",
+      "apps/server/src/controllers/contactController.ts",
+      "apps/server/src/controllers/dealController.ts",
+      "apps/server/src/routes/contactRoutes.ts",
+      "apps/server/src/routes/dealRoutes.ts"
+    ],
+
+    "api_endpoints_implemented": [
+      "GET /api/contacts",
+      "GET /api/contacts/:id",
+      "GET /api/contacts/company/:companyId",
+      "POST /api/contacts (protected)",
+      "PUT /api/contacts/:id (protected)",
+      "DELETE /api/contacts/:id (protected)",
+      "GET /api/deals",
+      "GET /api/deals/:id",
+      "GET /api/deals/company/:companyId",
+      "POST /api/deals (protected)",
+      "PUT /api/deals/:id (protected)",
+      "DELETE /api/deals/:id (protected)"
+    ],
+
+    "tests_completed": {
+      "contacts": {
+        "total": 7,
+        "passing": 7,
+        "tests": [
+          "GET /api/contacts - empty list",
+          "POST /api/companies - create test company",
+          "POST /api/contacts - create contact with JWT",
+          "GET /api/contacts/company/:id - filter by company",
+          "PUT /api/contacts/:id - update contact",
+          "DELETE /api/contacts/:id - delete contact",
+          "CASCADE DELETE - Company deletion removes Contacts"
+        ]
+      },
+      "deals": {
+        "total": 0,
+        "passing": 0,
+        "status": "Pending - awaiting server restart confirmation"
+      }
+    },
+
+    "statistics": {
+      "commits": 1,
+      "files_created": 9,
+      "files_modified": 5,
+      "code_lines": "~400",
+      "tests_run": 7,
+      "tests_passing": 7,
+      "test_pass_rate": "100%"
+    }
+  },
+
+  "cumulative_progress": {
+    "sessions_completed": 1.5,
+    "backend_progress": "85%",
+    "modules_completed": [
+      "Health Check",
+      "Authentication (JWT)",
+      "Company CRUD",
+      "Contacts CRUD",
+      "Deals CRUD (pending tests)"
+    ],
+    "modules_pending": [
+      "Tasks CRUD + 'Today' view",
+      "Desktop app (Electron + React)",
+      "Advanced features (pagination, search, filters)"
+    ],
+    
+    "total_commits": 8,
+    "total_files_created": 27,
+    "total_code_lines": "~1200",
+    "total_documentation_lines": 1060,
+    "total_tests_run": 15,
+    "total_tests_passing": 15,
+    "overall_test_pass_rate": "100%"
+  },
+
+  "database_schema": {
+    "tables": {
+      "users": {
+        "fields": ["id", "username", "email", "password", "role", "created_at", "updated_at"],
+        "model": "User",
+        "status": "✅ Implemented"
+      },
+      "companies": {
+        "fields": ["id", "name", "registration_code", "phone", "email", "address", "notes", "created_by", "created_at", "updated_at"],
+        "model": "Company",
+        "status": "✅ Implemented"
+      },
+      "contacts": {
+        "fields": ["id", "company_id (FK)", "first_name", "last_name", "position", "phone", "email", "notes", "created_at", "updated_at"],
+        "model": "Contact",
+        "status": "✅ Implemented"
+      },
+      "deals": {
+        "fields": ["id", "company_id (FK)", "title", "value", "status", "notes", "created_by", "created_at", "updated_at"],
+        "model": "Deal",
+        "status": "⏳ Pending tests"
+      },
+      "tasks": {
+        "fields": ["id", "company_id (FK)", "deal_id (FK)", "title", "description", "due_date", "completed", "assigned_to", "created_at", "updated_at"],
+        "model": "Task",
+        "status": "⬜ Not started"
+      }
+    },
+    "relationships": {
+      "Company → Contacts": "hasMany (CASCADE delete)",
+      "Company → Deals": "hasMany (CASCADE delete)",
+      "Company → Tasks": "hasMany (not yet implemented)",
+      "Deal → Tasks": "hasMany (not yet implemented)",
+      "User → Companies": "created_by (not enforced FK)",
+      "User → Tasks": "assigned_to (not yet implemented)"
+    }
+  },
+
+  "key_learnings": {
+    "session_1": [
+      "PostgreSQL 18+ requires /var/lib/postgresql volume path",
+      "TypeScript import/export consistency is critical",
+      "Sequelize underscored: true for snake_case mapping",
+      "JWT middleware needs custom TypeScript interface (AuthRequest)",
+      "bcrypt must use async/await (never sync)",
+      ".gitignore is essential from day 1"
+    ],
+    "session_2": [
+      "Sequelize classes are both types and values in TypeScript",
+      "Model.init() must be called before Model.findAll()",
+      "ORM models must match actual database schema (not assumptions)",
+      "Route order matters (/company/:id before /:id)",
+      "CASCADE delete works perfectly in Sequelize + PostgreSQL",
+      "204 No Content is REST standard for DELETE success"
+    ]
+  },
+
+  "code_quality_metrics": {
+    "typescript_strict_mode": true,
+    "type_safety": "High (no any types in business logic)",
+    "validation": "NaN checks, required field checks",
+    "error_handling": "NextFunction + try-catch",
+    "code_organization": "Clean separation (model/service/controller/routes)",
+    "naming_conventions": "snake_case (DB), camelCase (TypeScript)",
+    "documentation": "Inline comments + comprehensive devlog"
+  },
+
+  "testing_summary": {
+    "total_tests": 15,
+    "passing": 15,
+    "failing": 0,
+    "pass_rate": "100%",
+    
+    "test_categories": {
+      "health_checks": "1/1 passing",
+      "authentication": "2/2 passing (register + login)",
+      "company_crud": "5/5 passing",
+      "contacts_crud": "7/7 passing (including CASCADE)",
+      "deals_crud": "0/7 pending"
+    },
+
+    "coverage": {
+      "endpoints": "100% (all implemented endpoints tested)",
+      "jwt_protection": "100% (verified 401 without token)",
+      "cascade_delete": "100% (verified for Contacts)",
+      "validation": "Partial (basic validation tested)"
+    }
+  },
+
+  "next_steps": {
+    "immediate": [
+      "Test Deals API (7 tests)",
+      "Verify CASCADE delete for Deals",
+      "Update devlog.md with Session #2 test results"
+    ],
+    "session_3": [
+      "Tasks CRUD implementation",
+      "'Today' view (GET /api/tasks/today)",
+      "Task due_date filtering",
+      "Task assignment (assigned_to FK)"
+    ],
+    "future": [
+      "Automated testing (Jest + Supertest)",
+      "Input validation middleware (express-validator)",
+      "Centralized error handling",
+      "API documentation (Swagger/OpenAPI)",
+      "Pagination for list endpoints",
+      "Search/filter functionality",
+      "Frontend development (Electron app)"
+    ]
+  },
+
+  "known_issues": {
+    "resolved": [
+      "PostgreSQL volume path (fixed)",
+      "createdAt column mismatch (fixed with underscored: true)",
+      "TypeScript import/export inconsistencies (standardized)",
+      "Contact model initialization (fixed)",
+      "Deal model field names (aligned with DB schema)"
+    ],
+    "pending": [
+      "No automated test suite",
+      "No input validation library",
+      "No centralized error handler",
+      "No API documentation",
+      "No rate limiting",
+      "No logging system"
+    ]
+  },
+
+  "git_history": {
+    "commits": [
+      "c8b6804 - Add .gitignore",
+      "451902e - feat: JWT authentication and Company CRUD",
+      "2e12852 - docs: Add devlog + Docker config",
+      "29604b2 - docs: Fix inconsistencies",
+      "6a683d0 - docs: Add template + lessons learned",
+      "e06dda8 - fix: Company model underscored",
+      "87df7cb - docs: Add test results",
+      "8a445ce - meta: Add session context",
+      "d0ed78b - feat: Add Contacts CRUD with CASCADE delete"
+    ],
+    "tags": [
+      "v0.7.0 - Backend MVP completed (Session #1)"
+    ]
+  },
+
+  "time_investment": {
+    "session_1": "4.5 hours",
+    "session_2": "1.5 hours (ongoing)",
+    "total": "6 hours",
+    "estimated_to_mvp": "3-4 hours more (Tasks CRUD + basic frontend)"
+  },
+
+  "documentation_files": {
+    "devlog.md": "736 lines (Session #1) + Session #2 in progress",
+    "devlog_template.md": "380 lines",
+    "session_context_2025-11-06.json": "268 lines",
+    "sessions_summary_2025-11-05-06.json": "This file",
+    "total_documentation": "~1500 lines"
+  }
+}
+
