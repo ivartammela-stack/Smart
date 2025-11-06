@@ -765,12 +765,21 @@ docs/screenshots/
 - ✅ Deal routes + JWT kaitse
 - ✅ Model associations: Company.hasMany(Deal)
 
-### 4. **Testimine**
-- ✅ 14 API testi KOKKU (100% pass rate)
+### 4. **Tasks CRUD**
+- ✅ Task mudel (10 välja, 3 FK seost)
+- ✅ Task service layer (7 funktsiooni sh getTodayTasks)
+- ✅ Task controller (validation)
+- ✅ Task routes (8 endpoint'i sh /today)
+- ✅ Model associations: Company/Deal/User ↔ Tasks
+- ✅ **"Täna" vaade** - filtreerib due_date=today AND completed=false ⭐⭐
+
+### 5. **Testimine**
+- ✅ **22 API testi KOKKU (100% pass rate)** 🎯
 - ✅ Contacts: 7/7 testid (sh CASCADE delete)
 - ✅ Deals: 7/7 testid (sh CASCADE delete)
-- ✅ FK seosed töötavad mõlemal
-- ✅ **CASCADE delete töötab** - Company kustutamine kustutab Contacts JA Deals! ⭐⭐
+- ✅ Tasks: 8/8 testid (sh 2x CASCADE delete + "Täna" view)
+- ✅ FK seosed töötavad kõigil (company_id, deal_id, assigned_to)
+- ✅ **CASCADE delete töötab** - Company/Deal kustutamine kustutab Tasks! ⭐⭐⭐
 
 ---
 
@@ -781,9 +790,17 @@ docs/screenshots/
 - ✅ Deals CRUD - täielikult valmis
 - ✅ CASCADE delete töötab mõlemal
 
+### ✅ SESSION #2 COMPLETE:
+- ✅ Contacts CRUD - valmis
+- ✅ Deals CRUD - valmis  
+- ✅ Tasks CRUD + "Täna" vaade - valmis
+- ✅ **BACKEND MVP 100% VALMIS!** 🏆
+
 ### Prioriteet järgmiseks (Session #3):
-- ⬜ Tasks CRUD + "Täna" vaade
 - ⬜ Frontend alustamine (Electron app)
+- ⬜ Login screen
+- ⬜ Companies list view
+- ⬜ "Täna" vaade frontend'is
 
 ---
 
