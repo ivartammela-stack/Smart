@@ -1,39 +1,36 @@
-// This file is the main process entry point for the Electron application.
-// It is responsible for creating the application window and managing the lifecycle of the app.
+// src/main/main.ts
 
 import { app, BrowserWindow } from 'electron';
-import path from 'path';
-
-let mainWindow: BrowserWindow | null;
+import * as path from 'path';
 
 function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, '../preload/preload.ts'),
-            contextIsolation: true,
-            enableRemoteModule: false,
-        },
-    });
+  const mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
+  });
 
-    mainWindow.loadURL('http://localhost:3000'); // Adjust the URL as needed for your renderer process
+  // Production / local build – laeme public/index.html
+  // __dirname = dist/main, seega ../../public = apps/desktop/public
+  mainWindow.loadFile(path.join(__dirname, '../../public/index.html'));
 
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
+  // Dev-tools (optional):
+  mainWindow.webContents.openDevTools();
 }
 
-app.on('ready', createWindow);
+app.whenReady().then(() => {
+  createWindow();
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
 
-app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

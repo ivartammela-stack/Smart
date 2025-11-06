@@ -1,39 +1,35 @@
 {
   "name": "smartfollow-desktop",
   "version": "1.0.0",
-  "description": "Desktop application for SmartFollow CRM built with Electron and TypeScript.",
-  "main": "src/main/main.ts",
+  "description": "Desktop application for SmartFollow CRM built with Electron and TypeScript",
+  "main": "dist/main/main.js",
   "scripts": {
+    "build:main": "tsc -p .",
+    "build:renderer": "webpack --mode production",
+    "build": "npm run build:main && npm run build:renderer",
+    "dev:renderer": "webpack --mode development --watch",
+    "dev": "npm run build:main && npm run dev:renderer",
     "start": "electron .",
-    "build": "tsc",
-    "dev": "electron . --dev",
     "package": "electron-packager . SmartFollow --platform=win32 --arch=x64"
   },
   "dependencies": {
-    "electron": "^25.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.7.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-loader": "^9.0.0",
-    "webpack": "^5.0.0",
-    "webpack-cli": "^4.0.0",
-    "webpack-dev-server": "^4.0.0",
-    "eslint": "^8.0.0",
-    "eslint-plugin-react": "^7.0.0"
+    "electron": "^31.0.0",
+    "typescript": "^5.6.0",
+    "ts-loader": "^9.5.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.0",
+    "style-loader": "^3.3.4",
+    "css-loader": "^7.1.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.37.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yourusername/smartfollow-desktop.git"
-  },
-  "keywords": [
-    "electron",
-    "typescript",
-    "crm",
-    "desktop"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "homepage": "https://github.com/yourusername/smartfollow-desktop#readme"
+  "author": "SmartFollow Team",
+  "license": "MIT"
 }
