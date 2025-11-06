@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 
 interface DashboardProps {
   onLogout: () => void;
+  onNavigate: (view: 'companies') => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [todayTasksCount, setTodayTasksCount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch today's tasks
+    const fetchTodayTasks = async () => {
+      try {
+        const tasks = await api.get('/tasks/today');
+        setTodayTasksCount(tasks.length);
+      } catch (error) {
+        console.error('Failed to fetch today tasks:', error);
+        setTodayTasksCount(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTodayTasks();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -24,7 +45,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <p>Tere tulemast SmartFollow CRM-i!</p>
         
         <div className="dashboard-grid">
-          <div className="dashboard-card">
+          <div 
+            className="dashboard-card" 
+            onClick={() => onNavigate('companies')}
+          >
             <h3>🏢 Ettevõtted</h3>
             <p>Halda kliente ja nende andmeid</p>
           </div>
@@ -41,7 +65,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
           <div className="dashboard-card">
             <h3>✅ Ülesanded</h3>
-            <p>Täna tähtaeg: 0 ülesannet</p>
+            <p>
+              {loading 
+                ? 'Laadimine...' 
+                : `Täna tähtaeg: ${todayTasksCount} ülesannet`}
+            </p>
           </div>
         </div>
       </main>

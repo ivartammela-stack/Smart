@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const API_URL = 'http://localhost:3000/api';
+import api from '../utils/api';
 
 interface LoginProps {
   onLoginSuccess: (token: string) => void;
@@ -18,19 +17,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
+      const data = await api.post('/auth/login', { email, password });
 
       if (data.success && data.token) {
         localStorage.setItem('token', data.token);
@@ -40,7 +27,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         setError('Invalid response from server');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const errorMsg = err instanceof Error ? err.message : 'Login failed';
+      // User-friendly error messages
+      if (errorMsg.includes('ERR_CONNECTION_REFUSED') || errorMsg.includes('Failed to fetch')) {
+        setError('Backend server ei vasta. Veendu, et server jookseb (npm run dev apps/server kaustas)');
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }

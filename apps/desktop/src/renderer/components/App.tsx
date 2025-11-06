@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import Dashboard from './Dashboard';
+import Companies from './Companies';
+
+type View = 'dashboard' | 'companies';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentView, setCurrentView] = useState<View>('dashboard');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -23,6 +27,11 @@ const App: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
+    setCurrentView('dashboard');
+  };
+
+  const handleNavigate = (view: View) => {
+    setCurrentView(view);
   };
 
   if (isLoading) {
@@ -33,12 +42,24 @@ const App: React.FC = () => {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="app">
+        <Login onLoginSuccess={handleLoginSuccess} />
+      </div>
+    );
+  }
+
   return (
     <div className="app">
-      {isAuthenticated ? (
-        <Dashboard onLogout={handleLogout} />
-      ) : (
-        <Login onLoginSuccess={handleLoginSuccess} />
+      {currentView === 'dashboard' && (
+        <Dashboard 
+          onLogout={handleLogout} 
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentView === 'companies' && (
+        <Companies onBack={() => setCurrentView('dashboard')} />
       )}
     </div>
   );
