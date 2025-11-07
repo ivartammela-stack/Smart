@@ -1,6 +1,6 @@
 {
   "name": "smartfollow-desktop",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Desktop application for SmartFollow CRM built with Electron and TypeScript",
   "main": "dist/main/main.js",
   "scripts": {
@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "axios": "^1.7.0",
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.15.0"
@@ -50,6 +52,14 @@
       "package.json"
     ],
     "asar": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ivartammela-stack",
+        "repo": "Smart",
+        "releaseType": "release"
+      }
+    ],
     "win": {
       "target": [
         {

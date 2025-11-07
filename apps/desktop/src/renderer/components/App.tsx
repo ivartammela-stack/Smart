@@ -9,6 +9,7 @@ import AdminUsers from './AdminUsers';
 import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
+import UpdateNotification from './UpdateNotification';
 
 type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
 
@@ -85,10 +86,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <ErrorBoundary>
-      <div className="app">
-        <div className="app-inner">
-          <div className="sf-layout">
+      <ErrorBoundary>
+          <div className="app">
+            {/* Auto-update notification toast */}
+            <UpdateNotification />
+            
+            <div className="app-inner">
+              <div className="sf-layout">
             {/* Left sidebar */}
             <aside className="sf-sidebar">
               <div>

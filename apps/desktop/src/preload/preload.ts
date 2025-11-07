@@ -14,3 +14,20 @@ contextBridge.exposeInMainWorld('api', {
         ipcRenderer.on(channel, (event, data) => func(data));
     }
 });
+
+// Auto-updater API
+contextBridge.exposeInMainWorld('smartfollowUpdater', {
+  // Listen for update status events from main process
+  onStatus: (callback: (status: any) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, data: any) => callback(data);
+    ipcRenderer.on('update:status', listener);
+
+    // Return cleanup function
+    return () => {
+      ipcRenderer.removeListener('update:status', listener);
+    };
+  },
+  
+  // Request immediate installation of downloaded update
+  installNow: () => ipcRenderer.invoke('update:installNow'),
+});
