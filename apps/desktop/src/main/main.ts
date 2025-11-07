@@ -7,11 +7,11 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    webPreferences: {
+        webPreferences: {
       nodeIntegration: false,
-      contextIsolation: true,
-    },
-  });
+            contextIsolation: true,
+        },
+    });
 
   // Production / local build – laeme public/index.html
   // __dirname = dist/main, seega ../../public = apps/desktop/public
@@ -30,7 +30,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });

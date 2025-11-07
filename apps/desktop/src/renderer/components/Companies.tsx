@@ -42,12 +42,14 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const data = await api.get('/companies');
-      setCompanies(Array.isArray(data) ? data : []); // Safety check
+      const response = await api.get('/companies');
+      // Backend returns: { success: true, count: N, data: [...] }
+      const companiesList = response.data || [];
+      setCompanies(companiesList);
       setError('');
     } catch (err) {
+      console.error('Error fetching companies:', err);
       setError('Ettevõtete laadimine ebaõnnestus');
-      console.error(err);
     } finally {
       setLoading(false);
     }

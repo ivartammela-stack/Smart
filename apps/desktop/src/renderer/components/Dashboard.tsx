@@ -3,7 +3,7 @@ import api from '../utils/api';
 
 interface DashboardProps {
   onLogout: () => void;
-  onNavigate: (view: 'dashboard' | 'companies') => void;
+  onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
@@ -53,17 +53,26 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
             <p>Halda kliente ja nende andmeid</p>
           </div>
 
-          <div className="dashboard-card">
+          <div 
+            className="dashboard-card" 
+            onClick={() => onNavigate('contacts')}
+          >
             <h3>👤 Kontaktid</h3>
             <p>Kontaktisikud ettevõtetes</p>
           </div>
 
-          <div className="dashboard-card">
+          <div 
+            className="dashboard-card" 
+            onClick={() => onNavigate('deals')}
+          >
             <h3>💼 Tehingud</h3>
             <p>Müügivõimalused ja pakkumised</p>
           </div>
 
-          <div className="dashboard-card">
+          <div 
+            className="dashboard-card" 
+            onClick={() => onNavigate('tasks-today')}
+          >
             <h3>✅ Ülesanded</h3>
             <p>
               {loading 
@@ -71,6 +80,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
                 : `Täna tähtaeg: ${todayTasksCount} ülesannet`}
             </p>
           </div>
+
+          {/* Admin card - only visible to admins */}
+          {user.role === 'admin' && (
+            <div 
+              className="dashboard-card admin-card" 
+              onClick={() => onNavigate('admin-users')}
+            >
+              <h3>⚙️ Admin</h3>
+              <p>Kasutajate haldus</p>
+            </div>
+          )}
         </div>
       </main>
     </div>
