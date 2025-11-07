@@ -190,81 +190,119 @@ const Deals: React.FC<DealsProps> = ({ onBack }) => {
 
   return (
     <div className="deals-container">
-      <header className="page-header">
-        <button onClick={onBack} className="btn-back">← Tagasi Dashboardile</button>
-        <h1>💼 Tehingud</h1>
-      </header>
+      <div className="deals-layout">
+        {/* Header */}
+        <div className="deals-header">
+          <div className="deals-title-block">
+            <button onClick={onBack} className="sf-ghost-button" style={{alignSelf: 'flex-start', marginBottom: '8px'}}>
+              ← Tagasi
+            </button>
+            <h1 className="deals-title">💼 Tehingud</h1>
+            <p className="deals-subtitle">
+              Halda müügitehinguid ja jälgi nende staatust (Uus, Võidetud, Kaotatud).
+            </p>
+          </div>
 
-      {error && <div className="error-message">{error}</div>}
+          <div className="deals-filters">
+            <button
+              className={statusFilter === 'all' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setStatusFilter('all')}
+            >
+              Kõik
+            </button>
+            <button
+              className={statusFilter === 'new' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setStatusFilter('new')}
+            >
+              Uus
+            </button>
+            <button
+              className={statusFilter === 'won' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setStatusFilter('won')}
+            >
+              Võidetud
+            </button>
+            <button
+              className={statusFilter === 'lost' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setStatusFilter('lost')}
+            >
+              Kaotatud
+            </button>
+            <button 
+              onClick={() => setShowModal(true)} 
+              className="filter-chip"
+              style={{background: 'var(--sf-primary)', borderColor: 'var(--sf-primary)', color: 'white'}}
+            >
+              + Lisa uus
+            </button>
+          </div>
+        </div>
 
-      <div className="page-actions">
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value as any)}
-          className="status-filter"
-        >
-          <option value="all">Kõik staatused</option>
-          <option value="new">Uus</option>
-          <option value="won">Võidetud</option>
-          <option value="lost">Kaotatud</option>
-        </select>
+        {error && <div className="error-message">{error}</div>}
 
-        <button 
-          onClick={() => setShowModal(true)} 
-          className="btn-primary"
-        >
-          + Lisa uus tehing
-        </button>
-      </div>
-
-      <div className="table-container">
-        <table className="data-table">
+        {/* Deals table */}
+        <div className="deals-card">
+          <table className="deals-table">
           <thead>
             <tr>
               <th>Tehing</th>
               <th>Ettevõte</th>
-              <th className="align-right">Summa (EUR)</th>
+              <th className="align-right">Summa</th>
               <th>Staatus</th>
-              <th>Tegevused</th>
+              <th className="deals-actions-cell">Tegevused</th>
             </tr>
           </thead>
           <tbody>
             {filteredDeals.length === 0 ? (
               <tr>
                 <td colSpan={5} className="empty-state">
-                  Tehinguid ei leitud. Lisa esimene!
+                  {statusFilter === 'all' 
+                    ? 'Tehinguid pole veel lisatud. Lisa esimene! 💼'
+                    : `Staatusega "${statusFilter === 'new' ? 'Uus' : statusFilter === 'won' ? 'Võidetud' : 'Kaotatud'}" tehinguid ei leitud.`}
                 </td>
               </tr>
             ) : (
               filteredDeals.map((deal) => (
                 <tr key={deal.id}>
-                  <td><strong>{deal.title}</strong></td>
-                  <td>{getCompanyName(deal.company_id)}</td>
-                  <td className="align-right">
-                    {deal.value.toLocaleString('et-EE', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                    })}
+                  <td>
+                    <div className="deal-title">{deal.title}</div>
+                    {deal.notes && (
+                      <div className="deal-notes">{deal.notes}</div>
+                    )}
                   </td>
                   <td>
-                    <span className={getStatusClass(deal.status)}>
-                      {getStatusLabel(deal.status)}
+                    <div className="deals-pill">
+                      <span className="deals-pill-dot" />
+                      <span>{getCompanyName(deal.company_id)}</span>
+                    </div>
+                  </td>
+                  <td className="align-right">
+                    <div className="deal-value">
+                      {deal.value.toLocaleString('et-EE', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })} €
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`deals-status-pill deals-status-${deal.status}`}>
+                      {deal.status === 'new' && '🔵 Uus'}
+                      {deal.status === 'won' && '✅ Võidetud'}
+                      {deal.status === 'lost' && '❌ Kaotatud'}
                     </span>
                   </td>
-                  <td className="actions-cell">
+                  <td className="deals-actions-cell">
                     <button
-                      className="btn-icon btn-edit"
+                      className="deals-action-button"
                       onClick={() => handleEdit(deal)}
-                      title="Muuda"
                     >
-                      ✏️
+                      Muuda
                     </button>
                     <button
-                      className="btn-icon btn-delete"
+                      className="deals-action-button"
                       onClick={() => handleDelete(deal.id)}
-                      title="Kustuta"
                     >
-                      🗑️
+                      Kustuta
                     </button>
                   </td>
                 </tr>
@@ -272,6 +310,7 @@ const Deals: React.FC<DealsProps> = ({ onBack }) => {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Create/Edit Modal */}

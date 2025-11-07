@@ -129,22 +129,30 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
 
   return (
     <div className="companies-container">
-      <header className="page-header">
-        <button onClick={onBack} className="btn-back">
-          ← Tagasi
-        </button>
-        <h1>Ettevõtted</h1>
-        {!showForm && (
-          <button 
-            onClick={() => setShowForm(true)} 
-            className="btn-primary"
-          >
-            + Lisa uus
-          </button>
-        )}
-      </header>
+      <div className="companies-layout">
+        <div className="companies-header">
+          <div className="companies-title-block">
+            <button onClick={onBack} className="sf-ghost-button" style={{alignSelf: 'flex-start', marginBottom: '8px'}}>
+              ← Tagasi
+            </button>
+            <h1 className="companies-title">🏢 Ettevõtted</h1>
+            <p className="companies-subtitle">
+              Halda ettevõtteid, nende kontaktandmeid ja suhteid.
+            </p>
+          </div>
 
-      {error && <div className="error-message">{error}</div>}
+          {!showForm && (
+            <button 
+              onClick={() => setShowForm(true)} 
+              className="filter-chip"
+              style={{background: 'var(--sf-primary)', borderColor: 'var(--sf-primary)', color: 'white'}}
+            >
+              + Lisa uus
+            </button>
+          )}
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
 
       {showForm && (
         <div className="form-container">
@@ -228,52 +236,56 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
         </div>
       )}
 
-      <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Nimi</th>
-              <th>Registrikood</th>
-              <th>Telefon</th>
-              <th>E-mail</th>
-              <th>Tegevused</th>
-            </tr>
-          </thead>
-          <tbody>
-            {companies.length === 0 ? (
+        <div className="companies-card">
+          <table className="companies-table">
+            <thead>
               <tr>
-                <td colSpan={5} className="empty-state">
-                  Ühtegi ettevõtet ei leitud. Lisa esimene!
-                </td>
+                <th>Nimi</th>
+                <th>Registrikood</th>
+                <th>Telefon</th>
+                <th>E-mail</th>
+                <th className="companies-actions-cell">Tegevused</th>
               </tr>
-            ) : (
-              companies.map((company) => (
-                <tr key={company.id}>
-                  <td><strong>{company.name}</strong></td>
-                  <td>{company.registration_code}</td>
-                  <td>{company.phone || '-'}</td>
-                  <td>{company.email || '-'}</td>
-                  <td className="actions-cell">
-                    <button
-                      onClick={() => handleEdit(company)}
-                      className="btn-icon btn-edit"
-                      title="Muuda"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => handleDelete(company.id)}
-                      className="btn-icon btn-delete"
-                      title="Kustuta"
-                    >
-                      🗑️
-                    </button>
+            </thead>
+            <tbody>
+              {companies.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="empty-state">
+                    Ühtegi ettevõtet ei leitud. Lisa esimene! 🏢
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                companies.map((company) => (
+                  <tr key={company.id}>
+                    <td>
+                      <div className="company-name">{company.name}</div>
+                      {company.address && (
+                        <div className="company-meta">{company.address}</div>
+                      )}
+                    </td>
+                    <td><span className="company-code">{company.registration_code}</span></td>
+                    <td><span className="company-meta">{company.phone || '—'}</span></td>
+                    <td><span className="company-meta">{company.email || '—'}</span></td>
+                    <td className="companies-actions-cell">
+                      <button
+                        onClick={() => handleEdit(company)}
+                        className="companies-action-button"
+                      >
+                        Muuda
+                      </button>
+                      <button
+                        onClick={() => handleDelete(company.id)}
+                        className="companies-action-button"
+                      >
+                        Kustuta
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
