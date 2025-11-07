@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import logo3d from '../assets/smartfollow-logo.png';
 
 interface LoginProps {
   onLoginSuccess: (token: string) => void;
@@ -65,58 +66,87 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h1>SmartFollow CRM</h1>
-        <p className="subtitle">Logi sisse</p>
+    <div className="sf-login-page">
+      <div className="sf-login-gradient" />
+      
+      {/* Floating logo in background */}
+      <div 
+        className="sf-login-logo-mark"
+        style={{ backgroundImage: `url(${logo3d})` }}
+        aria-hidden="true"
+      />
 
-        {error && <div className="error-message">{error}</div>}
+      <div className="sf-login-shell">
+        <main className="sf-login-main">
+          <section className="sf-login-card">
+            <header className="sf-login-header">
+              <h2>Logi sisse</h2>
+              <p>Halda kliente, tehinguid ja järeltegevusi ühest kohast.</p>
+            </header>
 
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label htmlFor="email">E-mail</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="sinu@email.ee"
-              required
-              autoFocus
-            />
-          </div>
+            <form className="sf-login-form" onSubmit={handleLogin}>
+              <div className="sf-form-group">
+                <label htmlFor="email">E-mail</label>
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="sinunimi@ettevote.ee"
+                  disabled={loading}
+                  autoFocus
+                />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Parool</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
-          </div>
+              <div className="sf-form-group">
+                <label htmlFor="password">Parool</label>
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  disabled={loading}
+                />
+              </div>
 
-          <div className="form-group-checkbox">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Mäleta mind</span>
-            </label>
-          </div>
+              <div className="sf-login-row">
+                <label className="sf-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={loading}
+                  />
+                  <span>Mäleta mind</span>
+                </label>
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Sisselogimine...' : 'Logi sisse'}
-          </button>
-        </form>
+                <span className="sf-login-hint">Admin: admin@smartfollow.ee</span>
+              </div>
 
-        <p className="footer-text">
-          SmartFollow CRM - Desktop Application v1.0.0
-        </p>
+              {error && (
+                <div className="sf-login-error">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="sf-button-primary"
+                disabled={loading}
+              >
+                {loading ? 'Sisselogimine…' : 'Logi sisse'}
+              </button>
+            </form>
+
+            <footer className="sf-login-footer">
+              <span>SmartFollow CRM · Desktop rakendus</span>
+              <span className="sf-login-version">v1.3.0</span>
+            </footer>
+          </section>
+        </main>
       </div>
     </div>
   );

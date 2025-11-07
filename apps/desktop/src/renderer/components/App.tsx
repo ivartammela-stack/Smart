@@ -7,6 +7,8 @@ import Deals from './Deals';
 import TasksToday from './TasksToday';
 import AdminUsers from './AdminUsers';
 import ErrorBoundary from './ErrorBoundary';
+import RightSidebar from './RightSidebar';
+import PlanBanner from './PlanBanner';
 
 type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
 
@@ -14,6 +16,7 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [reportsData, setReportsData] = useState<any>(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -23,6 +26,22 @@ const App: React.FC = () => {
     }
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchReportsData();
+    }
+  }, [isAuthenticated]);
+
+  const fetchReportsData = async () => {
+    try {
+      const api = await import('../utils/api');
+      const response = await api.default.get('/reports/summary');
+      setReportsData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch reports:', error);
+    }
+  };
 
   const handleLoginSuccess = (token: string) => {
     setIsAuthenticated(true);
@@ -55,30 +74,143 @@ const App: React.FC = () => {
     );
   }
 
+  const user = isAuthenticated ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+  
+  // Mock plan data - later can be from backend
+  const userPlan = {
+    id: 'pro' as const,
+    name: 'Pro',
+    billingPeriod: 'monthly' as const,
+    renewsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  };
+
   return (
     <ErrorBoundary>
       <div className="app">
-        {currentView === 'dashboard' && (
-          <Dashboard 
-            onLogout={handleLogout} 
-            onNavigate={handleNavigate}
-          />
-        )}
-        {currentView === 'companies' && (
-          <Companies onBack={() => setCurrentView('dashboard')} />
-        )}
-        {currentView === 'contacts' && (
-          <Contacts onBack={() => setCurrentView('dashboard')} />
-        )}
-        {currentView === 'deals' && (
-          <Deals onBack={() => setCurrentView('dashboard')} />
-        )}
-        {currentView === 'tasks-today' && (
-          <TasksToday onBack={() => setCurrentView('dashboard')} />
-        )}
-        {currentView === 'admin-users' && (
-          <AdminUsers onBack={() => setCurrentView('dashboard')} />
-        )}
+        <div className="app-inner">
+          <div className="sf-layout">
+            {/* Left sidebar */}
+            <aside className="sf-sidebar">
+              <div>
+                <div className="sf-logo">
+                  <div className="sf-logo-mark">
+                    <img src="SmartFollow logo.png" alt="SF" />
+                  </div>
+                  <div className="sf-logo-text">SmartFollow CRM</div>
+                </div>
+
+                <nav className="sf-nav">
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'dashboard' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('dashboard')}
+                  >
+                    <span className="sf-nav-item-icon">🏠</span>
+                    <span>Dashboard</span>
+                  </button>
+
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'companies' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('companies')}
+                  >
+                    <span className="sf-nav-item-icon">🏢</span>
+                    <span>Ettevõtted</span>
+                  </button>
+
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'contacts' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('contacts')}
+                  >
+                    <span className="sf-nav-item-icon">👤</span>
+                    <span>Kontaktid</span>
+                  </button>
+
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'deals' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('deals')}
+                  >
+                    <span className="sf-nav-item-icon">💼</span>
+                    <span>Tehingud</span>
+                  </button>
+
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'tasks-today' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('tasks-today')}
+                  >
+                    <span className="sf-nav-item-icon">✅</span>
+                    <span>Ülesanded</span>
+                  </button>
+
+                  {user?.role === 'admin' && (
+                    <button
+                      className={'sf-nav-item ' + (currentView === 'admin-users' ? 'sf-nav-item-active' : '')}
+                      onClick={() => setCurrentView('admin-users')}
+                    >
+                      <span className="sf-nav-item-icon">🛡️</span>
+                      <span>Admin</span>
+                    </button>
+                  )}
+                </nav>
+              </div>
+
+              <div className="sf-sidebar-footer">
+                <div>
+                  Versioon 1.3.0<br />
+                  Kasutaja: {user?.username || 'Kasutaja'}
+                </div>
+                
+                <div className={`sf-plan-badge ${
+                  userPlan.id === 'pro' ? 'plan-pro' : 
+                  userPlan.id === 'business' ? 'plan-business' : 
+                  'plan-starter'
+                }`}>
+                  <span className="sf-plan-dot" />
+                  <span>{userPlan.name}</span>
+                </div>
+
+                <button className="sf-logout-btn" onClick={handleLogout}>
+                  Logi välja
+                </button>
+              </div>
+            </aside>
+
+            {/* Main content */}
+            <main className="sf-main">
+              {currentView === 'dashboard' && (
+                <Dashboard 
+                  onLogout={handleLogout} 
+                  onNavigate={handleNavigate}
+                />
+              )}
+              {currentView === 'companies' && (
+                <Companies onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'contacts' && (
+                <Contacts onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'deals' && (
+                <Deals onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'tasks-today' && (
+                <TasksToday onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'admin-users' && (
+                <AdminUsers onBack={() => setCurrentView('dashboard')} />
+              )}
+            </main>
+
+            {/* Right sidebar */}
+            <aside className="sf-rightbar">
+              <RightSidebar 
+                user={user} 
+                stats={reportsData}
+                onNavigate={handleNavigate}
+              />
+            </aside>
+          </div>
+        </div>
+
+        {/* Floating plan banner */}
+        <PlanBanner plan={userPlan} />
       </div>
     </ErrorBoundary>
   );

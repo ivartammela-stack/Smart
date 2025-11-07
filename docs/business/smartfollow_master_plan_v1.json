@@ -1,0 +1,364 @@
+{
+  "project": "SmartFollow CRM",
+  "version": "1.3.0",
+  "created": "2025-11-07",
+  "total_estimated_hours": {
+    "min": 185,
+    "max": 255
+  },
+  "actual_hours_to_date": 140,
+  "completion_percentage": 65,
+  "phases": [
+    {
+      "id": 0,
+      "code": "phase_0",
+      "name": "Projekti raamimine ja kooli nõuded",
+      "goal": "Veenduda, et projekt vastab lõputöö formaalsetele ja sisulistele nõuetele.",
+      "estimated_hours_min": 5,
+      "estimated_hours_max": 10,
+      "actual_hours": 8,
+      "status": "completed",
+      "completion_date": "2025-11-05",
+      "tasks": [
+        "Lõputöö juhendi läbiv lugemine (maht, struktuur, tehnilised nõuded).",
+        "Teema kooskõlastamine juhendajaga (\"SmartFollow – töölauapõhine CRM väikeettevõtetele\").",
+        "Fookuse sõnastamine (tehniline vs tehniline+äriline).",
+        "Git reposti loomine ja lihtsa Kanban / todo süsteemi seadistamine."
+      ],
+      "deliverables": [
+        "Kinnitatud lõputöö teema.",
+        "Esmane tööplaan ja ajakava.",
+        "Git repo: https://github.com/ivartammela-stack/Smart"
+      ]
+    },
+    {
+      "id": 1,
+      "code": "phase_1",
+      "name": "Nõuete analüüs ja kasutuslood",
+      "goal": "Mõista täpselt, mida SmartFollow peab tegema ja kellele.",
+      "estimated_hours_min": 15,
+      "estimated_hours_max": 25,
+      "actual_hours": 18,
+      "status": "completed",
+      "completion_date": "2025-11-05",
+      "tasks": [
+        "Intervjuud 1–3 väikeettevõtjaga (poolstruktureeritud küsimustik).",
+        "Intervjuu tulemuste koondamine (nt Word/Notion/Excel).",
+        "Funktsionaalsete nõuete kirjeldamine (klientide, tehingute, järeltegevuste haldus).",
+        "Mittefunktsionaalsete nõuete kirjeldamine (kasutatavus, jõudlus, turvalisus).",
+        "Kasutuslugude (user stories) koostamine."
+      ],
+      "deliverables": [
+        "Nõuete analüüsi dokument (docs/devlog.md)",
+        "Kogum kasutuslugusid (user stories).",
+        "Funktsionaalsed nõuded: Companies, Contacts, Deals, Tasks CRUD"
+      ]
+    },
+    {
+      "id": 2,
+      "code": "phase_2",
+      "name": "Arhitektuur ja tehnoloogia detailne valik",
+      "goal": "Panna paika süsteemi osade omavaheline suhtlus ja tehniline stack.",
+      "estimated_hours_min": 10,
+      "estimated_hours_max": 15,
+      "actual_hours": 12,
+      "status": "completed",
+      "completion_date": "2025-11-05",
+      "tasks": [
+        "Üldise arhitektuuriskeemi joonistamine (desktop klient, backend, andmebaas).",
+        "REST API rolli ja vastutuspiiride määratlemine.",
+        "Konkreetse stacki valik (Electron + React/TS, Node.js + Express/Nest, ORM, logimine).",
+        "Autentimisstrateegia valik (JWT vs sessioon)."
+      ],
+      "deliverables": [
+        "Arhitektuuri diagramm (monorepo struktuuri)",
+        "Tech stack: Electron, React, TypeScript, Node.js, Express, PostgreSQL, Sequelize",
+        "JWT autentimine"
+      ]
+    },
+    {
+      "id": 3,
+      "code": "phase_3",
+      "name": "UX/UI visandid ja ekraanid",
+      "goal": "Defineerida rakenduse põhi-vaated enne koodi kirjutamist.",
+      "estimated_hours_min": 10,
+      "estimated_hours_max": 15,
+      "actual_hours": 22,
+      "status": "in_progress",
+      "tasks": [
+        "Peamiste ekraanide visandamine (login, dashboard, kliendid, tehingud, \"Today\").",
+        "Kasutajavoogude kirjeldamine (login → kliendi lisamine → tehing → järeltegevus).",
+        "UI loogika ja navigeerimise kirjeldamine (sidebar, detailvaated, filtrid).",
+        "Professional redesign (Session #4): Light purple theme, sidebar layout"
+      ],
+      "deliverables": [
+        "Login, Dashboard, Companies, Contacts, Deals, Tasks views",
+        "Professional light purple theme (MultiPurpose Themes inspired)",
+        "3-column layout: sidebar | main | rightbar"
+      ]
+    },
+    {
+      "id": 4,
+      "code": "phase_4",
+      "name": "Andmemudel ja andmebaas",
+      "goal": "Luua CRM-i tabloode ja seoste loogiline skeem ning reaalsed migratsioonid.",
+      "estimated_hours_min": 10,
+      "estimated_hours_max": 15,
+      "actual_hours": 14,
+      "status": "completed",
+      "completion_date": "2025-11-05",
+      "tasks": [
+        "ERD skeemi loomine (users, companies, contacts, deals, tasks).",
+        "Võtmete ja seoste määratlemine (FK, ON DELETE CASCADE jne).",
+        "ORM seadistamine ja esmaste migratsioonide kirjutamine.",
+        "Andmebaasi loomine (PostgreSQL) ja ühenduse testimine."
+      ],
+      "deliverables": [
+        "Sequelize mudelid: User, Company, Contact, Deal, Task",
+        "PostgreSQL Docker setup",
+        "Associations ja foreign keys"
+      ]
+    },
+    {
+      "id": 5,
+      "code": "phase_5",
+      "name": "Backend v1 (baas-API + autentimine)",
+      "goal": "Luua töötav REST API põhifunktsioonidega ja autentimisega.",
+      "estimated_hours_min": 25,
+      "estimated_hours_max": 35,
+      "actual_hours": 32,
+      "status": "completed",
+      "completion_date": "2025-11-06",
+      "tasks": [
+        "Backend projekti struktuuri seadistamine (/controllers, /services, /models, /routes).",
+        "Kasutajate registreerimise ja sisselogimise realiseerimine.",
+        "Paroolide hashimine (bcrypt) ja JWT genereerimine.",
+        "Autentimise middleware kirjutamine.",
+        "CRUD endpointide loomine (companies, contacts, deals, tasks).",
+        "Admin endpoints (user management).",
+        "Reports ja Search endpoints."
+      ],
+      "deliverables": [
+        "Töötav REST API (Express + TypeScript)",
+        "Auth endpoints: /api/auth/register, /api/auth/login",
+        "CRUD endpoints: /api/companies, /api/contacts, /api/deals, /api/tasks",
+        "Admin endpoints: /api/admin/users",
+        "Reports: /api/reports/summary",
+        "Search: /api/search"
+      ]
+    },
+    {
+      "id": 6,
+      "code": "phase_6",
+      "name": "Töölauarakendus v1 (login + põhi-vaated)",
+      "goal": "Luua Electroni äpp, mis logib sisse ja kuvab põhinavigatsiooni.",
+      "estimated_hours_min": 25,
+      "estimated_hours_max": 35,
+      "actual_hours": 28,
+      "status": "completed",
+      "completion_date": "2025-11-06",
+      "tasks": [
+        "Electron + React/TS projekti seadistamine.",
+        "Keskkonnamuutujatega backend URLi konfigureerimine.",
+        "Login ekraani loomine ja seotus /auth/login APIga.",
+        "JWT tokeni hoidmine (localStorage).",
+        "Põhiraami (shell) loomine: navigation, sisuvaated.",
+        "Remember me functionality."
+      ],
+      "deliverables": [
+        "Käivituv töölauarakendus sisselogimisega",
+        "Login screen + Remember me",
+        "Dashboard view",
+        "Sidebar navigation (Session #4)"
+      ]
+    },
+    {
+      "id": 7,
+      "code": "phase_7",
+      "name": "Täiendavad funktsioonid (filtrid, otsing, meeldetuletused)",
+      "goal": "Muutuda prototüüp reaalselt kasutatavaks CRM-iks.",
+      "estimated_hours_min": 30,
+      "estimated_hours_max": 40,
+      "actual_hours": 36,
+      "status": "completed",
+      "completion_date": "2025-11-07",
+      "tasks": [
+        "Kliendihalduse UI (tabel, detailvaade, lisamine, muutmine, kustutamine).",
+        "Tehingute haldus: staatuse mudel, filtrid, \"deal age\" kuvamine.",
+        "Järeltegevuste Today view: due_date=täna, tehtuks märkimine, sorteerimine.",
+        "Vormivigade ja valideerimise lisamine.",
+        "Global search (SearchBar) üle kõigi entiteetide.",
+        "Dashboard KPI graafikud (Recharts pie + bar chart).",
+        "Clickable charts - filtreerimine graafikute pealt."
+      ],
+      "deliverables": [
+        "Companies CRUD (v1.2.0)",
+        "Contacts CRUD (v1.2.0)",
+        "Deals CRUD with status filter (v1.2.0)",
+        "Tasks Today view with completion tracking (v1.2.0)",
+        "Admin user management (v1.2.0)",
+        "Global search functionality (v1.3.0)",
+        "Dashboard analytics and KPI charts (v1.3.0)"
+      ]
+    },
+    {
+      "id": 8,
+      "code": "phase_8",
+      "name": "Logimine, veakäsitlus, turvalisus",
+      "goal": "Lisada süsteemile robustsus ja minimaalsed turvanõuded.",
+      "estimated_hours_min": 10,
+      "estimated_hours_max": 20,
+      "actual_hours": 4,
+      "status": "in_progress",
+      "tasks": [
+        "Backend logimise seadistamine (vead, olulised sündmused).",
+        "Veateadete kuvamine kliendis (server down, sessioon aegunud).",
+        "JWT aegumise ja uuesti sisselogimise loogika läbimõtlemine.",
+        "Paroolide ja tundlike andmete vältimine logides.",
+        "ErrorBoundary component (DONE)",
+        "GitHub Actions CI/CD (DONE)"
+      ],
+      "deliverables": [
+        "ErrorBoundary React component (v1.3.0)",
+        "GitHub Actions workflows (ci.yml, release.yml)",
+        "Basic error handling in API calls"
+      ]
+    },
+    {
+      "id": 9,
+      "code": "phase_9",
+      "name": "Testimine (manuaalne + kasutajatestid)",
+      "goal": "Tõestada, et rakendus töötab ja koguda tagasisidet.",
+      "estimated_hours_min": 15,
+      "estimated_hours_max": 25,
+      "actual_hours": 0,
+      "status": "planned",
+      "tasks": [
+        "Arendaja enda testid (õnnelik rada: login → klient → tehing → järeltegevus).",
+        "Kasutajatestid ettevõtjaga (stsenaariumid ja ülesanded).",
+        "Tagasiside põhjal väikeste paranduste tegemine.",
+        "Testimise kokkuvõtte kirjutamine.",
+        "Jest backend testid (optional)",
+        "React Testing Library frontend testid (optional)"
+      ],
+      "deliverables": [
+        "Testimisstsenaariumid ja tulemuste kirjeldus.",
+        "Kasutajatestide kokkuvõte lõputöö jaoks.",
+        "Test coverage report (optional)"
+      ]
+    },
+    {
+      "id": 10,
+      "code": "phase_10",
+      "name": "Deploy / prototüübi esitlus",
+      "goal": "Viia süsteem seisundisse, kus seda saab installida ja näidata.",
+      "estimated_hours_min": 10,
+      "estimated_hours_max": 15,
+      "actual_hours": 6,
+      "status": "in_progress",
+      "tasks": [
+        "Backendi paigaldus serverisse või lokaalne tootmis-build.",
+        "Dokumenteeritud deploy-protsess (kuidas süsteemi üles panna).",
+        "Electroni äpi pakkimine (installer / Setup.exe).",
+        "Installi testimine teisel masinal.",
+        "Auto-update mechanism (optional)"
+      ],
+      "deliverables": [
+        "Electron-builder NSIS installer (DONE - v1.1.0, v1.2.0, v1.3.0)",
+        "Portable .exe (DONE)",
+        "GitHub Actions build artifacts (DONE)",
+        "Backend deployment guide (TODO)",
+        "Production .env template (TODO)"
+      ]
+    },
+    {
+      "id": 11,
+      "code": "phase_11",
+      "name": "Lõputöö kirjutamine ja dokumentatsioon",
+      "goal": "Kirjutada kogu töö üles viisil, millest komisjon aru saab.",
+      "estimated_hours_min": 30,
+      "estimated_hours_max": 40,
+      "actual_hours": 0,
+      "status": "planned",
+      "tasks": [
+        "Lõputöö struktuuri paika panek (peatükid, alapeatükid).",
+        "Teoreetilise osa kirjutamine (CRM, väikeettevõtted, valikukriteeriumid).",
+        "Nõuete, arhitektuuri ja teostuse peatükkide kirjutamine.",
+        "Testimise ja tulemuste peatüki kirjutamine.",
+        "Kokkuvõtte, edasiste arendusvõimaluste ja lisa(d) kirjutamine.",
+        "Viidete, kujunduse ja formaadi korrastamine."
+      ],
+      "deliverables": [
+        "Valmis lõputöö käsikiri (40-60 lk).",
+        "Lisa(d): ajakava, testid, ERD, arhitektuuridiagrammid.",
+        "Esitlusmaterjalid (PPT/PDF)",
+        "Demo video (5-10 min)"
+      ]
+    }
+  ],
+  "current_status": {
+    "phase": "Phase 3-4: UI redesign + robustness improvements",
+    "version": "1.3.0",
+    "completed_phases": [0, 1, 2, 4, 5, 6, 7],
+    "in_progress_phases": [3, 8, 10],
+    "planned_phases": [9, 11],
+    "next_milestones": [
+      "Complete UI redesign (light purple professional theme)",
+      "Add Winston logging to backend",
+      "Plan user testing sessions",
+      "Start thesis writing (literature review)"
+    ]
+  },
+  "gantt_schedule": {
+    "description": "Nädalapõhine ajakava (hinnanguline)",
+    "weeks": [
+      {"week": "1-2", "phases": [0, 1], "description": "Teema kinnitamine, nõuete analüüs, intervjuud"},
+      {"week": "3", "phases": [2], "description": "Arhitektuur ja tehnoloogiline stack"},
+      {"week": "4", "phases": [3, 4], "description": "UX/UI visandid, andmemudel, ERD"},
+      {"week": "5-6", "phases": [5], "description": "Backend v1: autentimine + CRUD API"},
+      {"week": "7-8", "phases": [6], "description": "Electron app: login, shell, navigation"},
+      {"week": "9-10", "phases": [7], "description": "Täiendavad funktsioonid: CRUD views, filters"},
+      {"week": "11", "phases": [8], "description": "Logimine, veakäsitlus, turvalisus"},
+      {"week": "12", "phases": [9], "description": "Testimine: arendaja + kasutajatestid"},
+      {"week": "13", "phases": [10], "description": "Deploy, installer, demo"},
+      {"week": "14-16", "phases": [11], "description": "Lõputöö kirjutamine, viimistlus"}
+    ]
+  },
+  "sessions_log": [
+    {
+      "session": 1,
+      "date": "2025-11-05",
+      "duration_hours": 9.5,
+      "focus": "Project setup + Backend foundation",
+      "version": "0.1.0 -> 1.0.0"
+    },
+    {
+      "session": 2,
+      "date": "2025-11-06",
+      "duration_hours": 6.5,
+      "focus": "Installer setup + Desktop foundation",
+      "version": "1.0.0 -> 1.1.0"
+    },
+    {
+      "session": 3,
+      "date": "2025-11-06",
+      "duration_hours": 6.5,
+      "focus": "Admin users + CRUD completion",
+      "version": "1.1.0 -> 1.2.0"
+    },
+    {
+      "session": 4,
+      "date": "2025-11-07",
+      "duration_hours": 5.5,
+      "focus": "Search, Reports, KPI charts, UI redesign",
+      "version": "1.2.0 -> 1.3.0 (in progress)",
+      "status": "in_progress"
+    }
+  ],
+  "notes": {
+    "technology_decisions": "Electron chosen for desktop cross-platform support. PostgreSQL for relational data integrity. JWT for stateless authentication.",
+    "scope_management": "MVP focuses on core CRM features. Advanced features (email sync, AI suggestions) planned for v2.0+",
+    "risks": "User adoption depends on UX quality. Backend deployment requires cloud hosting planning."
+  }
+}
+

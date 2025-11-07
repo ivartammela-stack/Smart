@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "seed:demo": "ts-node scripts/seed-demo-data.ts"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

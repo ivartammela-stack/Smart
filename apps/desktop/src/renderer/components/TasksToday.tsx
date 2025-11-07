@@ -65,6 +65,13 @@ const TasksToday: React.FC<TasksTodayProps> = ({ onBack }) => {
     fetchCompanies();
     fetchDeals();
     fetchUsers();
+    
+    // Check if there's a filter from Dashboard
+    const savedFilter = localStorage.getItem('tasksFilter');
+    if (savedFilter && (savedFilter === 'all' || savedFilter === 'pending' || savedFilter === 'completed')) {
+      setFilter(savedFilter as TaskFilter);
+      localStorage.removeItem('tasksFilter'); // Clear after reading
+    }
   }, []);
 
   const fetchTasks = async () => {
@@ -230,6 +237,7 @@ const TasksToday: React.FC<TasksTodayProps> = ({ onBack }) => {
 
   const completedCount = tasks.filter(t => t.completed).length;
   const totalCount = tasks.length;
+  const percentage = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
   if (loading) {
     return <div className="loading-container"><p>Tänaste ülesannete laadimine...</p></div>;
@@ -237,58 +245,69 @@ const TasksToday: React.FC<TasksTodayProps> = ({ onBack }) => {
 
   return (
     <div className="tasks-today-container">
-      <header className="page-header">
-        <button onClick={onBack} className="btn-back">← Tagasi Dashboardile</button>
-        <h1>✅ Tänased ülesanded</h1>
-      </header>
+      <div className="tasks-today-layout">
+        {/* Header with progress */}
+        <div className="tasks-today-header">
+          <div className="tasks-today-title-block">
+            <button onClick={onBack} className="sf-ghost-button" style={{alignSelf: 'flex-start', marginBottom: '8px'}}>
+              ← Tagasi
+            </button>
+            <h1 className="tasks-today-title">✅ Tänased ülesanded</h1>
+            <p className="tasks-today-subtitle">
+              Fookuses ainult need tegevused, mille tähtaeg on täna.
+            </p>
+            
+            <div className="tasks-progress">
+              <strong>Tehtud: {completedCount}/{totalCount}</strong> · Täitmismäär: {percentage}%
+            </div>
+            <div className="tasks-progress-bar">
+              <div className="tasks-progress-bar-fill" style={{ width: `${percentage}%` }} />
+            </div>
+          </div>
 
-      {error && <div className="error-message">{error}</div>}
-
-      <div className="tasks-summary">
-        <p>Tehtud: <strong>{completedCount} / {totalCount}</strong></p>
-      </div>
-
-      <div className="page-actions">
-        <div className="tasks-filter-group">
-          <button
-            className={filter === 'all' ? 'filter-chip filter-chip-active' : 'filter-chip'}
-            onClick={() => setFilter('all')}
-          >
-            Kõik
-          </button>
-          <button
-            className={filter === 'pending' ? 'filter-chip filter-chip-active' : 'filter-chip'}
-            onClick={() => setFilter('pending')}
-          >
-            Ootel
-          </button>
-          <button
-            className={filter === 'completed' ? 'filter-chip filter-chip-active' : 'filter-chip'}
-            onClick={() => setFilter('completed')}
-          >
-            Tehtud
-          </button>
+          <div className="tasks-filters">
+            <button
+              className={filter === 'all' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setFilter('all')}
+            >
+              Kõik
+            </button>
+            <button
+              className={filter === 'pending' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setFilter('pending')}
+            >
+              Ootel
+            </button>
+            <button
+              className={filter === 'completed' ? 'filter-chip filter-chip-active' : 'filter-chip'}
+              onClick={() => setFilter('completed')}
+            >
+              Tehtud
+            </button>
+            <button 
+              onClick={() => setShowModal(true)} 
+              className="filter-chip"
+              style={{background: 'var(--sf-primary)', borderColor: 'var(--sf-primary)', color: 'white'}}
+            >
+              + Lisa uus
+            </button>
+          </div>
         </div>
 
-        <button 
-          onClick={() => setShowModal(true)} 
-          className="btn-primary"
-        >
-          + Lisa uus ülesanne
-        </button>
-      </div>
+        {error && <div className="error-message">{error}</div>}
 
-      <div className="table-container">
-        <table className="data-table">
+        {/* Tasks table */}
+        <div className="tasks-card">
+          <table className="tasks-table">
           <thead>
             <tr>
-              <th style={{width: '40px'}}></th>
+              <th className="tasks-checkbox-cell"></th>
               <th>Ülesanne</th>
               <th>Ettevõte</th>
               <th>Tehing</th>
               <th>Tähtaeg</th>
               <th>Vastutaja</th>
-              <th>Tegevused</th>
+              <th className="tasks-actions-cell">Tegevused</th>
             </tr>
           </thead>
           <tbody>
@@ -304,41 +323,68 @@ const TasksToday: React.FC<TasksTodayProps> = ({ onBack }) => {
               </tr>
             ) : (
               filteredTasks.map((task) => (
-                <tr key={task.id} className={task.completed ? 'task-completed' : ''}>
-                  <td>
+                <tr key={task.id} className={task.completed ? 'tasks-row-completed' : ''}>
+                  <td className="tasks-checkbox-cell">
                     <input
                       type="checkbox"
                       checked={task.completed}
                       onChange={() => handleToggleComplete(task)}
-                      className="task-checkbox"
+                      className="tasks-checkbox"
                     />
                   </td>
                   <td>
-                    <strong className={task.completed ? 'task-title-completed' : ''}>
+                    <div className={task.completed ? 'task-title-completed' : 'task-title'}>
                       {task.title}
-                    </strong>
+                    </div>
                     {task.description && (
-                      <div className="task-description">{task.description}</div>
+                      <div className="task-meta">{task.description}</div>
                     )}
                   </td>
-                  <td>{getCompanyName(task.company_id)}</td>
-                  <td>{getDealTitle(task.deal_id)}</td>
-                  <td>{task.due_date || 'Täna'}</td>
-                  <td>{getUserName(task.assigned_to)}</td>
-                  <td className="actions-cell">
+                  <td>
+                    {task.company_id ? (
+                      <div className="tasks-pill">
+                        <span className="tasks-pill-dot" />
+                        <span>{getCompanyName(task.company_id)}</span>
+                      </div>
+                    ) : (
+                      <span className="task-meta">—</span>
+                    )}
+                  </td>
+                  <td>
+                    {task.deal_id ? (
+                      <div className="tasks-pill">
+                        <span className="tasks-pill-dot-warning" />
+                        <span>{getDealTitle(task.deal_id)}</span>
+                      </div>
+                    ) : (
+                      <span className="task-meta">—</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="task-meta">{task.due_date || 'Täna'}</div>
+                  </td>
+                  <td>
+                    {task.assigned_to ? (
+                      <div className="tasks-pill">
+                        <span className="tasks-pill-dot-muted" />
+                        <span>{getUserName(task.assigned_to)}</span>
+                      </div>
+                    ) : (
+                      <span className="task-meta">Määramata</span>
+                    )}
+                  </td>
+                  <td className="tasks-actions-cell">
                     <button
-                      className="btn-icon btn-edit"
+                      className="tasks-action-button"
                       onClick={() => handleEdit(task)}
-                      title="Muuda"
                     >
-                      ✏️
+                      Muuda
                     </button>
                     <button
-                      className="btn-icon btn-delete"
+                      className="tasks-action-button"
                       onClick={() => handleDelete(task.id)}
-                      title="Kustuta"
                     >
-                      🗑️
+                      Kustuta
                     </button>
                   </td>
                 </tr>
@@ -347,6 +393,7 @@ const TasksToday: React.FC<TasksTodayProps> = ({ onBack }) => {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* Create/Edit Modal */}
       {showModal && (

@@ -44,6 +44,16 @@ const Deals: React.FC<DealsProps> = ({ onBack }) => {
   useEffect(() => {
     fetchDeals();
     fetchCompanies();
+    
+    // Check if there's a filter from Dashboard
+    const savedFilter = localStorage.getItem('dealsFilter');
+    if (savedFilter && (savedFilter === 'new' || savedFilter === 'won' || savedFilter === 'lost')) {
+      setStatusFilter(savedFilter as DealStatus);
+      localStorage.removeItem('dealsFilter'); // Clear after reading
+    } else if (savedFilter === 'all') {
+      setStatusFilter('all');
+      localStorage.removeItem('dealsFilter');
+    }
   }, []);
 
   const fetchDeals = async () => {
