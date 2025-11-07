@@ -1,0 +1,63 @@
+name: Release - Build Installer
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Build & Release Installer
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/desktop/package-lock.json
+      
+      - name: Install backend dependencies
+        working-directory: apps/server
+        run: npm ci
+      
+      - name: Build backend
+        working-directory: apps/server
+        run: npm run build
+      
+      - name: Install desktop dependencies
+        working-directory: apps/desktop
+        run: npm ci
+      
+      - name: Build desktop app
+        working-directory: apps/desktop
+        run: npm run build
+      
+      - name: Build Electron installer
+        working-directory: apps/desktop
+        run: npm run dist:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Get version from tag
+        id: get_version
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            apps/desktop/release/SmartFollow-Setup-*.exe
+            apps/desktop/release/*.exe.blockmap
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          name: SmartFollow CRM v${{ steps.get_version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

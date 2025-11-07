@@ -1,5 +1,9 @@
 # SmartFollow CRM Desktop Application
 
+![CI Status](https://github.com/ivartammela-stack/Smart/actions/workflows/ci.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/ivartammela-stack/Smart?label=version)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 > Eesti keeles: vaata `README_et.md` (see fail asub samas kaustas)
 
 ## Overview
