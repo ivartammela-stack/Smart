@@ -6,6 +6,7 @@ import Contacts from './Contacts';
 import Deals from './Deals';
 import TasksToday from './TasksToday';
 import AdminUsers from './AdminUsers';
+import ErrorBoundary from './ErrorBoundary';
 
 type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
 
@@ -55,29 +56,31 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="app">
-      {currentView === 'dashboard' && (
-        <Dashboard 
-          onLogout={handleLogout} 
-          onNavigate={handleNavigate}
-        />
-      )}
-      {currentView === 'companies' && (
-        <Companies onBack={() => setCurrentView('dashboard')} />
-      )}
-      {currentView === 'contacts' && (
-        <Contacts onBack={() => setCurrentView('dashboard')} />
-      )}
-      {currentView === 'deals' && (
-        <Deals onBack={() => setCurrentView('dashboard')} />
-      )}
-      {currentView === 'tasks-today' && (
-        <TasksToday onBack={() => setCurrentView('dashboard')} />
-      )}
-      {currentView === 'admin-users' && (
-        <AdminUsers onBack={() => setCurrentView('dashboard')} />
-      )}
-    </div>
+    <ErrorBoundary>
+      <div className="app">
+        {currentView === 'dashboard' && (
+          <Dashboard 
+            onLogout={handleLogout} 
+            onNavigate={handleNavigate}
+          />
+        )}
+        {currentView === 'companies' && (
+          <Companies onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'contacts' && (
+          <Contacts onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'deals' && (
+          <Deals onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'tasks-today' && (
+          <TasksToday onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'admin-users' && (
+          <AdminUsers onBack={() => setCurrentView('dashboard')} />
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };
 

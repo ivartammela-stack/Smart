@@ -37,7 +37,7 @@ export const getTasksByDeal = async (dealId: number): Promise<Task[]> => {
   });
 };
 
-// "Täna" vaade - tasks due today
+// "Täna" vaade - tasks due today (both completed and pending)
 export const getTodayTasks = async (): Promise<Task[]> => {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -45,9 +45,8 @@ export const getTodayTasks = async (): Promise<Task[]> => {
   return Task.findAll({
     where: {
       due_date: todayStr,
-      completed: false,
     },
-    order: [['created_at', 'ASC']],
+    order: [['completed', 'ASC'], ['created_at', 'ASC']], // pending first, then completed
   });
 };
 

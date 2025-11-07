@@ -35,7 +35,7 @@ export const login = async (req: Request, res: Response) => {
     if (!valid) return res.status(401).json({ success: false, message: 'Invalid password' });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, username: user.username }, 
+      { id: user.id, email: user.email, username: user.username, role: user.role }, 
       JWT_SECRET,
       { expiresIn: '2h' }
     );
@@ -47,6 +47,7 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        role: user.role,
       }
     });
   } catch (error) {
