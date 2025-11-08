@@ -16,18 +16,29 @@ contextBridge.exposeInMainWorld('api', {
 });
 
 // Auto-updater API
-contextBridge.exposeInMainWorld('smartfollowUpdater', {
-  // Listen for update status events from main process
-  onStatus: (callback: (status: any) => void) => {
-    const listener = (_event: Electron.IpcRendererEvent, data: any) => callback(data);
-    ipcRenderer.on('update:status', listener);
-
-    // Return cleanup function
-    return () => {
-      ipcRenderer.removeListener('update:status', listener);
-    };
+contextBridge.exposeInMainWorld('updates', {
+  onUpdateAvailable: (callback: (info: { version: string; releaseNotes?: string }) => void) => {
+    ipcRenderer.on('updates/update-available', (_event, info) => callback(info));
   },
-  
-  // Request immediate installation of downloaded update
-  installNow: () => ipcRenderer.invoke('update:installNow'),
+  onUpdateNotAvailable: (callback: () => void) => {
+    ipcRenderer.on('updates/update-not-available', () => callback());
+  },
+  onUpdateDownloaded: (callback: (info: { version: string }) => void) => {
+    ipcRenderer.on('updates/update-downloaded', (_event, info) => callback(info));
+  },
+  onDownloadProgress: (callback: (info: { percent: number; transferred: number; total: number }) => void) => {
+    ipcRenderer.on('updates/download-progress', (_event, info) => callback(info));
+  },
+  onUpdateError: (callback: (error: string) => void) => {
+    ipcRenderer.on('updates/update-error', (_event, error) => callback(error));
+  },
+  onChecking: (callback: () => void) => {
+    ipcRenderer.on('updates/checking', () => callback());
+  },
+  checkNow: () => {
+    ipcRenderer.send('updates/check-now');
+  },
+  installNow: () => {
+    ipcRenderer.send('updates/install-now');
+  },
 });

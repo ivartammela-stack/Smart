@@ -1,127 +1,139 @@
 // src/main/main.ts
 
 import { app, BrowserWindow, ipcMain } from 'electron';
+import * as path from 'path';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import * as path from 'path';
-
-// Configure logging
-log.transports.file.level = 'info';
-autoUpdater.logger = log;
 
 let mainWindow: BrowserWindow | null = null;
 
+// --- LOGI SEADISTUS ---
+log.transports.file.level = 'info';
+autoUpdater.logger = log;
+
+// --- AKNA LOOMINE ---
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 1280,
     height: 800,
+    minWidth: 1024,
+    minHeight: 640,
     webPreferences: {
+      preload: path.join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, '../preload/preload.js'),
     },
   });
 
-  // Production / local build – laeme public/index.html
+  // Production / local build – lae public/index.html
   // __dirname = dist/main, seega ../../public = apps/desktop/public
   mainWindow.loadFile(path.join(__dirname, '../../public/index.html'));
 
-  // Dev-tools (optional):
+  // Dev-tools (optional - võid production builds-is välja kommenteerida):
   mainWindow.webContents.openDevTools();
 
-  // Setup auto-updater after window is created
-  setupAutoUpdater();
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  // PRODIS: kontrolli uuendusi pärast akna loomist
+  if (app.isPackaged) {
+    log.info('Auto-update: checking for updates (on createWindow)...');
+    autoUpdater.checkForUpdatesAndNotify();
+  } else {
+    log.info('Auto-update: dev mode – skipping update check');
+  }
 }
 
-function setupAutoUpdater() {
-  // Disable auto-download in dev mode
-  if (!app.isPackaged) {
-    log.info('Dev mode - auto-update disabled');
-    return;
+// --- APP ELUTSÜKKEL ---
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+app.on('window-all-closed', () => {
+  // macOS: hoia app taustal
+  if (process.platform !== 'darwin') {
+    app.quit();
   }
+});
 
-  // Auto-download updates
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
+// --- AUTOUPDATER SÜNDMUSED ---
 
-  // Auto-updater events
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Checking for updates...');
-    mainWindow?.webContents.send('update:status', {
-      type: 'checking',
-    });
+autoUpdater.on('checking-for-update', () => {
+  log.info('Auto-update: checking for update...');
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('updates/checking', null);
   });
+});
 
-  autoUpdater.on('update-available', (info) => {
-    log.info('Update available:', info.version);
-    mainWindow?.webContents.send('update:status', {
-      type: 'available',
-      version: info.version,
-    });
+autoUpdater.on('update-available', (info) => {
+  log.info('Auto-update: update available', info);
+  const payload = {
+    version: info.version,
+    releaseNotes: info.releaseNotes ?? '',
+  };
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('updates/update-available', payload);
   });
+});
 
-  autoUpdater.on('update-not-available', (info) => {
-    log.info('Update not available:', info.version);
-    mainWindow?.webContents.send('update:status', {
-      type: 'not-available',
-    });
+autoUpdater.on('update-not-available', (info) => {
+  log.info('Auto-update: no update available', info);
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('updates/update-not-available', null);
   });
+});
 
-  autoUpdater.on('download-progress', (progressObj) => {
-    const message = `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`;
-    log.info(message);
-    mainWindow?.webContents.send('update:status', {
-      type: 'downloading',
+autoUpdater.on('download-progress', (progressObj) => {
+  log.info(`Auto-update: download progress ${progressObj.percent}%`);
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('updates/download-progress', {
       percent: progressObj.percent,
       transferred: progressObj.transferred,
       total: progressObj.total,
     });
   });
-
-  autoUpdater.on('update-downloaded', (info) => {
-    log.info('Update downloaded:', info.version);
-    mainWindow?.webContents.send('update:status', {
-      type: 'downloaded',
-      version: info.version,
-    });
-  });
-
-  autoUpdater.on('error', (err) => {
-    log.error('Update error:', err);
-    mainWindow?.webContents.send('update:status', {
-      type: 'error',
-      message: err == null ? 'unknown error' : (err.message || String(err)),
-    });
-  });
-
-  // Check for updates after app starts (5 second delay)
-  setTimeout(() => {
-    log.info('Starting update check...');
-    autoUpdater.checkForUpdatesAndNotify();
-  }, 5000);
-
-  // Check for updates every 6 hours
-  setInterval(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-  }, 6 * 60 * 60 * 1000);
-}
-
-// IPC handler: Install update now
-ipcMain.handle('update:installNow', async () => {
-  log.info('User requested immediate update installation');
-  autoUpdater.quitAndInstall(false, true);
 });
 
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+autoUpdater.on('update-downloaded', (info) => {
+  log.info('Auto-update: update downloaded', info);
+  const payload = {
+    version: info.version,
+  };
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('updates/update-downloaded', payload);
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+autoUpdater.on('error', (err) => {
+  log.error('Auto-update error', err);
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send(
+      'updates/update-error',
+      err == null ? 'unknown error' : String(err),
+    );
+  });
+});
+
+// --- IPC RENDERERILT ---
+// renderer → "kontrolli nüüd uuendusi"
+ipcMain.on('updates/check-now', () => {
+  if (!app.isPackaged) {
+    log.info('Auto-update: check-now ignored in dev mode');
+    return;
   }
+  log.info('Auto-update: manual checkForUpdatesAndNotify()');
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
+// renderer → "paigalda nüüd"
+ipcMain.on('updates/install-now', () => {
+  log.info('Auto-update: user requested installNow');
+  autoUpdater.quitAndInstall();
 });

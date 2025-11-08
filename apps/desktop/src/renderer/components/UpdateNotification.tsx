@@ -1,139 +1,117 @@
 import React, { useEffect, useState } from 'react';
 
-type UpdateStatus =
-  | { type: 'idle' }
-  | { type: 'checking' }
-  | { type: 'available'; version?: string }
-  | { type: 'downloading'; percent?: number; transferred?: number; total?: number }
-  | { type: 'downloaded'; version?: string }
-  | { type: 'error'; message: string }
-  | { type: 'not-available' };
+type UpdateState =
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'available'; version: string }
+  | { state: 'downloading'; percent: number }
+  | { state: 'downloaded'; version: string }
+  | { state: 'error'; message: string };
 
 // Declare global window types
 declare global {
   interface Window {
-    smartfollowUpdater?: {
-      onStatus: (callback: (status: UpdateStatus) => void) => () => void;
-      installNow: () => Promise<void>;
+    updates?: {
+      onUpdateAvailable: (cb: (info: { version: string; releaseNotes?: string }) => void) => void;
+      onUpdateNotAvailable: (cb: () => void) => void;
+      onUpdateDownloaded: (cb: (info: { version: string }) => void) => void;
+      onDownloadProgress: (cb: (info: { percent: number; transferred: number; total: number }) => void) => void;
+      onUpdateError: (cb: (error: string) => void) => void;
+      onChecking: (cb: () => void) => void;
+      checkNow: () => void;
+      installNow: () => void;
     };
   }
 }
 
 const UpdateNotification: React.FC = () => {
-  const [status, setStatus] = useState<UpdateStatus>({ type: 'idle' });
-  const [visible, setVisible] = useState(false);
+  const [update, setUpdate] = useState<UpdateState>({ state: 'idle' });
 
   useEffect(() => {
     // Check if running in Electron
-    if (!window.smartfollowUpdater) {
+    if (!window.updates) {
       console.log('Auto-updater not available (probably running in dev mode)');
       return;
     }
 
-    const unsubscribe = window.smartfollowUpdater.onStatus((newStatus) => {
-      setStatus(newStatus);
-      
-      // Show notification for all states except idle and not-available
-      if (newStatus.type !== 'not-available' && newStatus.type !== 'idle') {
-        setVisible(true);
-      }
+    // Check for updates on mount
+    window.updates.checkNow();
+
+    window.updates.onChecking(() => {
+      setUpdate({ state: 'checking' });
     });
 
-    return () => {
-      unsubscribe?.();
-    };
+    window.updates.onUpdateAvailable((info) => {
+      setUpdate({ state: 'available', version: info.version });
+    });
+
+    window.updates.onDownloadProgress((info) => {
+      setUpdate({ state: 'downloading', percent: info.percent });
+    });
+
+    window.updates.onUpdateDownloaded((info) => {
+      setUpdate({ state: 'downloaded', version: info.version });
+    });
+
+    window.updates.onUpdateError((error) => {
+      setUpdate({ state: 'error', message: error });
+    });
+
+    window.updates.onUpdateNotAvailable(() => {
+      // Silently reset to idle
+      setUpdate({ state: 'idle' });
+    });
   }, []);
 
-  const handleInstallNow = async () => {
-    if (window.smartfollowUpdater) {
-      await window.smartfollowUpdater.installNow();
+  const handleInstallNow = () => {
+    if (window.updates) {
+      window.updates.installNow();
     }
   };
 
-  const handleClose = () => {
-    setVisible(false);
-  };
+  if (update.state === 'idle' || update.state === 'checking' || update.state === 'available') {
+    return null;
+  }
 
-  if (!visible) return null;
+  const isDownloaded = update.state === 'downloaded';
+  const isError = update.state === 'error';
+  const isDownloading = update.state === 'downloading';
+  
+  const version = update.state === 'downloaded' ? update.version : undefined;
+  const percent = update.state === 'downloading' ? update.percent : undefined;
 
   let title = '';
   let description = '';
-  let showInstallButton = false;
-  let showCloseButton = true;
 
-  switch (status.type) {
-    case 'checking':
-      title = '🔍 Uuenduste kontroll...';
-      description = 'Kontrollin, kas on saadaval uusi versioone.';
-      showCloseButton = false;
-      break;
-    
-    case 'available':
-      title = '✨ Uus versioon saadaval';
-      description = `Laen uuendust alla... (v${status.version ?? ''})`;
-      showCloseButton = false;
-      break;
-    
-    case 'downloading':
-      title = '⬇️ Uuendus allalaadimisel';
-      const percent = status.percent?.toFixed(0) ?? 0;
-      const transferred = status.transferred ? (status.transferred / 1024 / 1024).toFixed(1) : 0;
-      const total = status.total ? (status.total / 1024 / 1024).toFixed(1) : 0;
-      description = `Laaditud ${percent}% (${transferred} MB / ${total} MB)`;
-      showCloseButton = false;
-      break;
-    
-    case 'downloaded':
-      title = '🎉 Uuendus valmis paigaldamiseks!';
-      description = `Versioon v${status.version ?? ''} on valmis. Vajuta "Paigalda & taaskäivita" - rakendus sulgub ja käivitub automaatselt uuesti uue versiooniga.`;
-      showInstallButton = true;
-      break;
-    
-    case 'error':
-      title = '⚠️ Uuendus ebaõnnestus';
-      description = `Viga: ${status.message}`;
-      break;
-    
-    default:
-      return null;
+  if (isDownloading) {
+    title = '⬇️ Uuendus allalaadimisel';
+    description = `Laaditud ${percent?.toFixed(0) ?? 0}%`;
+  } else if (isDownloaded) {
+    title = '🎉 Uuendus valmis!';
+    description = `Versioon v${version} on alla laetud. Vajuta "Paigalda & taaskäivita" - rakendus sulgub ja käivitub automaatselt uuesti uue versiooniga.`;
+  } else if (isError) {
+    title = '⚠️ Uuendus ebaõnnestus';
+    description = `Viga: ${update.message}`;
   }
 
   return (
     <div className="sf-update-notification">
       <div className="sf-update-header">
         <div className="sf-update-title">{title}</div>
-        {showCloseButton && (
-          <button
-            className="sf-update-close"
-            onClick={handleClose}
-            aria-label="Sulge"
-          >
-            ✕
-          </button>
-        )}
       </div>
       
       <div className="sf-update-description">{description}</div>
       
-      <div className="sf-update-actions">
-        {showInstallButton && (
+      {isDownloaded && (
+        <div className="sf-update-actions">
           <button
             className="sf-update-button sf-update-button-primary"
             onClick={handleInstallNow}
           >
             Paigalda & taaskäivita
           </button>
-        )}
-        
-        {showCloseButton && !showInstallButton && (
-          <button
-            className="sf-update-button sf-update-button-secondary"
-            onClick={handleClose}
-          >
-            Sulge
-          </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
