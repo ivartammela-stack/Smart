@@ -7,7 +7,9 @@ type FeatureKey = keyof (typeof PLANS)['FREE']['features'];
 
 export function requireFeature(featureKey: FeatureKey) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user as { plan?: UserPlan } | undefined;
+    // Express Request does not declare 'user' by default; use a safe cast.
+    const anyReq = req as any;
+    const user = anyReq.user as { plan?: UserPlan } | undefined;
 
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized' });
