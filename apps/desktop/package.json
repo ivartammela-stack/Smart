@@ -12,7 +12,9 @@
     "start": "electron .",
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win --x64 --publish never",
-    "dist:portable": "npm run build && electron-builder --win portable --publish never"
+    "dist:portable": "npm run build && electron-builder --win portable --publish never",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
     "axios": "^1.7.0",

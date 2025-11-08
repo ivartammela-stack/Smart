@@ -6,7 +6,9 @@
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
-    "seed:demo": "ts-node scripts/seed-demo-data.ts"
+    "seed:demo": "ts-node scripts/seed-demo-data.ts",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

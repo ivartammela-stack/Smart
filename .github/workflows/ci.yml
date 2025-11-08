@@ -25,9 +25,17 @@ jobs:
         working-directory: apps/server
         run: npm ci
       
-      - name: Lint TypeScript
+      - name: Lint with ESLint
+        working-directory: apps/server
+        run: npm run lint
+      
+      - name: Type check with TypeScript
         working-directory: apps/server
         run: npx tsc --noEmit
+      
+      - name: Run tests
+        working-directory: apps/server
+        run: npm test
       
       - name: Build backend
         working-directory: apps/server
@@ -60,9 +68,17 @@ jobs:
         working-directory: apps/desktop
         run: npm ci
       
-      - name: Lint TypeScript
+      - name: Lint with ESLint
+        working-directory: apps/desktop
+        run: npm run lint
+      
+      - name: Type check with TypeScript
         working-directory: apps/desktop
         run: npx tsc --noEmit
+      
+      - name: Run tests
+        working-directory: apps/desktop
+        run: npm test
       
       - name: Build desktop app
         working-directory: apps/desktop
