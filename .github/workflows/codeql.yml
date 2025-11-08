@@ -36,13 +36,6 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          # Exclude build artifacts and large generated files
-          paths-ignore:
-            - 'apps/desktop/release/**'
-            - 'apps/desktop/dist/**'
-            - 'apps/server/dist/**'
-            - '**/*.min.js'
-            - '**/node_modules/**'
           # Optional: Add custom queries
           # queries: security-extended,security-and-quality
 
