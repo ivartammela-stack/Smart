@@ -9,8 +9,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security: Disable Express version disclosure
+app.disable('x-powered-by');
+
 // Middleware
-app.use(cors());
+// CORS: Restrict to specific origins in production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost']
+    : '*',
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -34,6 +45,17 @@ const startServer = async () => {
     }
 
     // Start Express server
+    app.listen(PORT, () => {
+      console.log(`✅ Server is running on http://localhost:${PORT}`);
+      console.log(`📊 Database: Connected to smartfollow_db`);
+    });
+  } catch (error) {
+    console.error('❌ Error starting server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
     app.listen(PORT, () => {
       console.log(`✅ Server is running on http://localhost:${PORT}`);
       console.log(`📊 Database: Connected to smartfollow_db`);

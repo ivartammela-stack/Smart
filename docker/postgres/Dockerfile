@@ -1,7 +1,16 @@
-FROM postgres:latest
+# Use specific version instead of 'latest' for reproducibility
+FROM postgres:14-alpine
 
-ENV POSTGRES_USER=smartfollow
-ENV POSTGRES_PASSWORD=yourpassword
-ENV POSTGRES_DB=smartfollow_db
+# Use build args (can be overridden at build time)
+# Never hardcode passwords in Dockerfile!
+ARG POSTGRES_USER=smartfollow
+ARG POSTGRES_PASSWORD
+ARG POSTGRES_DB=smartfollow_db
 
-COPY init.sql /docker-entrypoint-initdb.d/
+# Set ENV from build args
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+ENV POSTGRES_DB=${POSTGRES_DB}
+
+# Run as non-root user (postgres user is created by base image)
+USER postgres

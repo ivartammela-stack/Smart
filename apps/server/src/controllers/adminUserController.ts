@@ -89,14 +89,28 @@ export const createUser = async (req: AuthRequest, res: Response) => {
 };
 
 /**
- * Generate a random temporary password
+ * Generate a cryptographically secure random temporary password
  */
 function generateTemporaryPassword(): string {
+  const crypto = require('crypto');
   const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const length = 16;
   let password = '';
-  for (let i = 0; i < 12; i++) {
-    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  
+  // Use crypto.randomBytes for cryptographically secure random
+  const randomBytes = crypto.randomBytes(length);
+  
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(randomBytes[i] % charset.length);
   }
+  
+  return password;
+}
+
+
+
+  }
+  
   return password;
 }
 
