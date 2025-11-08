@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write  # Required for creating releases and uploading assets
+
 jobs:
   release:
     name: Build & Release Installer
@@ -41,7 +44,9 @@ jobs:
         working-directory: apps/desktop
         run: npm run dist:win
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Skip electron-builder auto-publish (we use softprops/action-gh-release instead)
+          EP_DRAFT: true
+          EP_PRE_RELEASE: false
       
       - name: Get version from tag
         id: get_version
