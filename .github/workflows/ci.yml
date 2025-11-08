@@ -23,7 +23,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: apps/server
-        run: npm ci
+        run: npm install
       
       - name: Lint with ESLint
         working-directory: apps/server
@@ -66,7 +66,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: apps/desktop
-        run: npm ci
+        run: npm install
       
       - name: Lint with ESLint
         working-directory: apps/desktop
