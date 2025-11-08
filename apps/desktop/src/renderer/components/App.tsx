@@ -156,11 +156,11 @@ const App: React.FC = () => {
                 </nav>
               </div>
 
-              <div className="sf-sidebar-footer">
-                <div>
-                  Versioon 1.3.0<br />
-                  Kasutaja: {user?.username || 'Kasutaja'}
-                </div>
+                  <div className="sf-sidebar-footer">
+                    <div>
+                      <strong style={{color: 'var(--sf-primary)'}}>Versioon 1.4.1</strong> 🎉<br />
+                      Kasutaja: {user?.username || 'Kasutaja'}
+                    </div>
                 
                 <div className={`sf-plan-badge ${
                   userPlan.id === 'pro' ? 'plan-pro' : 
