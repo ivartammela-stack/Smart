@@ -45,7 +45,7 @@ const App: React.FC = () => {
     }
   }, [isAuthenticated, fetchReportsData]);
 
-  const handleLoginSuccess = (token: string) => {
+  const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
 
@@ -182,7 +182,6 @@ const App: React.FC = () => {
             <main className="sf-main">
               {currentView === 'dashboard' && (
                 <Dashboard 
-                  onLogout={handleLogout} 
                   onNavigate={handleNavigate}
                 />
               )}

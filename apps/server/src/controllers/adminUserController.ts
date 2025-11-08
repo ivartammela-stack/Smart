@@ -92,6 +92,7 @@ export const createUser = async (req: AuthRequest, res: Response) => {
  * Generate a cryptographically secure random temporary password
  */
 function generateTemporaryPassword(): string {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const crypto = require('crypto');
   const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   const length = 16;
@@ -102,13 +103,6 @@ function generateTemporaryPassword(): string {
   
   for (let i = 0; i < length; i++) {
     password += charset.charAt(randomBytes[i] % charset.length);
-  }
-  
-  return password;
-}
-
-
-
   }
   
   return password;

@@ -82,7 +82,7 @@ async function seedDemoData() {
     // 4. Create demo contacts
     console.log('👤 Creating demo contacts...');
     
-    const contact1 = await Contact.create({
+    await Contact.create({
       company_id: acmeCorp.id,
       name: 'Jüri Tamm',
       position: 'Tegevjuht',
@@ -91,7 +91,7 @@ async function seedDemoData() {
       notes: 'Otsustaja, sõbralik ja avatud uutele ideedele',
     });
 
-    const contact2 = await Contact.create({
+    await Contact.create({
       company_id: acmeCorp.id,
       name: 'Kadri Kask',
       position: 'Projektijuht',
@@ -100,7 +100,7 @@ async function seedDemoData() {
       notes: 'Vastutab tehniliste projektide eest',
     });
 
-    const contact3 = await Contact.create({
+    await Contact.create({
       company_id: techSolutions.id,
       name: 'Marten Mägi',
       position: 'CTO',
@@ -109,7 +109,7 @@ async function seedDemoData() {
       notes: 'Tehniline juht, huvitatud uutest tehnoloogiatest',
     });
 
-    const contact4 = await Contact.create({
+    await Contact.create({
       company_id: marketingPro.id,
       name: 'Liisa Lepp',
       position: 'Müügijuht',
@@ -118,7 +118,7 @@ async function seedDemoData() {
       notes: 'Aktiivne ja energiline, otsib pidevalt uusi võimalusi',
     });
 
-    const contact5 = await Contact.create({
+    await Contact.create({
       company_id: marketingPro.id,
       name: 'Peeter Poom',
       position: 'Creative Director',
