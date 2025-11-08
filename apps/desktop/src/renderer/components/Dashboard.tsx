@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import SearchBar from './SearchBar';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -9,15 +9,7 @@ interface DashboardProps {
   onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
 }
 
-interface User {
-  id?: number;
-  email?: string;
-  username?: string;
-  role?: string;
-}
-
 const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
-  const user: User = JSON.parse(localStorage.getItem('user') || '{}');
   const [todayTasksCount, setTodayTasksCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
