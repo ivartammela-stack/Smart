@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import SearchBar from './SearchBar';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -9,15 +9,7 @@ interface DashboardProps {
   onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
 }
 
-interface User {
-  id?: number;
-  email?: string;
-  username?: string;
-  role?: string;
-}
-
 const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
-  const user: User = JSON.parse(localStorage.getItem('user') || '{}');
   const [todayTasksCount, setTodayTasksCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
@@ -71,6 +63,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
     cy: number;
     midAngle: number;
     outerRadius: number;
+  }
+
+  // Recharts event handler types
+  interface PieChartDataPoint {
+    name: string;
+    value: number;
+  }
+
+  interface LegendPayload {
+    value: string;
+    color?: string;
   }
 
   const renderCustomLabel = ({ name, value, cx, cy, midAngle, outerRadius }: PieLabelProps) => {
@@ -201,16 +204,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
                         outerRadius={70}
                         labelLine={true}
                         label={renderCustomLabel}
-                        onClick={(data: any) => handleDealStatusClick(data.name)}
+                        onClick={(data: PieChartDataPoint) => handleDealStatusClick(data.name)}
                         style={{ cursor: 'pointer' }}
                       >
-                        {dealsByStatusData.map((entry: any, index: number) => (
+                        {dealsByStatusData.map((entry: PieChartDataPoint, index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip />
                       <Legend 
-                        onClick={(data: any) => handleDealStatusClick(data.value)}
+                        onClick={(data: LegendPayload) => handleDealStatusClick(data.value)}
                         wrapperStyle={{ cursor: 'pointer' }}
                       />
                     </PieChart>
@@ -232,7 +235,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
                     <YAxis />
                     <Tooltip />
                     <Legend 
-                      onClick={(data: any) => {
+                      onClick={(data: LegendPayload) => {
                         if (data.value === 'Tehtud') handleTasksClick('completed');
                         if (data.value === 'Pooleli') handleTasksClick('pending');
                       }}
@@ -241,7 +244,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
                     <Bar 
                       dataKey="value" 
                       fill="#7b61ff"
-                      onClick={(data: any) => {
+                      onClick={(data: PieChartDataPoint) => {
                         if (data.name === 'Tehtud') handleTasksClick('completed');
                         if (data.name === 'Pooleli') handleTasksClick('pending');
                       }}
