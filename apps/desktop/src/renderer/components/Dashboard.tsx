@@ -5,26 +5,19 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Resp
 import type { ReportsData } from '../types/reports';
 
 interface DashboardProps {
-  onLogout: () => void;
   onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
-  const [todayTasksCount, setTodayTasksCount] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
 
   useEffect(() => {
     // Fetch today's tasks
     const fetchTodayTasks = async () => {
       try {
-        const tasks = await api.get('/tasks/today');
-        setTodayTasksCount(tasks.length);
+        await api.get('/tasks/today');
       } catch (error) {
         console.error('Failed to fetch today tasks:', error);
-        setTodayTasksCount(0);
-      } finally {
-        setLoading(false);
       }
     };
 

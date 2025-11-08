@@ -52,21 +52,10 @@ const startServer = async () => {
     // Start Express server
     app.listen(PORT, () => {
       logger.success(`Server is running on http://localhost:${PORT}`);
-      logger.info(`Database: Connected to smartfollow_db`);
+      logger.info('Database: Connected to smartfollow_db');
     });
   } catch (error) {
     logger.error('Error starting server:', error);
-    process.exit(1);
-  }
-};
-
-startServer();
-    app.listen(PORT, () => {
-      console.log(`✅ Server is running on http://localhost:${PORT}`);
-      console.log(`📊 Database: Connected to smartfollow_db`);
-    });
-  } catch (error) {
-    console.error('❌ Error starting server:', error);
     process.exit(1);
   }
 };
