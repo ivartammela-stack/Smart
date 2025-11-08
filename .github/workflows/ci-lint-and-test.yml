@@ -22,7 +22,7 @@ jobs:
       
       - name: Install deps
         working-directory: apps/server
-        run: npm install
+        run: npm ci
       
       - name: Lint
         working-directory: apps/server
@@ -52,7 +52,7 @@ jobs:
       
       - name: Install deps
         working-directory: apps/desktop
-        run: npm install
+        run: npm ci
       
       - name: Lint
         working-directory: apps/desktop
