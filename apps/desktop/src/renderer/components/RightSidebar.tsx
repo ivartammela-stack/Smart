@@ -1,9 +1,19 @@
 import React from 'react';
+import type { ReportsData } from '../types/reports';
+
+type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
+
+interface User {
+  id?: number;
+  username?: string;
+  email?: string;
+  role?: string;
+}
 
 interface RightSidebarProps {
-  user: any;
-  stats: any;
-  onNavigate: (view: any) => void;
+  user: User;
+  stats: ReportsData | null;
+  onNavigate: (view: View) => void;
 }
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) => {

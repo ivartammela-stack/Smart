@@ -31,4 +31,6 @@ Thumbs.db
 
 # Electron
 out/
+release/
+apps/*/release/
 

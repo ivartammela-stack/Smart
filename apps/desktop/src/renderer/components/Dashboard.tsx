@@ -1,18 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import SearchBar from './SearchBar';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { ReportsData } from '../types/reports';
 
 interface DashboardProps {
   onLogout: () => void;
   onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
 }
 
+interface User {
+  id?: number;
+  email?: string;
+  username?: string;
+  role?: string;
+}
+
 const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user: User = JSON.parse(localStorage.getItem('user') || '{}');
   const [todayTasksCount, setTodayTasksCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const [reportsData, setReportsData] = useState<any>(null);
+  const [reportsData, setReportsData] = useState<ReportsData | null>(null);
 
   useEffect(() => {
     // Fetch today's tasks
@@ -43,7 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
   }, []);
 
   // Prepare chart data
-  const dealsByStatusData = reportsData?.deals_by_status?.map((item: any) => ({
+  const dealsByStatusData = reportsData?.deals_by_status?.map((item) => ({
     name: item.status === 'new' ? 'Uus' : item.status === 'won' ? 'Võidetud' : item.status === 'lost' ? 'Kaotatud' : item.status,
     value: Number(item.count),
   })) || [];
@@ -56,7 +64,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout, onNavigate }) => {
   const COLORS = ['#4ADE80', '#60A5FA', '#F59E0B', '#EF4444']; // SmartFollow brand colors
 
   // Custom label renderer to prevent overlap
-  const renderCustomLabel = ({ name, value, cx, cy, midAngle, outerRadius }: any) => {
+  interface PieLabelProps {
+    name: string;
+    value: number;
+    cx: number;
+    cy: number;
+    midAngle: number;
+    outerRadius: number;
+  }
+
+  const renderCustomLabel = ({ name, value, cx, cy, midAngle, outerRadius }: PieLabelProps) => {
     const RADIAN = Math.PI / 180;
     const radius = outerRadius + 20;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);

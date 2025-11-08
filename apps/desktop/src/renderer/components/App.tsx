@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Companies from './Companies';
@@ -10,6 +10,7 @@ import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
 import UpdateNotification from './UpdateNotification';
+import type { ReportsData } from '../types/reports';
 
 type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
 
@@ -17,7 +18,7 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<View>('dashboard');
-  const [reportsData, setReportsData] = useState<any>(null);
+  const [reportsData, setReportsData] = useState<ReportsData | null>(null);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -28,13 +29,7 @@ const App: React.FC = () => {
     setIsLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchReportsData();
-    }
-  }, [isAuthenticated]);
-
-  const fetchReportsData = async () => {
+  const fetchReportsData = useCallback(async () => {
     try {
       const api = await import('../utils/api');
       const response = await api.default.get('/reports/summary');
@@ -42,7 +37,13 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch reports:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchReportsData();
+    }
+  }, [isAuthenticated, fetchReportsData]);
 
   const handleLoginSuccess = (token: string) => {
     setIsAuthenticated(true);

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/index';
 import { testConnection } from './config/database';
+import logger from './utils/logger';
 
 dotenv.config();
 
@@ -40,17 +41,17 @@ const startServer = async () => {
     const dbConnected = await testConnection();
     
     if (!dbConnected) {
-      console.error('❌ Failed to connect to database. Server will not start.');
+      logger.error('Failed to connect to database. Server will not start.');
       process.exit(1);
     }
 
     // Start Express server
     app.listen(PORT, () => {
-      console.log(`✅ Server is running on http://localhost:${PORT}`);
-      console.log(`📊 Database: Connected to smartfollow_db`);
+      logger.success(`Server is running on http://localhost:${PORT}`);
+      logger.info(`Database: Connected to smartfollow_db`);
     });
   } catch (error) {
-    console.error('❌ Error starting server:', error);
+    logger.error('Error starting server:', error);
     process.exit(1);
   }
 };
