@@ -1,6 +1,6 @@
 // src/renderer/utils/api.ts
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://185.170.198.120/api';
 
 const getToken = (): string | null => {
   return localStorage.getItem('token');

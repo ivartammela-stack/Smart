@@ -1,12 +1,15 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
+export type UserPlan = 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+
 export class User extends Model {
   public id!: number;
   public username!: string;
   public email!: string;
   public password!: string;
   public role!: string;
+  public plan!: UserPlan;
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -35,6 +38,11 @@ User.init(
     role: {
       type: DataTypes.STRING,
       defaultValue: 'user',
+    },
+    plan: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: 'FREE',
     },
   },
   {
