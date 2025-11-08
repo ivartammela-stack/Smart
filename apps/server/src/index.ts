@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import apiRouter from './routes/index';
 import { testConnection } from './config/database';
 import logger from './utils/logger';
+import { apiLimiter } from './middleware/rateLimiter';
 
 dotenv.config();
 
@@ -30,6 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', message: 'SmartFollow server is running 🚀' });
 });
+
+// Apply rate limiting to all API routes (DDoS protection)
+app.use('/api', apiLimiter);
 
 // Routes
 app.use('/api', apiRouter);

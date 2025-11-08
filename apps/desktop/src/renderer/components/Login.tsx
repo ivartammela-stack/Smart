@@ -13,17 +13,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Load saved credentials on mount
+  // Load saved email on mount (never passwords for security)
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberedEmail');
-    const savedPassword = localStorage.getItem('rememberedPassword');
     
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
-    }
-    if (savedPassword) {
-      setPassword(savedPassword);
     }
   }, []);
 
@@ -39,13 +35,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Save or clear credentials based on "Remember me"
+        // Save or clear email based on "Remember me"
+        // SECURITY: Never store passwords in localStorage!
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
-          localStorage.setItem('rememberedPassword', password);
         } else {
           localStorage.removeItem('rememberedEmail');
-          localStorage.removeItem('rememberedPassword');
         }
         
         onLoginSuccess(data.token);
