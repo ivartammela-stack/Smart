@@ -175,11 +175,11 @@ export const updateUserPlan = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const { plan } = req.body;
 
-    const validPlans = ['FREE', 'STARTER', 'PRO', 'ENTERPRISE'];
+    const validPlans = ['TRIAL', 'STARTER', 'PRO', 'ENTERPRISE'];
     if (!plan || !validPlans.includes(plan)) {
       return res.status(400).json({
         success: false,
-        message: 'Vigane pakett. Lubatud: FREE, STARTER, PRO, ENTERPRISE',
+        message: 'Vigane pakett. Lubatud: TRIAL, STARTER, PRO, ENTERPRISE',
       });
     }
 

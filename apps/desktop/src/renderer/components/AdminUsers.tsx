@@ -15,10 +15,10 @@ interface AdminUsersProps {
   onBack: () => void;
 }
 
-type Plan = 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+type Plan = 'TRIAL' | 'STARTER' | 'PRO' | 'ENTERPRISE';
 
 const PLAN_OPTIONS: { value: Plan; label: string }[] = [
-  { value: 'FREE', label: 'Tasuta' },
+  { value: 'TRIAL', label: 'Trial' },
   { value: 'STARTER', label: 'Starter' },
   { value: 'PRO', label: 'Pro' },
   { value: 'ENTERPRISE', label: 'Enterprise' },
@@ -172,7 +172,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
                   </td>
                   <td>
                     <select
-                      value={user.plan || 'FREE'}
+                      value={user.plan || 'TRIAL'}
                       onChange={(e) => handleChangePlan(user.id, e.target.value as Plan)}
                       style={{
                         padding: '4px 12px',
@@ -182,7 +182,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
                         fontSize: '13px',
                         fontWeight: '500',
                         cursor: 'pointer',
-                        color: user.plan === 'PRO' ? '#7c3aed' : user.plan === 'ENTERPRISE' ? '#b45309' : user.plan === 'STARTER' ? '#0369a1' : '#475569',
+                        color: user.plan === 'PRO' ? '#7c3aed' : user.plan === 'ENTERPRISE' ? '#b45309' : user.plan === 'STARTER' ? '#0369a1' : '#64748b',
                       }}
                     >
                       {PLAN_OPTIONS.map((opt) => (

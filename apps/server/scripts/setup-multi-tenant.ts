@@ -20,18 +20,27 @@ async function setupMultiTenant() {
     await sequelize.sync({ alter: true });
     console.log('✅ Database schema synced\n');
 
-    // Step 2: Create default account
+    // Step 2: Create default account with TRIAL
     console.log('🏢 Step 2: Creating default account...');
     let defaultAccount = await Account.findByPk(1);
     
     if (!defaultAccount) {
+      const now = new Date();
+      const trialEnds = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 days
+      const graceEnds = new Date(trialEnds.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days
+
       defaultAccount = await Account.create({
         id: 1,
         name: 'Default Account',
         is_active: true,
-        billing_plan: 'PRO',
+        billing_plan: 'TRIAL',
+        plan_locked: false,
+        trial_ends_at: trialEnds,
+        grace_ends_at: graceEnds,
       });
-      console.log('✅ Default account created (ID: 1)\n');
+      console.log('✅ Default account created (ID: 1)');
+      console.log(`   Trial ends: ${trialEnds.toISOString().split('T')[0]}`);
+      console.log(`   Grace ends: ${graceEnds.toISOString().split('T')[0]}\n`);
     } else {
       console.log('ℹ️  Default account already exists (ID: 1)\n');
     }

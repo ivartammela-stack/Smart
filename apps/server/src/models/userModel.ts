@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
-export type UserPlan = 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+export type UserPlan = 'TRIAL' | 'STARTER' | 'PRO' | 'ENTERPRISE';
 
 export class User extends Model {
   public id!: number;
@@ -43,7 +43,7 @@ User.init(
     plan: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      defaultValue: 'FREE',
+      defaultValue: 'TRIAL',
     },
     account_id: {
       type: DataTypes.INTEGER,

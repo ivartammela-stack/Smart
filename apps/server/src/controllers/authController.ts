@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/userModel';
+import Account from '../models/accountModel';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret123';
 
@@ -34,6 +35,9 @@ export const login = async (req: Request, res: Response) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ success: false, message: 'Invalid password' });
 
+    // Load account to get billing_plan
+    const account = user.account_id ? await Account.findByPk(user.account_id) : null;
+
     const token = jwt.sign(
       { 
         id: user.id, 
@@ -54,6 +58,8 @@ export const login = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        plan: account?.billing_plan || 'TRIAL',
+        account_id: user.account_id,
       }
     });
   } catch (error) {

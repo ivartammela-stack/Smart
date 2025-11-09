@@ -1,7 +1,7 @@
 // Hook to get current user's plan information
 import { useMemo } from 'react';
 
-export type PlanId = 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+export type PlanId = 'TRIAL' | 'STARTER' | 'PRO' | 'ENTERPRISE';
 
 export interface PlanFrontendConfig {
   id: PlanId;
@@ -10,7 +10,7 @@ export interface PlanFrontendConfig {
 }
 
 const PLAN_UI: Record<PlanId, PlanFrontendConfig> = {
-  FREE: { id: 'FREE', label: 'Free', badgeColor: 'gray' },
+  TRIAL: { id: 'TRIAL', label: 'Trial', badgeColor: 'gray' },
   STARTER: { id: 'STARTER', label: 'Starter', badgeColor: 'blue' },
   PRO: { id: 'PRO', label: 'Pro', badgeColor: 'purple' },
   ENTERPRISE: { id: 'ENTERPRISE', label: 'Enterprise', badgeColor: 'yellow' }
@@ -27,7 +27,7 @@ export function useCurrentPlan() {
     }
   }, []);
 
-  const planId = (user?.plan as PlanId) || 'FREE';
+  const planId = (user?.plan as PlanId) || 'TRIAL';
   const ui = useMemo(() => PLAN_UI[planId], [planId]);
 
   return {

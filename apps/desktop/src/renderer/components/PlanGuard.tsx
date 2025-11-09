@@ -8,7 +8,7 @@ interface PlanGuardProps {
   fallback?: React.ReactNode;
 }
 
-const planOrder: PlanId[] = ['FREE', 'STARTER', 'PRO', 'ENTERPRISE'];
+const planOrder: PlanId[] = ['TRIAL', 'STARTER', 'PRO', 'ENTERPRISE'];
 
 function isPlanAtLeast(current: PlanId, required: PlanId) {
   return planOrder.indexOf(current) >= planOrder.indexOf(required);

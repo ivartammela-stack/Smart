@@ -32,13 +32,13 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
   // Plan badge helper
   const getPlanBadge = (plan: string) => {
     const planConfig: Record<string, { label: string; bg: string; color: string }> = {
-      FREE: { label: 'Tasuta', bg: '#f1f5f9', color: '#475569' },
+      TRIAL: { label: 'Trial', bg: '#f1f5f9', color: '#475569' },
       STARTER: { label: 'Starter', bg: '#e0f2fe', color: '#0369a1' },
       PRO: { label: 'Pro', bg: '#ede9fe', color: '#7c3aed' },
       ENTERPRISE: { label: 'Enterprise', bg: '#fef3c7', color: '#b45309' },
     };
 
-    const config = planConfig[plan] || planConfig.FREE;
+    const config = planConfig[plan] || planConfig.TRIAL;
 
     return (
       <div
@@ -111,7 +111,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
         
         {/* Plan Badge */}
         <div style={{ marginTop: '12px' }}>
-          {getPlanBadge(user?.plan || 'FREE')}
+          {getPlanBadge(user?.plan || 'TRIAL')}
         </div>
 
         <div className="right-location" style={{ marginTop: '12px' }}>CRM versioon 1.6.5</div>
