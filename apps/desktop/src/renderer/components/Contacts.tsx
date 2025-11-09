@@ -31,6 +31,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   
+  // Form state
   const [formData, setFormData] = useState({
     company_id: '',
     first_name: '',
@@ -50,11 +51,12 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
     try {
       setLoading(true);
       const response = await api.get('/contacts');
-      setContacts(response.data || []);
+      const contactsList = response.data || response || [];
+      setContacts(contactsList);
       setError('');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kontaktide laadimisel';
-      setError(message);
+      console.error('Error fetching contacts:', err);
+      setError('Kontaktide laadimine ebaõnnestus');
     } finally {
       setLoading(false);
     }
@@ -63,9 +65,10 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
   const fetchCompanies = async () => {
     try {
       const response = await api.get('/companies');
-      setCompanies(response.data || []);
+      const companiesList = response.data || [];
+      setCompanies(companiesList);
     } catch (err) {
-      console.error('Viga ettevõtete laadimisel:', err);
+      console.error('❌ Error fetching companies:', err);
     }
   };
 
@@ -73,23 +76,32 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
     e.preventDefault();
     
     try {
-      const data = {
+      const payload = {
         ...formData,
         company_id: parseInt(formData.company_id),
       };
-      
+
       if (editingContact) {
-        await api.put(`/contacts/${editingContact.id}`, data);
+        await api.put(`/contacts/${editingContact.id}`, payload);
       } else {
-        await api.post('/contacts', data);
+        await api.post('/contacts', payload);
       }
       
+      // Reset form and refresh list
+      setFormData({
+        company_id: '',
+        first_name: '',
+        last_name: '',
+        position: '',
+        phone: '',
+        email: '',
+        notes: '',
+      });
       setShowModal(false);
-      resetForm();
+      setEditingContact(null);
       fetchContacts();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga salvestamisel';
-      setError(message);
+      setError(err instanceof Error ? err.message : 'Salvestamine ebaõnnestus');
     }
   };
 
@@ -108,18 +120,20 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Kas oled kindel, et soovid kontakti kustutada?')) return;
-    
-    try {
-      await api.delete(`/contacts/${id}`);
-      fetchContacts();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kustutamisel';
-      setError(message);
+    if (window.confirm('Oled kindel, et soovid selle kontakti kustutada?')) {
+      try {
+        await api.delete(`/contacts/${id}`);
+        fetchContacts();
+      } catch (err) {
+        setError('Kustutamine ebaõnnestus');
+        console.error(err);
+      }
     }
   };
 
-  const resetForm = () => {
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingContact(null);
     setFormData({
       company_id: '',
       first_name: '',
@@ -129,164 +143,189 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
       email: '',
       notes: '',
     });
-    setEditingContact(null);
+    setError('');
   };
 
-  const getCompanyName = (companyId: number): string => {
+  const getCompanyName = (companyId: number) => {
     const company = companies.find(c => c.id === companyId);
-    return company ? company.name : 'Teadmata';
+    return company ? company.name : `ID: ${companyId}`;
   };
+
+  if (loading) {
+    return <div className="loading-container"><p>Kontaktide laadimine...</p></div>;
+  }
 
   return (
-    <div className="sf-page">
-      <div className="sf-header">
-        <button onClick={onBack} className="sf-back-button">← Tagasi</button>
-        <h1>Kontaktid</h1>
-        <p>Halda kontaktisikuid ettevõtetes</p>
-      </div>
+    <div className="contacts-container">
+      <header className="page-header">
+        <button onClick={onBack} className="btn-back">← Tagasi Dashboardile</button>
+        <h1>👤 Kontaktid</h1>
+      </header>
 
-      <div className="sf-actions">
-        <button onClick={() => setShowModal(true)} className="sf-btn sf-btn-primary">
+      {error && <div className="error-message">{error}</div>}
+
+      <div className="page-actions">
+        <button 
+          onClick={() => setShowModal(true)} 
+          className="btn-primary"
+        >
           + Lisa uus kontakt
         </button>
       </div>
 
-      {error && <div className="sf-error">{error}</div>}
-
-      {loading ? (
-        <div className="sf-loading">Laadimine...</div>
-      ) : (
-        <div className="sf-table-container">
-          {contacts.length === 0 ? (
-            <div className="sf-empty-state">
-              <p>Kontakte pole veel lisatud.</p>
-              <button onClick={() => setShowModal(true)} className="sf-btn sf-btn-primary">
-                Lisa esimene kontakt
-              </button>
-            </div>
-          ) : (
-            <table className="sf-table">
-              <thead>
-                <tr>
-                  <th>NIMI</th>
-                  <th>ETTEVÕTE</th>
-                  <th>AMET</th>
-                  <th>TELEFON</th>
-                  <th>E-MAIL</th>
-                  <th>TEGEVUSED</th>
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Nimi</th>
+              <th>Ettevõte</th>
+              <th>Positsioon</th>
+              <th>Telefon</th>
+              <th>E-mail</th>
+              <th>Tegevused</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="empty-state">
+                  Kontakte ei leitud. Lisa esimene!
+                </td>
+              </tr>
+            ) : (
+              contacts.map((contact) => (
+                <tr key={contact.id}>
+                  <td><strong>{contact.first_name} {contact.last_name}</strong></td>
+                  <td>{getCompanyName(contact.company_id)}</td>
+                  <td>{contact.position || '-'}</td>
+                  <td>{contact.phone || '-'}</td>
+                  <td>{contact.email || '-'}</td>
+                  <td className="actions-cell">
+                    <button
+                      className="btn-icon btn-edit"
+                      onClick={() => handleEdit(contact)}
+                      title="Muuda"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="btn-icon btn-delete"
+                      onClick={() => handleDelete(contact.id)}
+                      title="Kustuta"
+                    >
+                      🗑️
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {contacts.map((contact) => (
-                  <tr key={contact.id}>
-                    <td>{contact.first_name} {contact.last_name}</td>
-                    <td>{getCompanyName(contact.company_id)}</td>
-                    <td>{contact.position || '-'}</td>
-                    <td>{contact.phone || '-'}</td>
-                    <td>{contact.email || '-'}</td>
-                    <td className="sf-actions-cell">
-                      <button onClick={() => handleEdit(contact)} className="sf-btn sf-btn-sm">
-                        Muuda
-                      </button>
-                      <button onClick={() => handleDelete(contact.id)} className="sf-btn sf-btn-sm sf-btn-danger">
-                        Kustuta
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      )}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Create/Edit Modal */}
       {showModal && (
-        <div className="sf-modal-overlay" onClick={() => { setShowModal(false); resetForm(); }}>
-          <div className="sf-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="sf-modal-header">
-              <h2>{editingContact ? 'Muuda kontakti' : 'Lisa uus kontakt'}</h2>
-              <button onClick={() => { setShowModal(false); resetForm(); }} className="sf-modal-close">×</button>
-            </div>
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{editingContact ? 'Muuda kontakti' : 'Lisa uus kontakt'}</h2>
             
-            <form onSubmit={handleSubmit} className="sf-form">
-              <div className="sf-form-group">
-                <label>Ettevõte *</label>
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="first_name">Eesnimi *</label>
+                  <input
+                    type="text"
+                    id="first_name"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="last_name">Perekonnanimi *</label>
+                  <input
+                    type="text"
+                    id="last_name"
+                    value={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="company_id">Ettevõte *</label>
                 <select
+                  id="company_id"
                   value={formData.company_id}
-                  onChange={(e) => setFormData({...formData, company_id: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, company_id: e.target.value })}
                   required
                 >
                   <option value="">Vali ettevõte...</option>
-                  {companies.map(company => (
-                    <option key={company.id} value={company.id}>{company.name}</option>
+                  {companies.map((company) => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
                   ))}
                 </select>
               </div>
 
-              <div className="sf-form-row">
-                <div className="sf-form-group">
-                  <label>Eesnimi *</label>
-                  <input
-                    type="text"
-                    value={formData.first_name}
-                    onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="sf-form-group">
-                  <label>Perekonnanimi *</label>
-                  <input
-                    type="text"
-                    value={formData.last_name}
-                    onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="sf-form-group">
-                <label>Amet</label>
+              <div className="form-group">
+                <label htmlFor="position">Ametikoht</label>
                 <input
                   type="text"
+                  id="position"
                   value={formData.position}
-                  onChange={(e) => setFormData({...formData, position: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  placeholder="nt Müügijuht"
                 />
               </div>
 
-              <div className="sf-form-row">
-                <div className="sf-form-group">
-                  <label>Telefon</label>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="phone">Telefon</label>
                   <input
                     type="tel"
+                    id="phone"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+372 5xxx xxxx"
                   />
                 </div>
-                <div className="sf-form-group">
-                  <label>E-mail</label>
+                <div className="form-group">
+                  <label htmlFor="email">E-mail</label>
                   <input
                     type="email"
+                    id="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="nimi@ettevõte.ee"
                   />
                 </div>
               </div>
 
-              <div className="sf-form-group">
-                <label>Märkused</label>
+              <div className="form-group">
+                <label htmlFor="notes">Märkmed</label>
                 <textarea
+                  id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                  rows={4}
-                />
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={3}
+                  placeholder="Lisainfo..."
+                ></textarea>
               </div>
 
-              <div className="sf-form-actions">
-                <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="sf-btn sf-btn-secondary">
-                  Tühista
+              <div className="form-actions">
+                <button type="submit" className="btn-primary">
+                  {editingContact ? 'Salvesta muudatused' : 'Lisa kontakt'}
                 </button>
-                <button type="submit" className="sf-btn sf-btn-primary">
-                  {editingContact ? 'Salvesta' : 'Lisa kontakt'}
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Tühista
                 </button>
               </div>
             </form>
@@ -298,3 +337,4 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
 };
 
 export default Contacts;
+

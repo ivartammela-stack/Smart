@@ -6,7 +6,6 @@ interface User {
   username: string;
   email: string;
   role: string;
-  plan?: string;
   created_at: string;
   updated_at: string;
 }
@@ -19,13 +18,9 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    role: 'user',
-  });
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newUser, setNewUser] = useState({ username: '', email: '', role: 'user' });
+  const [temporaryPassword, setTemporaryPassword] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -34,176 +29,183 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/admin/users');
-      setUsers(response.users || []);
+      const data = await api.get('/admin/users');
+      setUsers(data.users || []);
       setError('');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kasutajate laadimisel';
-      setError(message);
+      setError('Kasutajate laadimine ebaõnnestus');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setError('');
+    setTemporaryPassword('');
+
     try {
-      await api.post('/admin/users', formData);
-      setShowModal(false);
-      resetForm();
-      fetchUsers();
+      const data = await api.post('/admin/users', newUser);
+      
+      if (data.success && data.temporaryPassword) {
+        setTemporaryPassword(data.temporaryPassword);
+        // Reset form
+        setNewUser({ username: '', email: '', role: 'user' });
+        // Refresh users list
+        fetchUsers();
+      }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kasutaja loomisel';
-      setError(message);
+      setError('Kasutaja loomine ebaõnnestus');
+      console.error(err);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Kas oled kindel, et soovid kasutaja kustutada?')) return;
-    
-    try {
-      await api.delete(`/admin/users/${id}`);
-      fetchUsers();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kustutamisel';
-      setError(message);
-    }
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setTemporaryPassword('');
+    setNewUser({ username: '', email: '', role: 'user' });
+    setError('');
   };
 
-  const resetForm = () => {
-    setFormData({
-      username: '',
-      email: '',
-      role: 'user',
-    });
-  };
-
-  const getRoleBadgeClass = (role: string): string => {
-    return role === 'admin' ? 'sf-badge-admin' : 'sf-badge-user';
-  };
+  if (loading) {
+    return <div className="loading-container"><p>Kasutajate laadimine...</p></div>;
+  }
 
   return (
-    <div className="sf-page">
-      <div className="sf-header">
-        <button onClick={onBack} className="sf-back-button">← Tagasi</button>
-        <h1>Kasutajate haldus</h1>
-        <p>Halda CRM kasutajaid ja õiguseid</p>
-      </div>
+    <div className="admin-users-container">
+      <header className="page-header">
+        <button onClick={onBack} className="btn-back">← Tagasi Dashboardile</button>
+        <h1>⚙️ Kasutajate haldus</h1>
+      </header>
 
-      <div className="sf-actions">
-        <button onClick={() => setShowModal(true)} className="sf-btn sf-btn-primary">
+      {error && <div className="error-message">{error}</div>}
+
+      <div className="admin-actions">
+        <button 
+          onClick={() => setShowCreateModal(true)} 
+          className="btn-primary"
+        >
           + Lisa uus kasutaja
         </button>
       </div>
 
-      {error && <div className="sf-error">{error}</div>}
-
-      {loading ? (
-        <div className="sf-loading">Laadimine...</div>
-      ) : (
-        <div className="sf-table-container">
-          {users.length === 0 ? (
-            <div className="sf-empty-state">
-              <p>Kasutajaid pole veel lisatud.</p>
-            </div>
-          ) : (
-            <table className="sf-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>KASUTAJANIMI</th>
-                  <th>E-MAIL</th>
-                  <th>ROLL</th>
-                  <th>PLAAN</th>
-                  <th>LOODUD</th>
-                  <th>TEGEVUSED</th>
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Kasutajanimi</th>
+              <th>E-mail</th>
+              <th>Roll</th>
+              <th>Loodud</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="empty-state">
+                  Kasutajaid ei leitud.
+                </td>
+              </tr>
+            ) : (
+              users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <span className={`role-badge role-${user.role}`}>
+                      {user.role === 'admin' ? '👑 Admin' : '👤 Kasutaja'}
+                    </span>
+                  </td>
+                  <td>{new Date(user.created_at).toLocaleString('et-EE')}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td>
-                      <span className={`sf-badge ${getRoleBadgeClass(user.role)}`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td>{user.plan || 'FREE'}</td>
-                    <td>{new Date(user.created_at).toLocaleDateString('et-EE')}</td>
-                    <td className="sf-actions-cell">
-                      <button 
-                        onClick={() => handleDelete(user.id)} 
-                        className="sf-btn sf-btn-sm sf-btn-danger"
-                        disabled={user.id === 1} // Can't delete first admin
-                      >
-                        Kustuta
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      )}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {showModal && (
-        <div className="sf-modal-overlay" onClick={() => { setShowModal(false); resetForm(); }}>
-          <div className="sf-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="sf-modal-header">
-              <h2>Lisa uus kasutaja</h2>
-              <button onClick={() => { setShowModal(false); resetForm(); }} className="sf-modal-close">×</button>
-            </div>
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Lisa uus kasutaja</h2>
             
-            <form onSubmit={handleSubmit} className="sf-form">
-              <div className="sf-form-group">
-                <label>Kasutajanimi *</label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label>E-mail *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label>Roll *</label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => setFormData({...formData, role: e.target.value})}
-                  required
-                >
-                  <option value="user">Kasutaja</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <div className="sf-info-box">
-                ℹ️ Ajutine parool saadetakse kasutajale e-mailile.
-              </div>
-
-              <div className="sf-form-actions">
-                <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="sf-btn sf-btn-secondary">
-                  Tühista
-                </button>
-                <button type="submit" className="sf-btn sf-btn-primary">
-                  Lisa kasutaja
+            {temporaryPassword ? (
+              <div className="temp-password-display">
+                <div className="success-message">
+                  ✅ Kasutaja loodud edukalt!
+                </div>
+                <div className="temp-password-box">
+                  <p><strong>Ajutine parool:</strong></p>
+                  <div className="password-value">{temporaryPassword}</div>
+                  <p className="warning-text">
+                    ⚠️ Kopeeri see parool ja anna kasutajale. Seda ei kuvata uuesti!
+                  </p>
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(temporaryPassword)}
+                    className="btn-secondary"
+                  >
+                    📋 Kopeeri parool
+                  </button>
+                </div>
+                <button onClick={handleCloseModal} className="btn-primary">
+                  Sulge
                 </button>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleCreateUser}>
+                <div className="form-group">
+                  <label htmlFor="username">Kasutajanimi *</label>
+                  <input
+                    type="text"
+                    id="username"
+                    value={newUser.username}
+                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">E-mail *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="role">Roll</label>
+                  <select
+                    id="role"
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  >
+                    <option value="user">Tavakasutaja</option>
+                    <option value="admin">Administraator</option>
+                  </select>
+                </div>
+
+                <div className="form-actions">
+                  <button type="submit" className="btn-primary">
+                    Loo kasutaja
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={handleCloseModal} 
+                    className="btn-secondary"
+                  >
+                    Tühista
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -212,3 +214,5 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
 };
 
 export default AdminUsers;
+
+

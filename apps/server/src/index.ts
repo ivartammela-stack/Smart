@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 3000;
 // Security: Disable Express version disclosure
 app.disable('x-powered-by');
 
+// Trust proxy (required when behind nginx)
+app.set('trust proxy', true);
+
 // Middleware
 // CORS: Restrict to specific origins in production
 const corsOptions = {

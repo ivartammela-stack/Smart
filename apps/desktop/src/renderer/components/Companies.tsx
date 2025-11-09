@@ -10,8 +10,8 @@ interface Company {
   address?: string;
   notes?: string;
   created_by?: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface CompaniesProps {
@@ -22,7 +22,7 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   
   // Form state
@@ -43,11 +43,13 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
     try {
       setLoading(true);
       const response = await api.get('/companies');
-      setCompanies(response.data || []);
+      // Backend returns: { success: true, count: N, data: [...] }
+      const companiesList = response.data || [];
+      setCompanies(companiesList);
       setError('');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga ettevõtete laadimisel';
-      setError(message);
+      console.error('Error fetching companies:', err);
+      setError('Ettevõtete laadimine ebaõnnestus');
     } finally {
       setLoading(false);
     }
@@ -58,17 +60,27 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
     
     try {
       if (editingCompany) {
+        // Update existing
         await api.put(`/companies/${editingCompany.id}`, formData);
       } else {
+        // Create new
         await api.post('/companies', formData);
       }
       
-      setShowModal(false);
-      resetForm();
+      // Reset form and refresh list
+      setFormData({
+        name: '',
+        registration_code: '',
+        phone: '',
+        email: '',
+        address: '',
+        notes: '',
+      });
+      setShowForm(false);
+      setEditingCompany(null);
       fetchCompanies();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga salvest';
-      setError(message);
+      setError(err instanceof Error ? err.message : 'Salvestamine ebaõnnestus');
     }
   };
 
@@ -82,22 +94,25 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
       address: company.address || '',
       notes: company.notes || '',
     });
-    setShowModal(true);
+    setShowForm(true);
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Kas oled kindel, et soovid ettevõtte kustutada?')) return;
-    
+    if (!confirm('Kas oled kindel, et soovid selle ettevõtte kustutada?')) {
+      return;
+    }
+
     try {
       await api.delete(`/companies/${id}`);
       fetchCompanies();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Viga kustutamisel';
-      setError(message);
+      setError('Kustutamine ebaõnnestus');
     }
   };
 
-  const resetForm = () => {
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditingCompany(null);
     setFormData({
       name: '',
       registration_code: '',
@@ -106,173 +121,175 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
       address: '',
       notes: '',
     });
-    setEditingCompany(null);
   };
 
-  const handleModalClose = () => {
-    setShowModal(false);
-    resetForm();
-  };
+  if (loading) {
+    return <div className="loading-container">Laadimine...</div>;
+  }
 
   return (
-    <div className="sf-page">
-      <div className="sf-header">
-        <button onClick={onBack} className="sf-back-button">
-          ← Tagasi
-        </button>
-        <h1>Ettevõtted</h1>
-        <p>Halda oma kliente ja partnereid</p>
-      </div>
+    <div className="companies-container">
+      <div className="companies-layout">
+        <div className="companies-header">
+          <div className="companies-title-block">
+            <button onClick={onBack} className="sf-ghost-button" style={{alignSelf: 'flex-start', marginBottom: '8px'}}>
+              ← Tagasi
+            </button>
+            <h1 className="companies-title">🏢 Ettevõtted</h1>
+            <p className="companies-subtitle">
+              Halda ettevõtteid, nende kontaktandmeid ja suhteid.
+            </p>
+          </div>
 
-      <div className="sf-actions">
-        <button 
-          onClick={() => setShowModal(true)} 
-          className="sf-btn sf-btn-primary"
-        >
-          + Lisa uus ettevõte
-        </button>
-      </div>
+          {!showForm && (
+            <button 
+              onClick={() => setShowForm(true)} 
+              className="filter-chip"
+              style={{background: 'var(--sf-primary)', borderColor: 'var(--sf-primary)', color: 'white'}}
+            >
+              + Lisa uus
+            </button>
+          )}
+        </div>
 
-      {error && <div className="sf-error">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-      {loading ? (
-        <div className="sf-loading">Laadimine...</div>
-      ) : (
-        <div className="sf-table-container">
-          {companies.length === 0 ? (
-            <div className="sf-empty-state">
-              <p>Ettevõtteid pole veel lisatud.</p>
-              <button onClick={() => setShowModal(true)} className="sf-btn sf-btn-primary">
-                Lisa esimene ettevõte
+      {showForm && (
+        <div className="form-container">
+          <h2>{editingCompany ? 'Muuda ettevõtet' : 'Lisa uus ettevõte'}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="name">Nimi *</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="registration_code">Registrikood *</label>
+                <input
+                  type="text"
+                  id="registration_code"
+                  value={formData.registration_code}
+                  onChange={(e) => setFormData({ ...formData, registration_code: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="phone">Telefon</label>
+                <input
+                  type="text"
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">E-mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="address">Aadress</label>
+              <input
+                type="text"
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="notes">Märkmed</label>
+              <textarea
+                id="notes"
+                rows={3}
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              />
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="btn-primary">
+                {editingCompany ? 'Salvesta' : 'Lisa'}
+              </button>
+              <button type="button" onClick={handleCancel} className="btn-secondary">
+                Tühista
               </button>
             </div>
-          ) : (
-            <table className="sf-table">
-              <thead>
+          </form>
+        </div>
+      )}
+
+        <div className="companies-card">
+          <table className="companies-table">
+            <thead>
+              <tr>
+                <th>Nimi</th>
+                <th>Registrikood</th>
+                <th>Telefon</th>
+                <th>E-mail</th>
+                <th className="companies-actions-cell">Tegevused</th>
+              </tr>
+            </thead>
+            <tbody>
+              {companies.length === 0 ? (
                 <tr>
-                  <th>NIMI</th>
-                  <th>REG. KOOD</th>
-                  <th>TELEFON</th>
-                  <th>E-MAIL</th>
-                  <th>AADRESS</th>
-                  <th>TEGEVUSED</th>
+                  <td colSpan={5} className="empty-state">
+                    Ühtegi ettevõtet ei leitud. Lisa esimene! 🏢
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {companies.map((company) => (
+              ) : (
+                companies.map((company) => (
                   <tr key={company.id}>
-                    <td>{company.name}</td>
-                    <td>{company.registration_code}</td>
-                    <td>{company.phone || '-'}</td>
-                    <td>{company.email || '-'}</td>
-                    <td>{company.address || '-'}</td>
-                    <td className="sf-actions-cell">
-                      <button 
-                        onClick={() => handleEdit(company)} 
-                        className="sf-btn sf-btn-sm"
+                    <td>
+                      <div className="company-name">{company.name}</div>
+                      {company.address && (
+                        <div className="company-meta">{company.address}</div>
+                      )}
+                    </td>
+                    <td><span className="company-code">{company.registration_code}</span></td>
+                    <td><span className="company-meta">{company.phone || '—'}</span></td>
+                    <td><span className="company-meta">{company.email || '—'}</span></td>
+                    <td className="companies-actions-cell">
+                      <button
+                        onClick={() => handleEdit(company)}
+                        className="companies-action-button"
                       >
                         Muuda
                       </button>
-                      <button 
-                        onClick={() => handleDelete(company.id)} 
-                        className="sf-btn sf-btn-sm sf-btn-danger"
+                      <button
+                        onClick={() => handleDelete(company.id)}
+                        className="companies-action-button"
                       >
                         Kustuta
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
-
-      {showModal && (
-        <div className="sf-modal-overlay" onClick={handleModalClose}>
-          <div className="sf-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="sf-modal-header">
-              <h2>{editingCompany ? 'Muuda ettevõtet' : 'Lisa uus ettevõte'}</h2>
-              <button onClick={handleModalClose} className="sf-modal-close">×</button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="sf-form">
-              <div className="sf-form-group">
-                <label htmlFor="name">Ettevõtte nimi *</label>
-                <input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label htmlFor="registration_code">Registrikood *</label>
-                <input
-                  id="registration_code"
-                  type="text"
-                  value={formData.registration_code}
-                  onChange={(e) => setFormData({...formData, registration_code: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label htmlFor="phone">Telefon</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label htmlFor="email">E-mail</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label htmlFor="address">Aadress</label>
-                <textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  rows={3}
-                />
-              </div>
-
-              <div className="sf-form-group">
-                <label htmlFor="notes">Märkused</label>
-                <textarea
-                  id="notes"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                  rows={4}
-                />
-              </div>
-
-              <div className="sf-form-actions">
-                <button type="button" onClick={handleModalClose} className="sf-btn sf-btn-secondary">
-                  Tühista
-                </button>
-                <button type="submit" className="sf-btn sf-btn-primary">
-                  {editingCompany ? 'Salvesta' : 'Lisa ettevõte'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
 
 export default Companies;
+
