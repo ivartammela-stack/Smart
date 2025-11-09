@@ -8,6 +8,7 @@ import userRoutes from './userRoutes';
 import adminRoutes from './adminRoutes';
 import reportsRoutes from './reportsRoutes';
 import searchRoutes from './searchRoutes';
+import billingRoutes from './billingRoutes';
 
 const router = Router();
 
@@ -37,5 +38,8 @@ router.use('/reports', reportsRoutes);
 
 // Search routes
 router.use('/search', searchRoutes);
+
+// Billing routes
+router.use('/billing', billingRoutes);
 
 export default router;

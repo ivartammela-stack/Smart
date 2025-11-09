@@ -8,6 +8,7 @@
     "build": "tsc",
     "db:sync": "ts-node scripts/sync-db.ts",
     "setup:multi-tenant": "ts-node scripts/setup-multi-tenant.ts",
+    "migrate:trial-system": "ts-node scripts/migrate-to-trial-system.ts",
     "seed:demo": "ts-node scripts/seed-demo-data.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "echo 'No tests yet' && exit 0"

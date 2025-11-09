@@ -5,19 +5,25 @@ export interface AccountAttributes {
   id: number;
   name: string;
   is_active: boolean;
-  billing_plan: 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+  billing_plan: 'TRIAL' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+  plan_locked: boolean;
+  trial_ends_at?: Date | null;
+  grace_ends_at?: Date | null;
   created_at?: Date;
   updated_at?: Date;
 }
 
-export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'is_active' | 'billing_plan' | 'created_at' | 'updated_at'>;
+export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'is_active' | 'billing_plan' | 'plan_locked' | 'trial_ends_at' | 'grace_ends_at' | 'created_at' | 'updated_at'>;
 
 export class Account extends Model<AccountAttributes, AccountCreationAttributes>
   implements AccountAttributes {
   public id!: number;
   public name!: string;
   public is_active!: boolean;
-  public billing_plan!: 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+  public billing_plan!: 'TRIAL' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+  public plan_locked!: boolean;
+  public trial_ends_at?: Date | null;
+  public grace_ends_at?: Date | null;
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -41,7 +47,20 @@ Account.init(
     billing_plan: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      defaultValue: 'FREE',
+      defaultValue: 'TRIAL',
+    },
+    plan_locked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    trial_ends_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    grace_ends_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     created_at: {
       type: DataTypes.DATE,
