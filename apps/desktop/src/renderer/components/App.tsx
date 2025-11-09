@@ -159,7 +159,7 @@ const App: React.FC = () => {
 
                   <div className="sf-sidebar-footer">
                     <div>
-                      <strong style={{color: 'var(--sf-primary)'}}>Versioon 1.6.3</strong> 🎉<br />
+                      <strong style={{color: 'var(--sf-primary)'}}>Versioon 1.6.4</strong> 🎉<br />
                       Kasutaja: {user?.username || 'Kasutaja'}
                     </div>
                 

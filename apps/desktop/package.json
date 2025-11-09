@@ -1,6 +1,6 @@
 {
   "name": "smartfollow-desktop",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "Desktop application for SmartFollow CRM built with Electron and TypeScript",
   "main": "dist/main/main.js",
   "scripts": {
