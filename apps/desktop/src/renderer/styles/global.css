@@ -237,9 +237,16 @@ body {
 }
 
 /* Plan colors */
-.plan-starter {
+.plan-trial {
   --plan-color: #64748b;
   --plan-bg: #f1f5f9;
+  background: var(--plan-bg);
+  color: var(--plan-color);
+}
+
+.plan-starter {
+  --plan-color: #0ea5e9;
+  --plan-bg: #e0f2fe;
   background: var(--plan-bg);
   color: var(--plan-color);
 }

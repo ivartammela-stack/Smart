@@ -78,14 +78,6 @@ const App: React.FC = () => {
   }
 
   const user = isAuthenticated ? JSON.parse(localStorage.getItem('user') || '{}') : null;
-  
-  // Mock plan data - later can be from backend
-  const userPlan = {
-    id: 'pro' as const,
-    name: 'Pro',
-    billingPeriod: 'monthly' as const,
-    renewsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  };
 
   return (
       <ErrorBoundary>
@@ -173,12 +165,13 @@ const App: React.FC = () => {
                     </div>
                 
                 <div className={`sf-plan-badge ${
-                  userPlan.id === 'pro' ? 'plan-pro' : 
-                  userPlan.id === 'business' ? 'plan-business' : 
-                  'plan-starter'
+                  user?.plan === 'PRO' ? 'plan-pro' : 
+                  user?.plan === 'ENTERPRISE' ? 'plan-business' : 
+                  user?.plan === 'STARTER' ? 'plan-starter' :
+                  'plan-trial'
                 }`}>
                   <span className="sf-plan-dot" />
-                  <span>{userPlan.name}</span>
+                  <span>{user?.plan === 'TRIAL' ? 'Trial' : user?.plan || 'Trial'}</span>
                 </div>
 
                 <button className="sf-logout-btn" onClick={handleLogout}>
@@ -226,7 +219,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Floating plan banner */}
-        <PlanBanner plan={userPlan} />
+        <PlanBanner />
       </div>
     </ErrorBoundary>
   );
