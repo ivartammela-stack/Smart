@@ -10,6 +10,7 @@ import reportsRoutes from './reportsRoutes';
 import searchRoutes from './searchRoutes';
 import billingRoutes from './billingRoutes';
 import settingsRoutes from './settingsRoutes';
+import superAdminRoutes from './superAdminRoutes';
 
 const router = Router();
 
@@ -45,5 +46,8 @@ router.use('/billing', billingRoutes);
 
 // Settings routes
 router.use('/settings', settingsRoutes);
+
+// Super Admin routes (platform admin only)
+router.use('/super-admin', superAdminRoutes);
 
 export default router;
