@@ -20,7 +20,7 @@ export const globalSearch = async (req: Request, res: Response) => {
       where: {
         [Op.or]: [
           { name: { [Op.iLike]: searchTerm } },
-          { registry_code: { [Op.iLike]: searchTerm } },
+          { registration_code: { [Op.iLike]: searchTerm } },
         ],
       } as any,
       limit: 5,
@@ -64,7 +64,7 @@ export const globalSearch = async (req: Request, res: Response) => {
         type: 'company',
         id: c.id,
         title: c.name,
-        subtitle: c.registry_code || undefined,
+        subtitle: c.registration_code || undefined,
       });
     });
 
