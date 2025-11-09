@@ -1,0 +1,111 @@
+═══════════════════════════════════════════════════════════════════
+  🎉 SMARTFOLLOW v1.6.1 - VALMIS TESTIMISEKS! 🎉
+═══════════════════════════════════════════════════════════════════
+
+HEI! KUI SA SEDA LOED, KÕIK ON VALMIS! ✅
+
+═══════════════════════════════════════════════════════════════════
+  📦 DESKTOP APP - INSTALLI KOHE
+═══════════════════════════════════════════════════════════════════
+
+INSTALLER:
+  C:\Users\koolitööd\Desktop\smartfollow-desktop\apps\desktop\release\SmartFollow-Setup-1.6.1.exe
+
+SAMMUD:
+  1. Topeltkliki installer'it
+  2. Järgi juhiseid
+  3. Käivita SmartFollow CRM
+  4. Logi sisse:
+     Email: admin@smartfollow.ee
+     Parool: admin123
+
+═══════════════════════════════════════════════════════════════════
+  🖥️  SERVER - DEPLOY UUENDUSED
+═══════════════════════════════════════════════════════════════════
+
+SSH SERVERISSE:
+  ssh root@185.170.198.120
+
+KOPEERI JA KÄIVITA ÜKS KÄSK:
+  cd ~/smartfollow && git pull origin main && cd apps/server && npm ci && npm run build && pm2 restart smartfollow-server
+
+KONTROLLI:
+  pm2 logs smartfollow-server --lines 5
+  
+  Peaksid nägema:
+  ✅ Database connection established successfully.
+  ✅ Server is running on http://localhost:3000
+
+═══════════════════════════════════════════════════════════════════
+  🎯 MIS ON UUT v1.6.1-s
+═══════════════════════════════════════════════════════════════════
+
+✅ ORIGINAALSED KOMPONENDID TAGASI:
+   - Ettevõtted (Companies) - täielik CRUD
+   - Kontaktid (Contacts) - täielik CRUD
+   - Tehingud (Deals) - täielik CRUD + staatused
+   - Admin (Users) - kasutajate haldus
+
+✅ PAROOLI MUUTMINE:
+   - User profile'is nupp "🔒 Muuda parooli"
+   - Kasutajad saavad ise parooli muuta!
+
+✅ CUSTOM IKOON:
+   - SmartFollow sinine logo
+   - Desktop ja taskbar'is
+
+✅ BACKEND PARANDUSED:
+   - Trust proxy (nginx)
+   - Password change API
+
+═══════════════════════════════════════════════════════════════════
+  🧪 TESTI KÕIKE
+═══════════════════════════════════════════════════════════════════
+
+DESKTOP APP:
+  ✓ Login/Logout
+  ✓ Dashboard (graafikud)
+  ✓ Lisa ettevõte
+  ✓ Lisa kontakt (vali ettevõte dropdown'ist)
+  ✓ Lisa tehing (muuda staatust!)
+  ✓ Lisa ülesanne
+  ✓ Admin - lisa kasutaja
+  ✓ Parooli muutmine (paremal sidebar'is)
+
+SERVER:
+  Test browser'is: http://185.170.198.120/health
+  Peaks tagastama: {"status":"ok"...}
+
+═══════════════════════════════════════════════════════════════════
+  📝 GITHUB
+═══════════════════════════════════════════════════════════════════
+
+PR LOO
+
+DMINE:
+  Browser'is avatud: https://github.com/ivartammela-stack/Smart/pull/new/feat/v1.6.1-password-and-icon
+
+KUI TAHAD MERGE'IDA:
+  1. Mine PR lehele
+  2. Oota et checks lõpevad (~2 min)
+  3. Kliki "Squash and merge"
+
+VÕI:
+  Jäta PR ootel - rakendus töötab niikuinii!
+
+═══════════════════════════════════════════════════════════════════
+  📚 TÄPNE INFO
+═══════════════════════════════════════════════════════════════════
+
+DEPLOYMENT JUHISED:
+  → DEPLOY_INSTRUCTIONS.md
+
+SESSION KOKKUVÕTE:
+  → docs/meta/session_8_summary_2025-11-08.md
+
+═══════════════════════════════════════════════════════════════════
+
+HEAD UJU! KÕIK TOIMIB! 🏊‍♂️✨
+
+═══════════════════════════════════════════════════════════════════
+
