@@ -9,6 +9,7 @@
     "db:sync": "ts-node scripts/sync-db.ts",
     "setup:multi-tenant": "ts-node scripts/setup-multi-tenant.ts",
     "migrate:trial-system": "ts-node scripts/migrate-to-trial-system.ts",
+    "migrate:user-roles": "ts-node scripts/migrate-user-roles.ts",
     "billing:maintenance": "ts-node scripts/billing-maintenance.ts",
     "seed:demo": "ts-node scripts/seed-demo-data.ts",
     "lint": "eslint . --ext .ts,.tsx",

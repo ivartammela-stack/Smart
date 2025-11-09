@@ -26,8 +26,8 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
     req.user = decoded;
     
     // Set effective account ID
-    // System admin can override with x-account-id header
-    if (req.user?.role === 'system_admin' && req.headers['x-account-id']) {
+    // Super admin can override with x-account-id header
+    if (req.user?.role === 'SUPER_ADMIN' && req.headers['x-account-id']) {
       req.accountId = Number(req.headers['x-account-id']);
     } else {
       req.accountId = req.user?.account_id;

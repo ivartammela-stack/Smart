@@ -84,14 +84,19 @@ async function setupMultiTenant() {
     );
     console.log(`   ✅ Updated ${tasksUpdated} tasks\n`);
 
-    // Step 4: Set admin user to system_admin
-    console.log('👑 Step 4: Setting admin user role to system_admin...');
+    // Step 4: Set admin user to SUPER_ADMIN
+    console.log('👑 Step 4: Setting admin user role to SUPER_ADMIN...');
     const admin = await User.findOne({ where: { email: 'admin@smartfollow.ee' } });
-    if (admin && admin.role !== 'system_admin') {
-      await admin.update({ role: 'system_admin' });
-      console.log('✅ Admin user role updated to system_admin\n');
-    } else if (admin) {
-      console.log('ℹ️  Admin is already system_admin\n');
+    if (admin) {
+      if (admin.role !== 'SUPER_ADMIN') {
+        await admin.update({ 
+          role: 'SUPER_ADMIN',
+          account_id: null, // Super admin not tied to specific account
+        });
+        console.log('✅ Admin user role updated to SUPER_ADMIN\n');
+      } else {
+        console.log('ℹ️  Admin is already SUPER_ADMIN\n');
+      }
     } else {
       console.log('⚠️  Admin user not found\n');
     }

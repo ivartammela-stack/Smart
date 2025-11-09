@@ -14,8 +14,8 @@ export const getAccountFilter = (req: AuthRequest): { account_id?: number } | ob
     return { account_id: req.accountId };
   }
   
-  // System admin without specific account selection sees all
-  if (req.user?.role === 'system_admin' && !req.accountId) {
+  // Super admin without specific account selection sees all
+  if (req.user?.role === 'SUPER_ADMIN' && !req.accountId) {
     return {}; // No filter - see all accounts
   }
   
