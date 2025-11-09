@@ -1,25 +1,26 @@
 // apps/server/src/controllers/taskController.ts
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../middleware/authMiddleware';
 import * as taskService from '../services/taskService';
 
-export const getAllTasks = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllTasks = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tasks = await taskService.getAllTasks();
+    const tasks = await taskService.getAllTasks(req.accountId);
     res.json(tasks);
   } catch (error) {
     next(error);
   }
 };
 
-export const getTaskById = async (req: Request, res: Response, next: NextFunction) => {
+export const getTaskById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       return res.status(400).json({ message: 'Invalid task id' });
     }
 
-    const task = await taskService.getTaskById(id);
+    const task = await taskService.getTaskById(id, req.accountId);
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
@@ -30,28 +31,28 @@ export const getTaskById = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const getTasksByCompany = async (req: Request, res: Response, next: NextFunction) => {
+export const getTasksByCompany = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const companyId = Number(req.params.companyId);
     if (Number.isNaN(companyId)) {
       return res.status(400).json({ message: 'Invalid company id' });
     }
 
-    const tasks = await taskService.getTasksByCompany(companyId);
+    const tasks = await taskService.getTasksByCompany(companyId, req.accountId);
     res.json(tasks);
   } catch (error) {
     next(error);
   }
 };
 
-export const getTasksByDeal = async (req: Request, res: Response, next: NextFunction) => {
+export const getTasksByDeal = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const dealId = Number(req.params.dealId);
     if (Number.isNaN(dealId)) {
       return res.status(400).json({ message: 'Invalid deal id' });
     }
 
-    const tasks = await taskService.getTasksByDeal(dealId);
+    const tasks = await taskService.getTasksByDeal(dealId, req.accountId);
     res.json(tasks);
   } catch (error) {
     next(error);
@@ -59,16 +60,16 @@ export const getTasksByDeal = async (req: Request, res: Response, next: NextFunc
 };
 
 // "Täna" vaade
-export const getTodayTasks = async (req: Request, res: Response, next: NextFunction) => {
+export const getTodayTasks = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const tasks = await taskService.getTodayTasks();
+    const tasks = await taskService.getTodayTasks(req.accountId);
     res.json(tasks);
   } catch (error) {
     next(error);
   }
 };
 
-export const createTask = async (req: Request, res: Response, next: NextFunction) => {
+export const createTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const {
       company_id,
@@ -94,7 +95,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
       due_date,
       completed,
       assigned_to: assigned_to ? Number(assigned_to) : null,
-    });
+    }, req.accountId);
 
     res.status(201).json(task);
   } catch (error) {
@@ -102,7 +103,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
+export const updateTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
@@ -127,7 +128,7 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
       due_date,
       completed,
       assigned_to: assigned_to !== undefined ? (assigned_to ? Number(assigned_to) : null) : undefined,
-    });
+    }, req.accountId);
 
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
@@ -139,14 +140,14 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       return res.status(400).json({ message: 'Invalid task id' });
     }
 
-    const success = await taskService.deleteTask(id);
+    const success = await taskService.deleteTask(id, req.accountId);
     if (!success) {
       return res.status(404).json({ message: 'Task not found' });
     }

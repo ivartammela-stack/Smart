@@ -13,44 +13,58 @@ export interface TaskPayload {
   assigned_to?: number | null;
 }
 
-export const getAllTasks = async (): Promise<Task[]> => {
+export const getAllTasks = async (accountId?: number): Promise<Task[]> => {
+  const where: any = {};
+  if (accountId) where.account_id = accountId;
+  
   return Task.findAll({
+    where,
     order: [['due_date', 'ASC'], ['created_at', 'DESC']],
   });
 };
 
-export const getTaskById = async (id: number): Promise<Task | null> => {
-  return Task.findByPk(id);
+export const getTaskById = async (id: number, accountId?: number): Promise<Task | null> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  return Task.findOne({ where });
 };
 
-export const getTasksByCompany = async (companyId: number): Promise<Task[]> => {
+export const getTasksByCompany = async (companyId: number, accountId?: number): Promise<Task[]> => {
+  const where: any = { company_id: companyId };
+  if (accountId) where.account_id = accountId;
+  
   return Task.findAll({
-    where: { company_id: companyId },
+    where,
     order: [['due_date', 'ASC']],
   });
 };
 
-export const getTasksByDeal = async (dealId: number): Promise<Task[]> => {
+export const getTasksByDeal = async (dealId: number, accountId?: number): Promise<Task[]> => {
+  const where: any = { deal_id: dealId };
+  if (accountId) where.account_id = accountId;
+  
   return Task.findAll({
-    where: { deal_id: dealId },
+    where,
     order: [['due_date', 'ASC']],
   });
 };
 
 // "Täna" vaade - tasks due today (both completed and pending)
-export const getTodayTasks = async (): Promise<Task[]> => {
+export const getTodayTasks = async (accountId?: number): Promise<Task[]> => {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
+  const where: any = { due_date: todayStr };
+  if (accountId) where.account_id = accountId;
+
   return Task.findAll({
-    where: {
-      due_date: todayStr,
-    },
+    where,
     order: [['completed', 'ASC'], ['created_at', 'ASC']], // pending first, then completed
   });
 };
 
-export const createTask = async (payload: TaskPayload): Promise<Task> => {
+export const createTask = async (payload: TaskPayload, accountId?: number): Promise<Task> => {
   const data: TaskCreationAttributes = {
     company_id: payload.company_id ?? null,
     deal_id: payload.deal_id ?? null,
@@ -59,6 +73,7 @@ export const createTask = async (payload: TaskPayload): Promise<Task> => {
     due_date: payload.due_date ? new Date(payload.due_date) : null,
     completed: payload.completed ?? false,
     assigned_to: payload.assigned_to ?? null,
+    account_id: accountId,
   };
 
   const task = await Task.create(data);
@@ -67,9 +82,13 @@ export const createTask = async (payload: TaskPayload): Promise<Task> => {
 
 export const updateTask = async (
   id: number,
-  payload: Partial<TaskPayload>
+  payload: Partial<TaskPayload>,
+  accountId?: number
 ): Promise<Task | null> => {
-  const task = await Task.findByPk(id);
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const task = await Task.findOne({ where });
   if (!task) {
     return null;
   }
@@ -89,11 +108,11 @@ export const updateTask = async (
   return task;
 };
 
-export const deleteTask = async (id: number): Promise<boolean> => {
-  const deletedCount = await Task.destroy({
-    where: { id },
-  });
+export const deleteTask = async (id: number, accountId?: number): Promise<boolean> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const deletedCount = await Task.destroy({ where });
 
   return deletedCount > 0;
 };
-
