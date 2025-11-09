@@ -6,13 +6,14 @@ import Contacts from './Contacts';
 import Deals from './Deals';
 import TasksToday from './TasksToday';
 import AdminUsers from './AdminUsers';
+import BillingPage from './Settings/BillingPage';
 import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
 import UpdateNotification from './UpdateNotification';
 import type { ReportsData } from '../types/reports';
 
-type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
+type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users' | 'settings';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -154,6 +155,14 @@ const App: React.FC = () => {
                       <span>Admin</span>
                     </button>
                   )}
+
+                  <button
+                    className={'sf-nav-item ' + (currentView === 'settings' ? 'sf-nav-item-active' : '')}
+                    onClick={() => setCurrentView('settings')}
+                  >
+                    <span className="sf-nav-item-icon">⚙️</span>
+                    <span>Seaded</span>
+                  </button>
                 </nav>
               </div>
 
@@ -199,6 +208,9 @@ const App: React.FC = () => {
               )}
               {currentView === 'admin-users' && (
                 <AdminUsers onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'settings' && (
+                <BillingPage />
               )}
             </main>
 
