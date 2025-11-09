@@ -69,7 +69,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
         <div className="right-role">
           {user?.role === 'admin' ? 'Administraator' : 'SmartFollow kasutaja'}
         </div>
-        <div className="right-location">CRM versioon 1.6.1</div>
+        <div className="right-location">CRM versioon 1.6.2</div>
         <button 
           onClick={() => setShowPasswordModal(true)}
           className="sf-btn-text"
