@@ -194,7 +194,16 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
               </tr>
             ) : (
               contacts.map((contact) => (
-                <tr key={contact.id}>
+                <tr 
+                  key={contact.id}
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    handleEdit(contact);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
                   <td><strong>{contact.first_name} {contact.last_name}</strong></td>
                   <td>{getCompanyName(contact.company_id)}</td>
                   <td>{contact.position || '-'}</td>
@@ -203,14 +212,20 @@ const Contacts: React.FC<ContactsProps> = ({ onBack }) => {
                   <td className="actions-cell">
                     <button
                       className="btn-icon btn-edit"
-                      onClick={() => handleEdit(contact)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(contact);
+                      }}
                       title="Muuda"
                     >
                       ✏️
                     </button>
                     <button
                       className="btn-icon btn-delete"
-                      onClick={() => handleDelete(contact.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(contact.id);
+                      }}
                       title="Kustuta"
                     >
                       🗑️
