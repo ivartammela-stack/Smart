@@ -49,38 +49,48 @@ async function setupMultiTenant() {
     // Step 3: Assign all existing data to default account
     console.log('🔗 Step 3: Assigning existing data to default account...');
     
-    // Update users
-    const usersUpdated = await User.update(
+    // Update users - set all without account_id to account 1
+    const usersUpdated: [affectedCount: number] = await User.update(
       { account_id: 1 },
-      { where: { account_id: { [Op.is]: null } } }
+      { 
+        where: sequelize.literal('account_id IS NULL'),
+      } as any
     );
     console.log(`   ✅ Updated ${usersUpdated[0]} users`);
 
     // Update companies
-    const companiesUpdated = await Company.update(
+    const companiesUpdated: [affectedCount: number] = await Company.update(
       { account_id: 1 },
-      { where: { account_id: { [Op.is]: null } } }
+      { 
+        where: sequelize.literal('account_id IS NULL'),
+      } as any
     );
     console.log(`   ✅ Updated ${companiesUpdated[0]} companies`);
 
     // Update contacts
-    const contactsUpdated = await Contact.update(
+    const contactsUpdated: [affectedCount: number] = await Contact.update(
       { account_id: 1 },
-      { where: { account_id: { [Op.is]: null } } }
+      { 
+        where: sequelize.literal('account_id IS NULL'),
+      } as any
     );
     console.log(`   ✅ Updated ${contactsUpdated[0]} contacts`);
 
     // Update deals
-    const dealsUpdated = await Deal.update(
+    const dealsUpdated: [affectedCount: number] = await Deal.update(
       { account_id: 1 },
-      { where: { account_id: { [Op.is]: null } } }
+      { 
+        where: sequelize.literal('account_id IS NULL'),
+      } as any
     );
     console.log(`   ✅ Updated ${dealsUpdated[0]} deals`);
 
     // Update tasks
-    const tasksUpdated = await Task.update(
+    const tasksUpdated: [affectedCount: number] = await Task.update(
       { account_id: 1 },
-      { where: { account_id: { [Op.is]: null } } }
+      { 
+        where: sequelize.literal('account_id IS NULL'),
+      } as any
     );
     console.log(`   ✅ Updated ${tasksUpdated[0]} tasks\n`);
 
