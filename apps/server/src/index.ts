@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 3000;
 app.disable('x-powered-by');
 
 // Trust proxy (required when behind nginx)
-app.set('trust proxy', true);
+// Trust first proxy (nginx) for X-Forwarded-* headers
+app.set('trust proxy', 1);
 
 // Middleware
 // CORS: Restrict to specific origins in production
