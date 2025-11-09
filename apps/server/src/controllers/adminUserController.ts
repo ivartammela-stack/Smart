@@ -10,7 +10,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 export const listUsers = async (req: AuthRequest, res: Response) => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'username', 'email', 'role', 'created_at', 'updated_at'],
+      attributes: ['id', 'username', 'email', 'role', 'plan', 'created_at', 'updated_at'],
       order: [['created_at', 'DESC']],
     });
 
@@ -162,6 +162,48 @@ export const resetPassword = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Failed to reset password',
+    });
+  }
+};
+
+/**
+ * PUT /admin/users/:id/plan
+ * Update user plan (admin only)
+ */
+export const updateUserPlan = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { plan } = req.body;
+
+    const validPlans = ['FREE', 'STARTER', 'PRO', 'ENTERPRISE'];
+    if (!plan || !validPlans.includes(plan)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vigane pakett. Lubatud: FREE, STARTER, PRO, ENTERPRISE',
+      });
+    }
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kasutajat ei leitud',
+      });
+    }
+
+    await user.update({ plan });
+
+    res.json({
+      success: true,
+      message: 'Pakett uuendatud',
+      plan: user.plan,
+    });
+  } catch (error) {
+    console.error('Error updating user plan:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Paketi uuendamine ebaõnnestus',
     });
   }
 };

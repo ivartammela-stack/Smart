@@ -9,6 +9,7 @@ interface User {
   username?: string;
   email?: string;
   role?: string;
+  plan?: string;
 }
 
 interface RightSidebarProps {
@@ -27,6 +28,44 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
   });
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+
+  // Plan badge helper
+  const getPlanBadge = (plan: string) => {
+    const planConfig: Record<string, { label: string; bg: string; color: string }> = {
+      FREE: { label: 'Tasuta', bg: '#f1f5f9', color: '#475569' },
+      STARTER: { label: 'Starter', bg: '#e0f2fe', color: '#0369a1' },
+      PRO: { label: 'Pro', bg: '#ede9fe', color: '#7c3aed' },
+      ENTERPRISE: { label: 'Enterprise', bg: '#fef3c7', color: '#b45309' },
+    };
+
+    const config = planConfig[plan] || planConfig.FREE;
+
+    return (
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '6px 14px',
+          borderRadius: '16px',
+          background: config.bg,
+          color: config.color,
+          fontSize: '12px',
+          fontWeight: '600',
+          cursor: 'default',
+        }}
+      >
+        <span style={{ 
+          display: 'inline-block', 
+          width: '6px', 
+          height: '6px', 
+          borderRadius: '50%', 
+          background: config.color 
+        }} />
+        {config.label}
+      </div>
+    );
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +108,41 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
         <div className="right-role">
           {user?.role === 'admin' ? 'Administraator' : 'SmartFollow kasutaja'}
         </div>
-        <div className="right-location">CRM versioon 1.6.4</div>
+        
+        {/* Plan Badge */}
+        <div style={{ marginTop: '12px' }}>
+          {getPlanBadge(user?.plan || 'FREE')}
+        </div>
+
+        <div className="right-location" style={{ marginTop: '12px' }}>CRM versioon 1.6.4</div>
+        
+        {/* Change Password Button - New Style */}
         <button 
           onClick={() => setShowPasswordModal(true)}
-          className="sf-btn-text"
-          style={{ marginTop: '8px', fontSize: '13px', color: 'var(--sf-primary)' }}
+          style={{ 
+            marginTop: '12px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            border: 'none',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+            color: '#ffffff',
+            fontSize: '13px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)',
+            transition: 'all 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
-          🔒 Muuda parooli
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>Muuda parooli</span>
         </button>
       </div>
 

@@ -6,6 +6,7 @@ interface User {
   username: string;
   email: string;
   role: string;
+  plan: string;
   created_at: string;
   updated_at: string;
 }
@@ -13,6 +14,15 @@ interface User {
 interface AdminUsersProps {
   onBack: () => void;
 }
+
+type Plan = 'FREE' | 'STARTER' | 'PRO' | 'ENTERPRISE';
+
+const PLAN_OPTIONS: { value: Plan; label: string }[] = [
+  { value: 'FREE', label: 'Tasuta' },
+  { value: 'STARTER', label: 'Starter' },
+  { value: 'PRO', label: 'Pro' },
+  { value: 'ENTERPRISE', label: 'Enterprise' },
+];
 
 const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
   const [users, setUsers] = useState<User[]>([]);
@@ -97,6 +107,16 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
     }
   };
 
+  const handleChangePlan = async (userId: number, plan: Plan) => {
+    try {
+      await api.put(`/admin/users/${userId}/plan`, { plan });
+      fetchUsers(); // Refresh list
+    } catch (err) {
+      setError('Paketi uuendamine ebaõnnestus');
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return <div className="loading-container"><p>Kasutajate laadimine...</p></div>;
   }
@@ -127,6 +147,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
               <th>Kasutajanimi</th>
               <th>E-mail</th>
               <th>Roll</th>
+              <th>Pakett</th>
               <th>Loodud</th>
               <th>Toimingud</th>
             </tr>
@@ -134,7 +155,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={6} className="empty-state">
+                <td colSpan={7} className="empty-state">
                   Kasutajaid ei leitud.
                 </td>
               </tr>
@@ -148,6 +169,28 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
                     <span className={`role-badge role-${user.role}`}>
                       {user.role === 'admin' ? '👑 Admin' : '👤 Kasutaja'}
                     </span>
+                  </td>
+                  <td>
+                    <select
+                      value={user.plan || 'FREE'}
+                      onChange={(e) => handleChangePlan(user.id, e.target.value as Plan)}
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        background: '#ffffff',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        color: user.plan === 'PRO' ? '#7c3aed' : user.plan === 'ENTERPRISE' ? '#b45309' : user.plan === 'STARTER' ? '#0369a1' : '#475569',
+                      }}
+                    >
+                      {PLAN_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td>{new Date(user.created_at).toLocaleString('et-EE')}</td>
                   <td>
