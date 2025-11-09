@@ -10,6 +10,7 @@
 
 import sequelize from '../src/config/database';
 import { Account, User, Company, Contact, Deal, Task } from '../src/models';
+import { Op } from 'sequelize';
 
 async function setupMultiTenant() {
   try {
@@ -51,35 +52,35 @@ async function setupMultiTenant() {
     // Update users
     const usersUpdated = await User.update(
       { account_id: 1 },
-      { where: { account_id: null } }
+      { where: { account_id: { [Op.is]: null } } }
     );
     console.log(`   ✅ Updated ${usersUpdated[0]} users`);
 
     // Update companies
     const companiesUpdated = await Company.update(
       { account_id: 1 },
-      { where: { account_id: null } }
+      { where: { account_id: { [Op.is]: null } } }
     );
     console.log(`   ✅ Updated ${companiesUpdated[0]} companies`);
 
     // Update contacts
     const contactsUpdated = await Contact.update(
       { account_id: 1 },
-      { where: { account_id: null } }
+      { where: { account_id: { [Op.is]: null } } }
     );
     console.log(`   ✅ Updated ${contactsUpdated[0]} contacts`);
 
     // Update deals
     const dealsUpdated = await Deal.update(
       { account_id: 1 },
-      { where: { account_id: null } }
+      { where: { account_id: { [Op.is]: null } } }
     );
     console.log(`   ✅ Updated ${dealsUpdated[0]} deals`);
 
     // Update tasks
     const tasksUpdated = await Task.update(
       { account_id: 1 },
-      { where: { account_id: null } }
+      { where: { account_id: { [Op.is]: null } } }
     );
     console.log(`   ✅ Updated ${tasksUpdated[0]} tasks\n`);
 

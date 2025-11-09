@@ -31,7 +31,7 @@ export const getDealById = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
-export const getDealsByCompany = async (req: Request, res: Response, next: NextFunction) => {
+export const getDealsByCompany = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const companyId = Number(req.params.companyId);
     if (Number.isNaN(companyId)) {

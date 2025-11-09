@@ -6,15 +6,18 @@ import { authenticateJWT } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Public read endpoints
+// All endpoints require authentication (multi-tenant filtering)
+router.use(authenticateJWT);
+
+// Read endpoints
 router.get('/', dealController.getAllDeals);
 router.get('/company/:companyId', dealController.getDealsByCompany);
 router.get('/:id', dealController.getDealById);
 
-// Protected write endpoints
-router.post('/', authenticateJWT, dealController.createDeal);
-router.put('/:id', authenticateJWT, dealController.updateDeal);
-router.delete('/:id', authenticateJWT, dealController.deleteDeal);
+// Write endpoints
+router.post('/', dealController.createDeal);
+router.put('/:id', dealController.updateDeal);
+router.delete('/:id', dealController.deleteDeal);
 
 export default router;
 
