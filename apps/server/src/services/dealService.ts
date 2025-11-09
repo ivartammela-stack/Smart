@@ -12,24 +12,34 @@ export interface DealPayload {
   created_by?: number | null;
 }
 
-export const getAllDeals = async (): Promise<Deal[]> => {
+export const getAllDeals = async (accountId?: number): Promise<Deal[]> => {
+  const where: any = {};
+  if (accountId) where.account_id = accountId;
+  
   return Deal.findAll({
+    where,
     order: [['created_at', 'DESC']],
   });
 };
 
-export const getDealById = async (id: number): Promise<Deal | null> => {
-  return Deal.findByPk(id);
+export const getDealById = async (id: number, accountId?: number): Promise<Deal | null> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  return Deal.findOne({ where });
 };
 
-export const getDealsByCompany = async (companyId: number): Promise<Deal[]> => {
+export const getDealsByCompany = async (companyId: number, accountId?: number): Promise<Deal[]> => {
+  const where: any = { company_id: companyId };
+  if (accountId) where.account_id = accountId;
+  
   return Deal.findAll({
-    where: { company_id: companyId },
+    where,
     order: [['created_at', 'DESC']],
   });
 };
 
-export const createDeal = async (payload: DealPayload): Promise<Deal> => {
+export const createDeal = async (payload: DealPayload, accountId?: number): Promise<Deal> => {
   const data: DealCreationAttributes = {
     company_id: payload.company_id,
     title: payload.title,
@@ -37,6 +47,7 @@ export const createDeal = async (payload: DealPayload): Promise<Deal> => {
     status: payload.status ?? 'new',
     notes: payload.notes ?? null,
     created_by: payload.created_by ?? null,
+    account_id: accountId,
   };
 
   const deal = await Deal.create(data);
@@ -45,9 +56,13 @@ export const createDeal = async (payload: DealPayload): Promise<Deal> => {
 
 export const updateDeal = async (
   id: number,
-  payload: Partial<DealPayload>
+  payload: Partial<DealPayload>,
+  accountId?: number
 ): Promise<Deal | null> => {
-  const deal = await Deal.findByPk(id);
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const deal = await Deal.findOne({ where });
   if (!deal) {
     return null;
   }
@@ -63,10 +78,11 @@ export const updateDeal = async (
   return deal;
 };
 
-export const deleteDeal = async (id: number): Promise<boolean> => {
-  const deletedCount = await Deal.destroy({
-    where: { id },
-  });
+export const deleteDeal = async (id: number, accountId?: number): Promise<boolean> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const deletedCount = await Deal.destroy({ where });
 
   return deletedCount > 0;
 };
