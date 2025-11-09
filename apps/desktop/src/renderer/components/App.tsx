@@ -7,13 +7,14 @@ import Deals from './Deals';
 import TasksToday from './TasksToday';
 import AdminUsers from './AdminUsers';
 import SettingsPage from './Settings/SettingsPage';
+import SuperAdminCompanies from './SuperAdminCompanies';
 import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
 import UpdateNotification from './UpdateNotification';
 import type { ReportsData } from '../types/reports';
 
-type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users' | 'settings';
+type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users' | 'settings' | 'super-admin-companies';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -148,6 +149,16 @@ const App: React.FC = () => {
                     </button>
                   )}
 
+                  {user?.role === 'SUPER_ADMIN' && (
+                    <button
+                      className={'sf-nav-item ' + (currentView === 'super-admin-companies' ? 'sf-nav-item-active' : '')}
+                      onClick={() => setCurrentView('super-admin-companies')}
+                    >
+                      <span className="sf-nav-item-icon">👑</span>
+                      <span>Ettevõtted (SA)</span>
+                    </button>
+                  )}
+
                   <button
                     className={'sf-nav-item ' + (currentView === 'settings' ? 'sf-nav-item-active' : '')}
                     onClick={() => setCurrentView('settings')}
@@ -201,6 +212,9 @@ const App: React.FC = () => {
               )}
               {currentView === 'admin-users' && (
                 <AdminUsers onBack={() => setCurrentView('dashboard')} />
+              )}
+              {currentView === 'super-admin-companies' && (
+                <SuperAdminCompanies onBack={() => setCurrentView('dashboard')} />
               )}
               {currentView === 'settings' && (
                 <SettingsPage />
