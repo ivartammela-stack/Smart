@@ -1,4 +1,5 @@
 import sequelize from '../src/config/database';
+import { Op } from 'sequelize';
 import { User, Company, Contact, Deal, Task } from '../src/models';
 import bcrypt from 'bcrypt';
 
@@ -25,7 +26,7 @@ async function seedDemoData() {
     // Delete all users except admin
     await User.destroy({
       where: {
-        email: { [sequelize.Sequelize.Op.ne]: 'admin@smartfollow.ee' }
+        email: { [Op.ne]: 'admin@smartfollow.ee' }
       }
     });
     console.log('✅ Non-admin users deleted');
@@ -47,7 +48,6 @@ async function seedDemoData() {
       address: 'Narva mnt 7, Tallinn 10117',
       phone: '+372 5123 4567',
       email: 'info@acme.ee',
-      website: 'https://acme.ee',
       industry: 'IT teenused',
       notes: 'Suur IT ettevõte, mis pakub tarkvaraarendust ja konsultatsiooni',
     });
@@ -58,7 +58,6 @@ async function seedDemoData() {
       address: 'Pärnu mnt 15, Tallinn 10141',
       phone: '+372 5234 5678',
       email: 'kontakt@techsolutions.ee',
-      website: 'https://techsolutions.ee',
       industry: 'Tehnoloogia',
       notes: 'Keskendub tarkvara testimisele ja kvaliteedile',
     });
@@ -69,7 +68,6 @@ async function seedDemoData() {
       address: 'Viru väljak 2, Tallinn 10111',
       phone: '+372 5345 6789',
       email: 'info@marketingpro.ee',
-      website: 'https://marketingpro.ee',
       industry: 'Turundus',
       notes: 'Digitaalturunduse agentuur',
     });
