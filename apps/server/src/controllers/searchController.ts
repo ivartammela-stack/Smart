@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/authMiddleware';
 import { Company, Contact, Deal, Task } from '../models';
 import { Op } from 'sequelize';
 
-export const globalSearch = async (req: Request, res: Response) => {
+export const globalSearch = async (req: AuthRequest, res: Response) => {
   try {
     const query = req.query.q as string;
 
@@ -15,9 +16,16 @@ export const globalSearch = async (req: Request, res: Response) => {
 
     const searchTerm = `%${query}%`;
 
+    // Account filter
+    const accountFilter: any = {};
+    if (req.accountId) {
+      accountFilter.account_id = req.accountId;
+    }
+
     // Search companies
     const companies: any[] = await Company.findAll({
       where: {
+        ...accountFilter,
         [Op.or]: [
           { name: { [Op.iLike]: searchTerm } },
           { registration_code: { [Op.iLike]: searchTerm } },
@@ -29,6 +37,7 @@ export const globalSearch = async (req: Request, res: Response) => {
     // Search contacts
     const contacts: any[] = await Contact.findAll({
       where: {
+        ...accountFilter,
         [Op.or]: [
           { first_name: { [Op.iLike]: searchTerm } },
           { last_name: { [Op.iLike]: searchTerm } },
@@ -43,6 +52,7 @@ export const globalSearch = async (req: Request, res: Response) => {
     // Search deals
     const deals = await Deal.findAll({
       where: {
+        ...accountFilter,
         title: { [Op.iLike]: searchTerm },
       },
       include: [{ model: Company, as: 'company', attributes: ['name'] }],
@@ -52,6 +62,7 @@ export const globalSearch = async (req: Request, res: Response) => {
     // Search tasks
     const tasks = await Task.findAll({
       where: {
+        ...accountFilter,
         title: { [Op.iLike]: searchTerm },
       },
       limit: 5,
