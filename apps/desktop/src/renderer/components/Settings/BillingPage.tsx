@@ -108,51 +108,73 @@ const BillingPage: React.FC = () => {
   const graceDaysLeft = getDaysLeft(currentPlan.graceEndsAt);
 
   return (
-    <div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
-      <h1 style={{ marginBottom: 8 }}>Arveldus ja paketid</h1>
-      <p style={{ color: '#666', marginBottom: 32 }}>
-        Halda oma SmartFollow CRM tellimust ja vali sobiv pakett
-      </p>
-
-      {/* Current Plan Status */}
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh',
+      overflow: 'hidden' 
+    }}>
+      {/* Fixed Header */}
       <div style={{ 
-        marginBottom: 32, 
-        padding: 24, 
-        background: currentPlan.status === 'LOCKED' || currentPlan.status === 'GRACE' ? '#fee' : '#f0f9ff',
-        borderRadius: 12,
-        border: `2px solid ${currentPlan.status === 'LOCKED' || currentPlan.status === 'GRACE' ? '#dc2626' : '#3b82f6'}`
+        flexShrink: 0,
+        padding: '24px 24px 0 24px',
+        maxWidth: 1200,
+        margin: '0 auto',
+        width: '100%'
       }}>
-        <h2 style={{ marginBottom: 8 }}>Praegune pakett: <strong>{currentPlan.planName}</strong></h2>
-        
-        {currentPlan.status === 'TRIAL' && (
-          <p style={{ color: '#3b82f6', fontSize: 16 }}>
-            🎉 Prooviversioon aktiivne • {trialDaysLeft} päeva jäänud
-          </p>
-        )}
-        
-        {currentPlan.status === 'GRACE' && (
-          <p style={{ color: '#dc2626', fontSize: 16, fontWeight: 600 }}>
-            ⚠️ Prooviversioon lõppenud! Vali pakett {graceDaysLeft} päeva jooksul või konto lukustatakse.
-          </p>
-        )}
-        
-        {currentPlan.status === 'LOCKED' && (
-          <p style={{ color: '#dc2626', fontSize: 16, fontWeight: 600 }}>
-            🔒 Konto on lukus. Vali pakett, et jätkata kasutamist.
-          </p>
-        )}
-        
-        {currentPlan.status === 'ACTIVE' && currentPlan.plan !== 'TRIAL' && (
-          <p style={{ color: '#16a34a', fontSize: 16 }}>
-            ✅ Aktiivne tellimus
-          </p>
-        )}
+        <h1 style={{ marginBottom: 8 }}>Arveldus ja paketid</h1>
+        <p style={{ color: '#666', marginBottom: 24 }}>
+          Halda oma SmartFollow CRM tellimust ja vali sobiv pakett
+        </p>
+
+        {/* Current Plan Status */}
+        <div style={{ 
+          marginBottom: 24, 
+          padding: 24, 
+          background: currentPlan.status === 'LOCKED' || currentPlan.status === 'GRACE' ? '#fee' : '#f0f9ff',
+          borderRadius: 12,
+          border: `2px solid ${currentPlan.status === 'LOCKED' || currentPlan.status === 'GRACE' ? '#dc2626' : '#3b82f6'}`
+        }}>
+          <h2 style={{ marginBottom: 8 }}>Praegune pakett: <strong>{currentPlan.planName}</strong></h2>
+          
+          {currentPlan.status === 'TRIAL' && (
+            <p style={{ color: '#3b82f6', fontSize: 16 }}>
+              🎉 Prooviversioon aktiivne • {trialDaysLeft} päeva jäänud
+            </p>
+          )}
+          
+          {currentPlan.status === 'GRACE' && (
+            <p style={{ color: '#dc2626', fontSize: 16, fontWeight: 600 }}>
+              ⚠️ Prooviversioon lõppenud! Vali pakett {graceDaysLeft} päeva jooksul või konto lukustatakse.
+            </p>
+          )}
+          
+          {currentPlan.status === 'LOCKED' && (
+            <p style={{ color: '#dc2626', fontSize: 16, fontWeight: 600 }}>
+              🔒 Konto on lukus. Vali pakett, et jätkata kasutamist.
+            </p>
+          )}
+          
+          {currentPlan.status === 'ACTIVE' && currentPlan.plan !== 'TRIAL' && (
+            <p style={{ color: '#16a34a', fontSize: 16 }}>
+              ✅ Aktiivne tellimus
+            </p>
+          )}
+        </div>
+
+        <h2 style={{ marginBottom: 16 }}>Saadaolevad paketid</h2>
       </div>
 
-      {/* Available Plans */}
-      <h2 style={{ marginBottom: 24 }}>Saadaolevad paketid</h2>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+      {/* Scrollable Plans Area */}
+      <div style={{ 
+        flex: 1,
+        overflowY: 'auto',
+        padding: '0 24px 24px 24px',
+        maxWidth: 1200,
+        margin: '0 auto',
+        width: '100%'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, paddingRight: 12 }}>
         {availablePlans.map((plan) => {
           const isCurrent = plan.id === currentPlan.plan;
           
@@ -226,6 +248,7 @@ const BillingPage: React.FC = () => {
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );
