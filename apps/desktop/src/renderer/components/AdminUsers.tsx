@@ -154,17 +154,34 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                       <button
                         onClick={() => setUserToResetPassword(user)}
-                        className="btn-action btn-secondary"
+                        className="btn-icon"
                         title="Lähtesta parool"
+                        style={{ 
+                          background: '#f0f0f0', 
+                          border: 'none', 
+                          borderRadius: '6px', 
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          fontSize: '18px'
+                        }}
                       >
-                        🔑 Lähtesta parool
+                        🔑
                       </button>
                       <button
                         onClick={() => setUserToDelete(user)}
-                        className="btn-action btn-danger"
+                        className="btn-icon btn-icon-danger"
                         title="Kustuta kasutaja"
+                        style={{ 
+                          background: '#fee', 
+                          border: 'none', 
+                          borderRadius: '6px', 
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          fontSize: '18px',
+                          color: '#dc3545'
+                        }}
                       >
-                        🗑️ Kustuta
+                        ✕
                       </button>
                     </div>
                   </td>
