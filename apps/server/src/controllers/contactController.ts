@@ -1,24 +1,25 @@
 // apps/server/src/controllers/contactController.ts
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../middleware/authMiddleware';
 import * as contactService from '../services/contactService';
 
-export const getAllContacts = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllContacts = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const contacts = await contactService.getAllContacts();
+    const contacts = await contactService.getAllContacts(req.accountId);
     res.json(contacts);
   } catch (error) {
     next(error);
   }
 };
 
-export const getContactById = async (req: Request, res: Response, next: NextFunction) => {
+export const getContactById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       return res.status(400).json({ message: 'Invalid contact id' });
     }
-    const contact = await contactService.getContactById(id);
+    const contact = await contactService.getContactById(id, req.accountId);
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
@@ -28,20 +29,20 @@ export const getContactById = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const getContactsByCompany = async (req: Request, res: Response, next: NextFunction) => {
+export const getContactsByCompany = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const companyId = Number(req.params.companyId);
     if (Number.isNaN(companyId)) {
       return res.status(400).json({ message: 'Invalid company id' });
     }
-    const contacts = await contactService.getContactsByCompany(companyId);
+    const contacts = await contactService.getContactsByCompany(companyId, req.accountId);
     res.json(contacts);
   } catch (error) {
     next(error);
   }
 };
 
-export const createContact = async (req: Request, res: Response, next: NextFunction) => {
+export const createContact = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { company_id, first_name, last_name, position, phone, email, notes } = req.body;
     if (!company_id || !first_name || !last_name) {
@@ -57,14 +58,14 @@ export const createContact = async (req: Request, res: Response, next: NextFunct
       phone,
       email,
       notes,
-    });
+    }, req.accountId);
     res.status(201).json(contact);
   } catch (error) {
     next(error);
   }
 };
 
-export const updateContact = async (req: Request, res: Response, next: NextFunction) => {
+export const updateContact = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
@@ -79,7 +80,7 @@ export const updateContact = async (req: Request, res: Response, next: NextFunct
       phone,
       email,
       notes,
-    });
+    }, req.accountId);
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
@@ -89,13 +90,13 @@ export const updateContact = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const deleteContact = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteContact = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       return res.status(400).json({ message: 'Invalid contact id' });
     }
-    const success = await contactService.deleteContact(id);
+    const success = await contactService.deleteContact(id, req.accountId);
     if (!success) {
       return res.status(404).json({ message: 'Contact not found' });
     }

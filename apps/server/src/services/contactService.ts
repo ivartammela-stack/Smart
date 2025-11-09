@@ -13,25 +13,36 @@ export interface ContactPayload {
   notes?: string | null;
 }
 
-export const getAllContacts = async (): Promise<Contact[]> => {
+export const getAllContacts = async (accountId?: number): Promise<Contact[]> => {
+  const where: any = {};
+  if (accountId) where.account_id = accountId;
+  
   return Contact.findAll({
+    where,
     order: [['created_at', 'DESC']],
   });
 };
 
-export const getContactById = async (id: number): Promise<Contact | null> => {
-  return Contact.findByPk(id);
+export const getContactById = async (id: number, accountId?: number): Promise<Contact | null> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  return Contact.findOne({ where });
 };
 
-export const getContactsByCompany = async (companyId: number): Promise<Contact[]> => {
+export const getContactsByCompany = async (companyId: number, accountId?: number): Promise<Contact[]> => {
+  const where: any = { company_id: companyId };
+  if (accountId) where.account_id = accountId;
+  
   return Contact.findAll({
-    where: { company_id: companyId },
+    where,
     order: [['created_at', 'DESC']],
   });
 };
 
 export const createContact = async (
-  payload: ContactPayload
+  payload: ContactPayload,
+  accountId?: number
 ): Promise<Contact> => {
   const data: ContactCreationAttributes = {
     company_id: payload.company_id,
@@ -41,6 +52,7 @@ export const createContact = async (
     phone: payload.phone ?? null,
     email: payload.email ?? null,
     notes: payload.notes ?? null,
+    account_id: accountId,
   };
   const contact = await Contact.create(data);
   return contact;
@@ -48,9 +60,13 @@ export const createContact = async (
 
 export const updateContact = async (
   id: number,
-  payload: Partial<ContactPayload>
+  payload: Partial<ContactPayload>,
+  accountId?: number
 ): Promise<Contact | null> => {
-  const contact = await Contact.findByPk(id);
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const contact = await Contact.findOne({ where });
   if (!contact) {
     return null;
   }
@@ -67,10 +83,11 @@ export const updateContact = async (
   return contact;
 };
 
-export const deleteContact = async (id: number): Promise<boolean> => {
-  const deletedCount = await Contact.destroy({
-    where: { id },
-  });
+export const deleteContact = async (id: number, accountId?: number): Promise<boolean> => {
+  const where: any = { id };
+  if (accountId) where.account_id = accountId;
+  
+  const deletedCount = await Contact.destroy({ where });
   return deletedCount > 0;
 };
 
