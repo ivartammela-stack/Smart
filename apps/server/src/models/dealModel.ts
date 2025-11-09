@@ -11,6 +11,7 @@ export interface DealAttributes {
   status: string; // DB uses VARCHAR, not ENUM
   notes?: string | null;
   created_by?: number | null;
+  account_id?: number;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -36,6 +37,7 @@ export class Deal
   public status!: string;
   public notes!: string | null;
   public created_by!: number | null;
+  public account_id?: number;
 
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
@@ -79,6 +81,14 @@ Deal.init(
     created_by: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'accounts',
+        key: 'id',
+      },
     },
     created_at: {
       type: DataTypes.DATE,

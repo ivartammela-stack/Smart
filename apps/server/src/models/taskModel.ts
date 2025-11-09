@@ -10,6 +10,7 @@ export interface TaskAttributes {
   due_date: Date | null;
   completed: boolean;
   assigned_to: number | null;
+  account_id?: number;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -39,6 +40,7 @@ export class Task
   public due_date!: Date | null;
   public completed!: boolean;
   public assigned_to!: number | null;
+  public account_id?: number;
 
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
@@ -98,6 +100,14 @@ Task.init(
       },
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL',
+    },
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'accounts',
+        key: 'id',
+      },
     },
     created_at: {
       type: DataTypes.DATE,

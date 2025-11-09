@@ -10,6 +10,7 @@ export class User extends Model {
   public password!: string;
   public role!: string;
   public plan!: UserPlan;
+  public account_id!: number;
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -43,6 +44,14 @@ User.init(
       type: DataTypes.STRING(20),
       allowNull: false,
       defaultValue: 'FREE',
+    },
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // Temporarily nullable for migration
+      references: {
+        model: 'accounts',
+        key: 'id',
+      },
     },
   },
   {

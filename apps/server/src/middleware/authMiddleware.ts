@@ -9,7 +9,9 @@ export interface AuthRequest extends Request {
     email: string;
     username: string;
     role: string;
+    account_id?: number;
   };
+  accountId?: number; // Effective account ID (for filtering)
 }
 
 export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -21,7 +23,16 @@ export const authenticateJWT = (req: AuthRequest, res: Response, next: NextFunct
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    req.user = decoded; // lisame req.user
+    req.user = decoded;
+    
+    // Set effective account ID
+    // System admin can override with x-account-id header
+    if (req.user?.role === 'system_admin' && req.headers['x-account-id']) {
+      req.accountId = Number(req.headers['x-account-id']);
+    } else {
+      req.accountId = req.user?.account_id;
+    }
+    
     next();
   } catch (err) {
     return res.status(403).json({ success: false, message: 'Invalid token' });

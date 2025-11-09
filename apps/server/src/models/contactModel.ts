@@ -10,6 +10,7 @@ export interface ContactAttributes {
   phone?: string | null;
   email?: string | null;
   notes?: string | null;
+  account_id?: number;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -37,6 +38,7 @@ export class Contact
   public phone!: string | null;
   public email!: string | null;
   public notes!: string | null;
+  public account_id?: number;
 
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
@@ -86,6 +88,14 @@ Contact.init(
     notes: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'accounts',
+        key: 'id',
+      },
     },
     created_at: {
       type: DataTypes.DATE,

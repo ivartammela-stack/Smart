@@ -13,6 +13,7 @@ interface CompanyAttributes {
   industry?: string;
   notes?: string;
   created_by?: number;
+  account_id?: number;
 }
 
 interface CompanyCreationAttributes extends Optional<CompanyAttributes, 'id'> {}
@@ -30,6 +31,7 @@ export class Company extends Model<CompanyAttributes, CompanyCreationAttributes>
   public industry?: string;
   public notes?: string;
   public created_by?: number;
+  public account_id?: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -59,6 +61,14 @@ Company.init(
     industry: DataTypes.STRING,
     notes: DataTypes.TEXT,
     created_by: DataTypes.INTEGER,
+    account_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true, // Temporarily nullable for migration
+      references: {
+        model: 'accounts',
+        key: 'id',
+      },
+    },
   },
   {
     sequelize,

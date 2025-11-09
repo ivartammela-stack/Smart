@@ -9,9 +9,9 @@ import {
 } from '../services/companyService';
 
 // Get all companies
-export const getCompanies = async (_req: Request, res: Response) => {
+export const getCompanies = async (req: AuthRequest, res: Response) => {
   try {
-    const companies = await getAllCompanies();
+    const companies = await getAllCompanies(req.accountId);
     res.status(200).json({
       success: true,
       count: companies.length,
@@ -24,10 +24,10 @@ export const getCompanies = async (_req: Request, res: Response) => {
 };
 
 // Get single company
-export const getCompany = async (req: Request, res: Response) => {
+export const getCompany = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const company = await getCompanyById(id);
+    const company = await getCompanyById(id, req.accountId);
     
     if (!company) {
       return res.status(404).json({
@@ -49,13 +49,13 @@ export const getCompany = async (req: Request, res: Response) => {
 // Create company
 export const createNewCompany = async (req: AuthRequest, res: Response) => {
   try {
-    // Add created_by from authenticated user
+    // Add created_by and account_id from authenticated user
     const companyData = {
       ...req.body,
       created_by: req.user?.id,
     };
     
-    const company = await createCompany(companyData);
+    const company = await createCompany(companyData, req.accountId);
     res.status(201).json({
       success: true,
       message: 'Company created successfully',
@@ -71,7 +71,7 @@ export const createNewCompany = async (req: AuthRequest, res: Response) => {
 export const updateExistingCompany = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const company = await updateCompany(id, req.body);
+    const company = await updateCompany(id, req.body, req.accountId);
     
     if (!company) {
       return res.status(404).json({
@@ -95,7 +95,7 @@ export const updateExistingCompany = async (req: AuthRequest, res: Response) => 
 export const removeCompany = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const deleted = await deleteCompany(id);
+    const deleted = await deleteCompany(id, req.accountId);
     
     if (!deleted) {
       return res.status(404).json({
