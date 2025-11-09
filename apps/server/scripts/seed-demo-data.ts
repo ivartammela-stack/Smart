@@ -1,4 +1,4 @@
-import { sequelize } from '../src/config/database';
+import sequelize from '../src/config/database';
 import { User, Company, Contact, Deal, Task } from '../src/models';
 import bcrypt from 'bcrypt';
 
@@ -44,7 +44,6 @@ async function seedDemoData() {
     const acmeCorp = await Company.create({
       name: 'ACME Corporation OÜ',
       registration_code: '12345678',
-      vat_number: 'EE102345678',
       address: 'Narva mnt 7, Tallinn 10117',
       phone: '+372 5123 4567',
       email: 'info@acme.ee',
@@ -56,7 +55,6 @@ async function seedDemoData() {
     const techSolutions = await Company.create({
       name: 'TechSolutions AS',
       registration_code: '87654321',
-      vat_number: 'EE108765432',
       address: 'Pärnu mnt 15, Tallinn 10141',
       phone: '+372 5234 5678',
       email: 'kontakt@techsolutions.ee',
@@ -68,7 +66,6 @@ async function seedDemoData() {
     const marketingPro = await Company.create({
       name: 'MarketingPro OÜ',
       registration_code: '11223344',
-      vat_number: 'EE101122334',
       address: 'Viru väljak 2, Tallinn 10111',
       phone: '+372 5345 6789',
       email: 'info@marketingpro.ee',
@@ -186,7 +183,7 @@ async function seedDemoData() {
       assigned_to: adminUser!.id,
       title: 'Helista Jüri Tammele',
       description: 'Kinnita esimese kohtumise aeg ja arutle CRM vajaduste üle',
-      due_date: today.toISOString().split('T')[0],
+      due_date: today,
       completed: false,
     });
 
@@ -196,7 +193,7 @@ async function seedDemoData() {
       assigned_to: adminUser!.id,
       title: 'Saada pakkumine TechSolutions-ile',
       description: 'Koosta detailne pakkumine testimise automatiseerimise kohta',
-      due_date: today.toISOString().split('T')[0],
+      due_date: today,
       completed: false,
     });
 
@@ -206,7 +203,7 @@ async function seedDemoData() {
       assigned_to: adminUser!.id,
       title: 'Koosta veebilehe redesigni plaan',
       description: 'Ettevalmistus projektiga alustamiseks',
-      due_date: tomorrow.toISOString().split('T')[0],
+      due_date: tomorrow,
       completed: false,
     });
 
@@ -216,7 +213,7 @@ async function seedDemoData() {
       assigned_to: adminUser!.id,
       title: 'Kohtumine ACME projektijuhiga',
       description: 'Arutelu tehniliste nõuete üle',
-      due_date: nextWeek.toISOString().split('T')[0],
+      due_date: nextWeek,
       completed: false,
     });
 
@@ -226,7 +223,7 @@ async function seedDemoData() {
       assigned_to: adminUser!.id,
       title: 'Follow-up kõne Liisa Lepaga',
       description: 'Tänan projekti võitmise eest',
-      due_date: today.toISOString().split('T')[0],
+      due_date: today,
       completed: true,
     });
 
