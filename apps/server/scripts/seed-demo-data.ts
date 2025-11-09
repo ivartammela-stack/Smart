@@ -43,7 +43,7 @@ async function seedDemoData() {
     
     const acmeCorp = await Company.create({
       name: 'ACME Corporation OÜ',
-      registry_code: '12345678',
+      registration_code: '12345678',
       vat_number: 'EE102345678',
       address: 'Narva mnt 7, Tallinn 10117',
       phone: '+372 5123 4567',
@@ -55,7 +55,7 @@ async function seedDemoData() {
 
     const techSolutions = await Company.create({
       name: 'TechSolutions AS',
-      registry_code: '87654321',
+      registration_code: '87654321',
       vat_number: 'EE108765432',
       address: 'Pärnu mnt 15, Tallinn 10141',
       phone: '+372 5234 5678',
@@ -67,7 +67,7 @@ async function seedDemoData() {
 
     const marketingPro = await Company.create({
       name: 'MarketingPro OÜ',
-      registry_code: '11223344',
+      registration_code: '11223344',
       vat_number: 'EE101122334',
       address: 'Viru väljak 2, Tallinn 10111',
       phone: '+372 5345 6789',
@@ -84,7 +84,8 @@ async function seedDemoData() {
     
     await Contact.create({
       company_id: acmeCorp.id,
-      name: 'Jüri Tamm',
+      first_name: 'Jüri',
+      last_name: 'Tamm',
       position: 'Tegevjuht',
       email: 'juri.tamm@acme.ee',
       phone: '+372 5123 4567',
@@ -93,7 +94,8 @@ async function seedDemoData() {
 
     await Contact.create({
       company_id: acmeCorp.id,
-      name: 'Kadri Kask',
+      first_name: 'Kadri',
+      last_name: 'Kask',
       position: 'Projektijuht',
       email: 'kadri.kask@acme.ee',
       phone: '+372 5123 4568',
@@ -102,7 +104,8 @@ async function seedDemoData() {
 
     await Contact.create({
       company_id: techSolutions.id,
-      name: 'Marten Mägi',
+      first_name: 'Marten',
+      last_name: 'Mägi',
       position: 'CTO',
       email: 'marten.magi@techsolutions.ee',
       phone: '+372 5234 5679',
@@ -111,7 +114,8 @@ async function seedDemoData() {
 
     await Contact.create({
       company_id: marketingPro.id,
-      name: 'Liisa Lepp',
+      first_name: 'Liisa',
+      last_name: 'Lepp',
       position: 'Müügijuht',
       email: 'liisa.lepp@marketingpro.ee',
       phone: '+372 5345 6790',
@@ -120,11 +124,12 @@ async function seedDemoData() {
 
     await Contact.create({
       company_id: marketingPro.id,
-      name: 'Peeter Poom',
+      first_name: 'Peeter',
+      last_name: 'Poom',
       position: 'Creative Director',
       email: 'peeter.poom@marketingpro.ee',
       phone: '+372 5345 6791',
-      notes: 'Loominguline juht, nõuab kvaliteeti',
+      notes: 'Loominguline juht, nõuab kvaliteetti',
     });
 
     console.log('✅ 5 demo contacts created');
