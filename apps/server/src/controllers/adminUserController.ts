@@ -89,6 +89,84 @@ export const createUser = async (req: AuthRequest, res: Response) => {
 };
 
 /**
+ * DELETE /admin/users/:id
+ * Delete a user (admin only)
+ */
+export const deleteUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Prevent admin from deleting themselves
+    if (req.user?.id === parseInt(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete your own account',
+      });
+    }
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    await user.destroy();
+
+    res.json({
+      success: true,
+      message: 'User deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete user',
+    });
+  }
+};
+
+/**
+ * PUT /admin/users/:id/reset-password
+ * Reset user password (admin only)
+ * Generates new temporary password
+ */
+export const resetPassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Generate new temporary password
+    const tempPassword = generateTemporaryPassword();
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    await user.update({ password: hashedPassword });
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully',
+      temporaryPassword: tempPassword, // ⚠️ Show only once!
+    });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password',
+    });
+  }
+};
+
+/**
  * Generate a cryptographically secure random temporary password
  */
 function generateTemporaryPassword(): string {

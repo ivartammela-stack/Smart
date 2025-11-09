@@ -21,6 +21,8 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ username: '', email: '', role: 'user' });
   const [temporaryPassword, setTemporaryPassword] = useState('');
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [userToResetPassword, setUserToResetPassword] = useState<User | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -68,6 +70,33 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
     setError('');
   };
 
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    try {
+      await api.delete(`/admin/users/${userToDelete.id}`);
+      setUserToDelete(null);
+      fetchUsers(); // Refresh list
+    } catch (err) {
+      setError('Kasutaja kustutamine ebaõnnestus');
+      console.error(err);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!userToResetPassword) return;
+
+    try {
+      const data = await api.put(`/admin/users/${userToResetPassword.id}/reset-password`, {});
+      if (data.success && data.temporaryPassword) {
+        setTemporaryPassword(data.temporaryPassword);
+      }
+    } catch (err) {
+      setError('Parooli lähtestamine ebaõnnestus');
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return <div className="loading-container"><p>Kasutajate laadimine...</p></div>;
   }
@@ -99,12 +128,13 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
               <th>E-mail</th>
               <th>Roll</th>
               <th>Loodud</th>
+              <th>Toimingud</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={5} className="empty-state">
+                <td colSpan={6} className="empty-state">
                   Kasutajaid ei leitud.
                 </td>
               </tr>
@@ -120,12 +150,106 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onBack }) => {
                     </span>
                   </td>
                   <td>{new Date(user.created_at).toLocaleString('et-EE')}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                      <button
+                        onClick={() => setUserToResetPassword(user)}
+                        className="btn-action btn-secondary"
+                        title="Lähtesta parool"
+                      >
+                        🔑 Lähtesta parool
+                      </button>
+                      <button
+                        onClick={() => setUserToDelete(user)}
+                        className="btn-action btn-danger"
+                        title="Kustuta kasutaja"
+                      >
+                        🗑️ Kustuta
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {userToDelete && (
+        <div className="modal-overlay" onClick={() => setUserToDelete(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>⚠️ Kustuta kasutaja</h2>
+            <p>
+              Kas oled kindel, et soovid kustutada kasutaja <strong>{userToDelete.username}</strong> ({userToDelete.email})?
+            </p>
+            <p className="warning-text">
+              Seda toimingut ei saa tagasi võtta!
+            </p>
+            <div className="form-actions">
+              <button onClick={handleDeleteUser} className="btn-danger">
+                🗑️ Jah, kustuta
+              </button>
+              <button onClick={() => setUserToDelete(null)} className="btn-secondary">
+                Tühista
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {userToResetPassword && (
+        <div className="modal-overlay" onClick={() => { setUserToResetPassword(null); setTemporaryPassword(''); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>🔑 Lähtesta parool</h2>
+            
+            {temporaryPassword ? (
+              <div className="temp-password-display">
+                <div className="success-message">
+                  ✅ Parool lähtest edukalt kasutajale: <strong>{userToResetPassword.username}</strong>
+                </div>
+                <div className="temp-password-box">
+                  <p><strong>Uus ajutine parool:</strong></p>
+                  <div className="password-value">{temporaryPassword}</div>
+                  <p className="warning-text">
+                    ⚠️ Kopeeri see parool ja anna kasutajale. Seda ei kuvata uuesti!
+                  </p>
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(temporaryPassword)}
+                    className="btn-secondary"
+                  >
+                    📋 Kopeeri parool
+                  </button>
+                </div>
+                <button 
+                  onClick={() => { setUserToResetPassword(null); setTemporaryPassword(''); }} 
+                  className="btn-primary"
+                >
+                  Sulge
+                </button>
+              </div>
+            ) : (
+              <>
+                <p>
+                  Kas oled kindel, et soovid lähtestada parooli kasutajale <strong>{userToResetPassword.username}</strong> ({userToResetPassword.email})?
+                </p>
+                <p className="info-text">
+                  Genereeritakse uus ajutine parool, mille saad kasutajale edastada.
+                </p>
+                <div className="form-actions">
+                  <button onClick={handleResetPassword} className="btn-primary">
+                    🔑 Lähtesta parool
+                  </button>
+                  <button onClick={() => setUserToResetPassword(null)} className="btn-secondary">
+                    Tühista
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Create User Modal */}
       {showCreateModal && (
