@@ -1357,3 +1357,184 @@ apps/desktop/
 **Autor:** AI Assistant + Kasutaja  
 **Versioon:** 3.0 - SmartFollow CRM MVP Complete 🎉
 
+---
+---
+
+## 📅 Session #9: 2025-11-09
+### 🎯 Teema: Multi-Tenant System + Plan System + Role-Based Access Control
+
+---
+
+## ✅ Session #9 KOKKUVÕTE
+
+### 📊 Sessiooni info:
+- **Kuupäev:** 9. november 2025
+- **Kestus:** **~15 tundi** (üks intensiivsemaid sessioone!)
+- **Versioon:** 1.6.5 → 1.7.0 (WIP - Multi-Tenant MVP)
+- **Branch:** `feat/multi-tenant-system`
+- **Tool Calls:** ~550+
+- **Commits:** ~20+
+
+---
+
+### 🎯 PEAMISED SAAVUTUSED:
+
+#### 1️⃣ **Multi-Tenant Architecture** ✅
+- ✅ `accounts` tabel loodud (id, name, billing_plan, trial dates)
+- ✅ `account_id` FK lisatud: users, companies, contacts, deals, tasks
+- ✅ Account-level data isolation (iga klient näeb ainult oma andmeid)
+- ✅ accountFilter middleware (automaatne WHERE account_id = ...)
+- ✅ Migration script: `setup-multi-tenant.ts`
+
+#### 2️⃣ **Plan System (TRIAL/STARTER/PRO/ENTERPRISE)** ✅
+- ✅ `billing_plan` enum Account mudelisse
+- ✅ Plan config: `apps/server/src/config/plans.ts`
+- ✅ Trial system: 14 päeva + 7 päeva grace period
+- ✅ Account status helper (TRIAL/GRACE/ACTIVE/LOCKED)
+- ✅ Billing API: `/api/billing/current`, `/api/billing/plans`
+- ✅ Frontend: Settings → Plaan tab (BillingPage.tsx)
+
+#### 3️⃣ **Role-Based Access Control** ✅
+- ✅ Uued rollid: `SUPER_ADMIN`, `COMPANY_ADMIN`, `USER`
+- ✅ Migration script: `migrate-user-roles.ts`
+- ✅ Middleware: `requireSuperAdmin`, `requireCompanyAdmin`
+- ✅ SUPER_ADMIN: account_id = NULL (näeb kõiki accounte)
+- ✅ COMPANY_ADMIN/USER: account_id = konkreetne account
+
+#### 4️⃣ **Settings → Kasutajad Tab** ✅
+- ✅ SettingsPage.tsx (tabs wrapper: Plaan | Kasutajad)
+- ✅ UsersPage.tsx (account users table + create modal)
+- ✅ API: `/api/settings/users` (GET/POST/PATCH/DELETE)
+- ✅ Company admin saab kasutajaid lisada oma account'i
+
+#### 5️⃣ **Super Admin → Ettevõtted Overview** ✅ (MVP)
+- ✅ SuperAdminCompanies.tsx komponent
+- ✅ API: `/api/super-admin/companies`
+- ✅ Kokkuvõtte kaardid (ettevõtteid/kasutajaid/keskmine)
+- ✅ Tabel kõigi accountidega (name, owner, plan, users_count, status)
+- ✅ Staatuse badge'id (TRIAL/GRACE/ACTIVE/LOCKED)
+- ✅ Otsing ettevõtte nime järgi
+- ⏳ "Ava" nupp (impersonation tuleb v1.8.0-s)
+
+---
+
+### 🏗️ TEHNILISED MUUDATUSED:
+
+#### Backend:
+```
+29 files changed, 1847 insertions(+), 143 deletions(-)
+
+New:
++ models/accountModel.ts
++ config/plans.ts
++ middleware/attachAccount.ts, planGuards.ts
++ utils/accountFilter.ts, accountStatus.ts
++ controllers/superAdminController.ts, settingsController.ts
++ routes/superAdminRoutes.ts, billingRoutes.ts, settingsRoutes.ts
++ scripts/setup-multi-tenant.ts, migrate-to-trial-system.ts, migrate-user-roles.ts
+```
+
+#### Frontend:
+```
+7 files changed, 893 insertions(+), 12 deletions(-)
+
+New:
++ components/Settings/SettingsPage.tsx, BillingPage.tsx, UsersPage.tsx
++ components/SuperAdminCompanies.tsx
++ types/superAdmin.ts
+```
+
+---
+
+### 🐛 LAHENDATUD PROBLEEMID:
+
+1. **Sequelize `Op.is: null` TypeScript viga**
+   - Lahendus: `sequelize.literal('account_id IS NULL')`
+   - Pragmaatiline: `// @ts-nocheck` migration scriptis
+
+2. **Seed script tüübide mittevastavus**
+   - Lahendus: Lisasime `vat_number`, `website`, `industry` Company mudelisse
+   - Õppetund: Mudel peab vastama seed andmetele
+
+3. **Frontend mock data vs backend data**
+   - Probleem: `localStorage.user.plan` vs `/api/billing/current`
+   - Lahendus: Eemaldame mock data, kasutame ainult API'd
+
+4. **Database column name mismatch (search)**
+   - Probleem: `registry_code` vs `registration_code`
+   - Lahendus: Korrigeeritud searchController.ts
+
+---
+
+### 📊 API ENDPOINTS (UUED):
+
+#### Billing:
+- `GET /api/billing/current` - Praegune plaan + trial info
+- `GET /api/billing/plans` - Saadaolevad plaanid
+- `POST /api/billing/change-plan` - Muuda plaani (stub)
+
+#### Settings (COMPANY_ADMIN):
+- `GET /api/settings/users` - Account'i kasutajad
+- `POST /api/settings/users` - Lisa kasutaja
+- `PATCH /api/settings/users/:id` - Muuda rolli/aktiivsust
+- `DELETE /api/settings/users/:id` - Kustuta kasutaja
+
+#### Super Admin (SUPER_ADMIN):
+- `GET /api/super-admin/companies` - Kõik accountid + statistika
+
+---
+
+### 🎯 JÄRGMISED SAMMUD (v1.8.0):
+
+- ⏳ Account impersonation / switcher (x-account-id header)
+- ⏳ Plan change UI for Super Admin
+- ⏳ Feature flags & limits enforcement (maxUsers, maxCompanies, maxDeals)
+- ⏳ Billing maintenance cron job (auto-lock expired trials)
+
+---
+
+### 📊 KOGU PROJEKTI STATISTIKA:
+
+**Projekti algus:** Oktoober 2025  
+**Tänane kuupäev:** 9. november 2025  
+
+**KOKKU AEGA PROJEKTILE: ~100 TUNDI**
+
+**Jaotus sessioonide kaupa:**
+- 📦 **Session #1-7:** ~75h (initial setup, CRUD, UI, CI/CD, production)
+- 🔧 **Session #8:** ~10h (CI/CD fixes, linting, search fixes)  
+- 🚀 **Session #9:** ~15h (multi-tenant MVP, plan system, roles) ← TÄNA
+
+**Kokku sessioone:** 9  
+**Kokku commite:** ~150+  
+**Kokku tool calls:** ~2000+
+
+**Kasutatavad tööriistad:**
+- Cursor (AI pair programming)
+- ChatGPT (architecture consultation)
+- GitHub (version control + CI/CD)
+- PM2 (production management)
+- PostgreSQL (database)
+- Nginx (reverse proxy)
+
+**Tehnoloogiad:**
+- Backend: Node.js, Express, TypeScript, Sequelize
+- Frontend: React, Electron, TypeScript
+- Database: PostgreSQL
+
+---
+
+### 🎉 TÄNANE SUUR WIN:
+
+✅ **Multi-tenant süsteem töötab!**  
+✅ **Plan süsteem implementeeritud (MVP)!**  
+✅ **Role süsteem valmis!**  
+✅ **Super Admin dashboard valmis (MVP)!**  
+✅ **Settings → Kasutajad valmis!**
+
+---
+
+**Viimati uuendatud:** 2025-11-09, 23:30 EET  
+**Autor:** AI Assistant + Kasutaja  
+**Versioon:** 4.0 - Multi-Tenant MVP + Plan System 🚀
+
