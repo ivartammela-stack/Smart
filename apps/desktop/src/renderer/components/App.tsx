@@ -6,7 +6,7 @@ import Contacts from './Contacts';
 import Deals from './Deals';
 import TasksToday from './TasksToday';
 import AdminUsers from './AdminUsers';
-import BillingPage from './Settings/BillingPage';
+import SettingsPage from './Settings/SettingsPage';
 import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
@@ -138,7 +138,7 @@ const App: React.FC = () => {
                     <span>Ülesanded</span>
                   </button>
 
-                  {user?.role === 'admin' && (
+                  {(user?.role === 'COMPANY_ADMIN' || user?.role === 'SUPER_ADMIN') && (
                     <button
                       className={'sf-nav-item ' + (currentView === 'admin-users' ? 'sf-nav-item-active' : '')}
                       onClick={() => setCurrentView('admin-users')}
@@ -203,7 +203,7 @@ const App: React.FC = () => {
                 <AdminUsers onBack={() => setCurrentView('dashboard')} />
               )}
               {currentView === 'settings' && (
-                <BillingPage />
+                <SettingsPage />
               )}
             </main>
 

@@ -106,7 +106,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
         <div className="right-avatar">{initials}</div>
         <div className="right-name">{user?.username || 'Kasutaja'}</div>
         <div className="right-role">
-          {user?.role === 'admin' ? 'Administraator' : 'SmartFollow kasutaja'}
+          {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : user?.role === 'COMPANY_ADMIN' ? 'Ettevõtte Admin' : 'SmartFollow kasutaja'}
         </div>
         
         {/* Plan Badge */}
