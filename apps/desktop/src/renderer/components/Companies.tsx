@@ -256,7 +256,17 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
                 </tr>
               ) : (
                 companies.map((company) => (
-                  <tr key={company.id}>
+                  <tr 
+                    key={company.id}
+                    onClick={(e) => {
+                      // Don't trigger row click if clicking on action buttons
+                      if ((e.target as HTMLElement).closest('button')) return;
+                      handleEdit(company);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
                     <td>
                       <div className="company-name">{company.name}</div>
                       {company.address && (
@@ -268,13 +278,19 @@ const Companies: React.FC<CompaniesProps> = ({ onBack }) => {
                     <td><span className="company-meta">{company.email || '—'}</span></td>
                     <td className="companies-actions-cell">
                       <button
-                        onClick={() => handleEdit(company)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(company);
+                        }}
                         className="companies-action-button"
                       >
                         Muuda
                       </button>
                       <button
-                        onClick={() => handleDelete(company.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(company.id);
+                        }}
                         className="companies-action-button"
                       >
                         Kustuta

@@ -5,9 +5,12 @@ interface CompanyAttributes {
   id: number;
   name: string;
   registration_code: string;
+  vat_number?: string;
   phone?: string;
   email?: string;
   address?: string;
+  website?: string;
+  industry?: string;
   notes?: string;
   created_by?: number;
 }
@@ -19,9 +22,12 @@ export class Company extends Model<CompanyAttributes, CompanyCreationAttributes>
   public id!: number;
   public name!: string;
   public registration_code!: string;
+  public vat_number?: string;
   public phone?: string;
   public email?: string;
   public address?: string;
+  public website?: string;
+  public industry?: string;
   public notes?: string;
   public created_by?: number;
 
@@ -45,9 +51,12 @@ Company.init(
       allowNull: false,
       unique: true,
     },
+    vat_number: DataTypes.STRING,
     phone: DataTypes.STRING,
     email: DataTypes.STRING,
     address: DataTypes.STRING,
+    website: DataTypes.STRING,
+    industry: DataTypes.STRING,
     notes: DataTypes.TEXT,
     created_by: DataTypes.INTEGER,
   },

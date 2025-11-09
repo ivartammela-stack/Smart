@@ -1,0 +1,62 @@
+═══════════════════════════════════════════════════════════════
+  ⚠️  SERVER VAJAB UUENDAMIST! ⚠️
+═══════════════════════════════════════════════════════════════
+
+PROBLEEM:
+Desktop app saab 403 Forbidden errors kuna server on vana versioon!
+
+ENDPOINT'ID PUUDUVAD SERVERIS:
+  - /api/reports/summary
+  - /api/admin/users
+
+═══════════════════════════════════════════════════════════════
+  🚀 KIIRE LAHENDUS (30 sekundit)
+═══════════════════════════════════════════════════════════════
+
+1. AVI SSH ÜHENDUS:
+
+ssh root@185.170.198.120
+
+
+2. KOPEERI JA KÄIVITA ÜKS KÄSK:
+
+cd ~/smartfollow && git pull origin main && cd apps/server && npm ci && npm run build && pm2 restart smartfollow-server
+
+
+3. KONTROLLI ET SERVER KÄIVITUS:
+
+pm2 logs smartfollow-server --lines 5
+
+
+PEAKS NÄGEMA:
+  ✅ Database connection established successfully.
+  ✅ Server is running on http://localhost:3000
+
+
+4. SULGE SSH:
+
+exit
+
+
+═══════════════════════════════════════════════════════════════
+
+PÄRAST DEPLOY'I:
+
+1. Sulge SmartFollow desktop app (täielikult)
+2. Ava uuesti
+3. Logi sisse uuesti
+4. Kõik peaks töötama! ✅
+
+═══════════════════════════════════════════════════════════════
+
+KUI MIDAGI EI TOIMI:
+
+pm2 logs smartfollow-server --lines 50
+
+
+VÕI:
+
+curl http://185.170.198.120/health
+
+═══════════════════════════════════════════════════════════════
+

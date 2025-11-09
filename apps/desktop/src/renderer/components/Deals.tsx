@@ -240,7 +240,16 @@ const Deals: React.FC<DealsProps> = ({ onBack }) => {
               </tr>
             ) : (
               filteredDeals.map((deal) => (
-                <tr key={deal.id}>
+                <tr 
+                  key={deal.id}
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    handleEdit(deal);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
                   <td>
                     <div className="deal-title">{deal.title}</div>
                     {deal.notes && (
@@ -271,13 +280,19 @@ const Deals: React.FC<DealsProps> = ({ onBack }) => {
                   <td className="deals-actions-cell">
                     <button
                       className="deals-action-button"
-                      onClick={() => handleEdit(deal)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(deal);
+                      }}
                     >
                       Muuda
                     </button>
                     <button
                       className="deals-action-button"
-                      onClick={() => handleDelete(deal.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(deal.id);
+                      }}
                     >
                       Kustuta
                     </button>

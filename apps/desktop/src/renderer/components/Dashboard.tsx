@@ -11,6 +11,27 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
 
+  const handleSearchResultClick = (result: any) => {
+    const type = result.type.toLowerCase();
+    
+    switch (type) {
+      case 'company':
+        onNavigate('companies');
+        break;
+      case 'contact':
+        onNavigate('contacts');
+        break;
+      case 'deal':
+        onNavigate('deals');
+        break;
+      case 'task':
+        onNavigate('tasks-today');
+        break;
+      default:
+        console.warn('Unknown search result type:', result.type);
+    }
+  };
+
   useEffect(() => {
     // Fetch today's tasks
     const fetchTodayTasks = async () => {
@@ -123,7 +144,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           </p>
         </div>
         <div className="dashboard-header-right">
-          <SearchBar />
+          <SearchBar onResultClick={handleSearchResultClick} />
         </div>
       </header>
 
