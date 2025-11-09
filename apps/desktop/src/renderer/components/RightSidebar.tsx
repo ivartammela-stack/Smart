@@ -114,7 +114,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ user, stats, onNavigate }) 
           {getPlanBadge(user?.plan || 'FREE')}
         </div>
 
-        <div className="right-location" style={{ marginTop: '12px' }}>CRM versioon 1.6.4</div>
+        <div className="right-location" style={{ marginTop: '12px' }}>CRM versioon 1.6.5</div>
         
         {/* Change Password Button - New Style */}
         <button 
