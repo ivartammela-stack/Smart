@@ -30,12 +30,13 @@ export const globalSearch = async (req: Request, res: Response) => {
     const contacts: any[] = await Contact.findAll({
       where: {
         [Op.or]: [
-          { name: { [Op.iLike]: searchTerm } },
+          { first_name: { [Op.iLike]: searchTerm } },
+          { last_name: { [Op.iLike]: searchTerm } },
           { email: { [Op.iLike]: searchTerm } },
           { phone: { [Op.iLike]: searchTerm } },
         ],
       } as any,
-      include: [{ model: Company, attributes: ['name'] }],
+      include: [{ model: Company, as: 'company', attributes: ['name'] }],
       limit: 5,
     });
 
@@ -44,7 +45,7 @@ export const globalSearch = async (req: Request, res: Response) => {
       where: {
         title: { [Op.iLike]: searchTerm },
       },
-      include: [{ model: Company, attributes: ['name'] }],
+      include: [{ model: Company, as: 'company', attributes: ['name'] }],
       limit: 5,
     });
 
@@ -72,8 +73,8 @@ export const globalSearch = async (req: Request, res: Response) => {
       results.push({
         type: 'contact',
         id: c.id,
-        title: c.name,
-        subtitle: c.Company?.name || c.email || undefined,
+        title: `${c.first_name} ${c.last_name}`,
+        subtitle: c.company?.name || c.email || undefined,
       });
     });
 
@@ -82,7 +83,7 @@ export const globalSearch = async (req: Request, res: Response) => {
         type: 'deal',
         id: d.id,
         title: d.title,
-        subtitle: d.Company?.name || `${d.value} €` || undefined,
+        subtitle: d.company?.name || `${d.value} €` || undefined,
       });
     });
 
