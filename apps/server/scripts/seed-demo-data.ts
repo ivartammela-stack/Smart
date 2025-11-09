@@ -52,6 +52,7 @@ async function seedDemoData() {
       website: 'https://acme.ee',
       industry: 'IT teenused',
       notes: 'Suur IT ettevõte, mis pakub tarkvaraarendust ja konsultatsiooni',
+      account_id: 1,
     });
 
     const techSolutions = await Company.create({
@@ -64,6 +65,7 @@ async function seedDemoData() {
       website: 'https://techsolutions.ee',
       industry: 'Tehnoloogia',
       notes: 'Keskendub tarkvara testimisele ja kvaliteedile',
+      account_id: 1,
     });
 
     const marketingPro = await Company.create({
@@ -76,6 +78,7 @@ async function seedDemoData() {
       website: 'https://marketingpro.ee',
       industry: 'Turundus',
       notes: 'Digitaalturunduse agentuur',
+      account_id: 1,
     });
 
     console.log('✅ 3 demo companies created');
@@ -91,6 +94,7 @@ async function seedDemoData() {
       email: 'juri.tamm@acme.ee',
       phone: '+372 5123 4567',
       notes: 'Otsustaja, sõbralik ja avatud uutele ideedele',
+      account_id: 1,
     });
 
     await Contact.create({
@@ -101,6 +105,7 @@ async function seedDemoData() {
       email: 'kadri.kask@acme.ee',
       phone: '+372 5123 4568',
       notes: 'Vastutab tehniliste projektide eest',
+      account_id: 1,
     });
 
     await Contact.create({
@@ -111,6 +116,7 @@ async function seedDemoData() {
       email: 'marten.magi@techsolutions.ee',
       phone: '+372 5234 5679',
       notes: 'Tehniline juht, huvitatud uutest tehnoloogiatest',
+      account_id: 1,
     });
 
     await Contact.create({
@@ -121,6 +127,7 @@ async function seedDemoData() {
       email: 'liisa.lepp@marketingpro.ee',
       phone: '+372 5345 6790',
       notes: 'Aktiivne ja energiline, otsib pidevalt uusi võimalusi',
+      account_id: 1,
     });
 
     await Contact.create({
@@ -131,6 +138,7 @@ async function seedDemoData() {
       email: 'peeter.poom@marketingpro.ee',
       phone: '+372 5345 6791',
       notes: 'Loominguline juht, nõuab kvaliteetti',
+      account_id: 1,
     });
 
     console.log('✅ 5 demo contacts created');
@@ -144,6 +152,7 @@ async function seedDemoData() {
       value: 25000,
       status: 'new',
       notes: 'ACME soovib uut CRM lahendust. Esimene kohtumine 15. novembril.',
+      account_id: 1,
     });
 
     await Deal.create({
@@ -152,6 +161,7 @@ async function seedDemoData() {
       value: 15000,
       status: 'new',
       notes: 'TechSolutions vajab automatiseeritud testimise lahendust',
+      account_id: 1,
     });
 
     await Deal.create({
@@ -160,6 +170,7 @@ async function seedDemoData() {
       value: 8500,
       status: 'won',
       notes: 'Projekt võidetud! Alustame detsembris.',
+      account_id: 1,
     });
 
     await Deal.create({
@@ -168,6 +179,7 @@ async function seedDemoData() {
       value: 3500,
       status: 'lost',
       notes: 'Klient valis teise pakkuja',
+      account_id: 1,
     });
 
     console.log('✅ 4 demo deals created');
@@ -189,6 +201,7 @@ async function seedDemoData() {
       description: 'Kinnita esimese kohtumise aeg ja arutle CRM vajaduste üle',
       due_date: today,
       completed: false,
+      account_id: 1,
     });
 
     await Task.create({
@@ -199,6 +212,7 @@ async function seedDemoData() {
       description: 'Koosta detailne pakkumine testimise automatiseerimise kohta',
       due_date: today,
       completed: false,
+      account_id: 1,
     });
 
     await Task.create({
@@ -209,6 +223,7 @@ async function seedDemoData() {
       description: 'Ettevalmistus projektiga alustamiseks',
       due_date: tomorrow,
       completed: false,
+      account_id: 1,
     });
 
     await Task.create({
@@ -219,6 +234,7 @@ async function seedDemoData() {
       description: 'Arutelu tehniliste nõuete üle',
       due_date: nextWeek,
       completed: false,
+      account_id: 1,
     });
 
     await Task.create({
@@ -229,6 +245,7 @@ async function seedDemoData() {
       description: 'Tänan projekti võitmise eest',
       due_date: today,
       completed: true,
+      account_id: 1,
     });
 
     console.log('✅ 5 demo tasks created');
