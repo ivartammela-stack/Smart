@@ -97,6 +97,36 @@ export const api = {
     return response.json();
   },
 
+  // PATCH request
+  patch: async (endpoint: string, data: any) => {
+    const token = getToken();
+    const accountId = getCurrentAccountId();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (accountId) {
+      headers['x-account-id'] = accountId;
+    }
+
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  },
+
   // DELETE request
   delete: async (endpoint: string) => {
     const token = getToken();

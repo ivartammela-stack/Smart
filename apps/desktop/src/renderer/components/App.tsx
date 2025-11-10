@@ -204,7 +204,10 @@ const App: React.FC = () => {
                 <TasksToday onBack={() => setCurrentView('dashboard')} />
               )}
               {currentView === 'super-admin-companies' && (
-                <SuperAdminCompanies onBack={() => setCurrentView('dashboard')} />
+                <SuperAdminCompanies 
+                  onBack={() => setCurrentView('dashboard')} 
+                  onNavigate={(view) => setCurrentView(view)}
+                />
               )}
               {currentView === 'settings' && (
                 <SettingsPage />

@@ -13,9 +13,11 @@ import {
   getStatusColor,
 } from '../types/superAdmin';
 import api from '../utils/api';
+import { useAccountContext } from '../context/AccountContext';
 
 interface SuperAdminCompaniesProps {
   onBack: () => void;
+  onNavigate: (view: 'settings') => void;
 }
 
 interface NewCompanyForm {
@@ -26,11 +28,14 @@ interface NewCompanyForm {
   };
 }
 
-const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => {
+const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack, onNavigate }) => {
   const [data, setData] = useState<SuperAdminCompaniesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Account context for switcher
+  const { setCurrentAccountId } = useAccountContext();
   
   // Create company modal state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -72,9 +77,11 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
     company.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const handleOpenCompany = (companyId: number) => {
-    console.log('Open company:', companyId);
-    // TODO: Implement account switcher in v1.8.0
+  const handleOpenCompany = (accountId: number) => {
+    // Set active account in global context
+    setCurrentAccountId(accountId);
+    // Navigate to Settings page to view account's plan and users
+    onNavigate('settings');
   };
 
   const handleDeactivate = async (accountId: number) => {
