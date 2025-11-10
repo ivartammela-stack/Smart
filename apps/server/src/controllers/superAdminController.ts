@@ -10,6 +10,7 @@ import { Account } from '../models/accountModel';
 import { User } from '../models/userModel';
 import { resolveAccountStatus } from '../utils/accountStatus';
 import sequelize from '../config/database';
+import { Op } from 'sequelize';
 
 interface SuperAdminCompanyItem {
   id: number;
@@ -61,7 +62,7 @@ export const getCompanies = async (req: AuthRequest, res: Response) => {
         [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
       ],
       where: {
-        account_id: { [sequelize.Sequelize.Op.ne]: null },
+        account_id: { [Op.ne]: null },
       },
       group: ['account_id'],
       raw: true,
@@ -76,7 +77,7 @@ export const getCompanies = async (req: AuthRequest, res: Response) => {
     const owners = await User.findAll({
       attributes: ['account_id', 'username', 'email', 'role'],
       where: {
-        account_id: { [sequelize.Sequelize.Op.ne]: null },
+        account_id: { [Op.ne]: null },
       },
       order: [
         ['account_id', 'ASC'],
@@ -108,8 +109,8 @@ export const getCompanies = async (req: AuthRequest, res: Response) => {
         billing_plan: account.billing_plan,
         is_active: account.is_active,
         plan_locked: account.plan_locked,
-        trial_ends_at: account.trial_ends_at,
-        grace_ends_at: account.grace_ends_at,
+        trial_ends_at: account.trial_ends_at ?? null,
+        grace_ends_at: account.grace_ends_at ?? null,
         created_at: account.created_at,
         users_count: usersCount,
         owner_full_name: owner?.full_name || null,
