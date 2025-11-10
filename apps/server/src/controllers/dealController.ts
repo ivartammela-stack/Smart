@@ -38,7 +38,7 @@ export const getDealsByCompany = async (req: AuthRequest, res: Response, next: N
       return res.status(400).json({ message: 'Invalid company id' });
     }
 
-    const deals = await dealService.getDealsByCompany(companyId);
+    const deals = await dealService.getDealsByCompany(companyId, req.accountId);
     res.json(deals);
   } catch (error) {
     next(error);
