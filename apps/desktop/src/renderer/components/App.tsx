@@ -11,6 +11,7 @@ import ErrorBoundary from './ErrorBoundary';
 import RightSidebar from './RightSidebar';
 import PlanBanner from './PlanBanner';
 import UpdateNotification from './UpdateNotification';
+import AccountSwitcher from './AccountSwitcher';
 import type { ReportsData } from '../types/reports';
 
 type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'settings' | 'super-admin-companies';
@@ -159,6 +160,9 @@ const App: React.FC = () => {
               </div>
 
                   <div className="sf-sidebar-footer">
+                    {/* Account Switcher for SUPER_ADMIN */}
+                    <AccountSwitcher />
+                    
                     <div>
                       <strong style={{color: 'var(--sf-primary)'}}>Versioon 1.6.5</strong> 🎉<br />
                       Kasutaja: {user?.username || 'Kasutaja'}

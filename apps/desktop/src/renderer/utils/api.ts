@@ -6,14 +6,23 @@ const getToken = (): string | null => {
   return localStorage.getItem('token');
 };
 
+const getCurrentAccountId = (): string | null => {
+  return localStorage.getItem('sf_current_account_id');
+};
+
 export const api = {
   // GET request
   get: async (endpoint: string) => {
     const token = getToken();
+    const accountId = getCurrentAccountId();
     const headers: HeadersInit = {};
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (accountId) {
+      headers['x-account-id'] = accountId;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -31,12 +40,17 @@ export const api = {
   // POST request
   post: async (endpoint: string, data: any) => {
     const token = getToken();
+    const accountId = getCurrentAccountId();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (accountId) {
+      headers['x-account-id'] = accountId;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -56,12 +70,17 @@ export const api = {
   // PUT request
   put: async (endpoint: string, data: any) => {
     const token = getToken();
+    const accountId = getCurrentAccountId();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (accountId) {
+      headers['x-account-id'] = accountId;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -81,10 +100,15 @@ export const api = {
   // DELETE request
   delete: async (endpoint: string) => {
     const token = getToken();
+    const accountId = getCurrentAccountId();
     const headers: HeadersInit = {};
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (accountId) {
+      headers['x-account-id'] = accountId;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {

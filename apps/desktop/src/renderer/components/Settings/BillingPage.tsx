@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import type { PlanId } from '../../hooks/useCurrentPlan';
+import { useAccountContext } from '../context/AccountContext';
 
 interface PlanConfig {
   id: PlanId;
@@ -39,6 +40,24 @@ const BillingPage: React.FC = () => {
   // Get user role from localStorage
   const userRole = JSON.parse(localStorage.getItem('user') || '{}')?.role || 'USER';
   const canChangePlan = userRole === 'SUPER_ADMIN';
+  
+  // Get current account context
+  const { currentAccountId, currentAccount } = useAccountContext();
+  
+  // SUPER_ADMIN without account selected - show prompt
+  if (userRole === 'SUPER_ADMIN' && !currentAccountId) {
+    return (
+      <div style={{ padding: 32, textAlign: 'center' }}>
+        <h2 style={{ fontSize: 24, marginBottom: 16 }}>Plaan</h2>
+        <p style={{ color: '#64748b', fontSize: 16 }}>
+          Vali ülevalt account switcherist ettevõte, mille plaani tahad vaadata.
+        </p>
+        <p style={{ color: '#94a3b8', fontSize: 14, marginTop: 12 }}>
+          Plaani haldus on account-põhine. Pead valima konkreetse kliendi, et näha tema tellimuse infot.
+        </p>
+      </div>
+    );
+  }
 
   useEffect(() => {
     loadData();

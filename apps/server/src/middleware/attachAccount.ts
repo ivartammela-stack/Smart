@@ -18,7 +18,9 @@ declare module './authMiddleware' {
 
 /**
  * Middleware to attach account to request
- * Requires: req.user with account_id
+ * Supports:
+ * - COMPANY_ADMIN/USER: Uses req.user.account_id
+ * - SUPER_ADMIN: Uses x-account-id header (account switcher)
  */
 export async function attachAccount(req: AuthRequest, res: Response, next: NextFunction) {
   try {
@@ -30,16 +32,33 @@ export async function attachAccount(req: AuthRequest, res: Response, next: NextF
       });
     }
 
-    // Check if user has account_id
-    if (!req.user.account_id) {
-      return res.status(403).json({
+    let accountId: number | null = null;
+
+    // Check for x-account-id header (SUPER_ADMIN account switcher)
+    const headerAccountId = req.headers['x-account-id'];
+    if (headerAccountId && req.user.role === 'SUPER_ADMIN') {
+      const parsed = parseInt(String(headerAccountId), 10);
+      if (!Number.isNaN(parsed)) {
+        accountId = parsed;
+      }
+    }
+
+    // Fallback to user's account_id (COMPANY_ADMIN/USER)
+    if (accountId === null && req.user.account_id) {
+      accountId = req.user.account_id;
+    }
+
+    // If no account context - return error
+    if (accountId === null) {
+      return res.status(400).json({
         success: false,
-        message: 'User has no associated account',
+        code: 'ACCOUNT_REQUIRED',
+        message: 'Account context required. Please select an account.',
       });
     }
 
     // Load account from database
-    const account = await Account.findByPk(req.user.account_id);
+    const account = await Account.findByPk(accountId);
 
     if (!account) {
       return res.status(404).json({

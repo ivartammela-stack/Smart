@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import BillingPage from './BillingPage';
 import UsersPage from './UsersPage';
+import { useAccountContext } from '../context/AccountContext';
 
 type SettingsTab = 'plan' | 'users';
 
@@ -14,9 +15,17 @@ const SettingsPage: React.FC = () => {
   const userRole = JSON.parse(localStorage.getItem('user') || '{}')?.role || 'USER';
   const isSuperAdmin = userRole === 'SUPER_ADMIN';
   
-  // SUPER_ADMIN starts with 'users' tab (no account context for billing)
-  // Others start with 'plan' tab
-  const [activeTab, setActiveTab] = useState<SettingsTab>(isSuperAdmin ? 'users' : 'plan');
+  // Get current account from context
+  const { currentAccountId } = useAccountContext();
+  
+  // Can see Plan tab if:
+  // - COMPANY_ADMIN (always has account context)
+  // - SUPER_ADMIN with account selected
+  const canSeePlanTab = userRole === 'COMPANY_ADMIN' || (isSuperAdmin && !!currentAccountId);
+  
+  // Default tab: 'users' for SUPER_ADMIN without account, 'plan' for others
+  const defaultTab: SettingsTab = canSeePlanTab ? 'plan' : 'users';
+  const [activeTab, setActiveTab] = useState<SettingsTab>(defaultTab);
 
   return (
     <div style={{ 
@@ -39,8 +48,8 @@ const SettingsPage: React.FC = () => {
           maxWidth: 1200,
           margin: '0 auto',
         }}>
-          {/* Hide Plan tab for SUPER_ADMIN (no account context) */}
-          {!isSuperAdmin && (
+          {/* Show Plan tab only if user has account context */}
+          {canSeePlanTab && (
             <button
               onClick={() => setActiveTab('plan')}
               style={{
