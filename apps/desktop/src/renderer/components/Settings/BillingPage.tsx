@@ -35,6 +35,10 @@ const BillingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get user role from localStorage
+  const userRole = JSON.parse(localStorage.getItem('user') || '{}')?.role || 'USER';
+  const canChangePlan = userRole === 'SUPER_ADMIN';
 
   useEffect(() => {
     loadData();
@@ -228,22 +232,23 @@ const BillingPage: React.FC = () => {
               </div>
 
               <button
-                onClick={() => handleUpgrade(plan.id)}
-                disabled={isCurrent || upgrading}
+                onClick={() => canChangePlan && handleUpgrade(plan.id)}
+                disabled={isCurrent || upgrading || !canChangePlan}
                 style={{
                   width: '100%',
                   padding: '12px 24px',
-                  background: isCurrent ? '#e5e7eb' : '#3b82f6',
-                  color: isCurrent ? '#6b7280' : '#fff',
+                  background: isCurrent || !canChangePlan ? '#e5e7eb' : '#3b82f6',
+                  color: isCurrent || !canChangePlan ? '#6b7280' : '#fff',
                   border: 'none',
                   borderRadius: 8,
                   fontSize: 16,
                   fontWeight: 600,
-                  cursor: isCurrent || upgrading ? 'not-allowed' : 'pointer',
+                  cursor: isCurrent || upgrading || !canChangePlan ? 'not-allowed' : 'pointer',
                   opacity: upgrading ? 0.6 : 1,
                 }}
+                title={!canChangePlan ? 'Ainult Super Admin saab paketti muuta' : ''}
               >
-                {isCurrent ? 'Aktiivne' : upgrading ? 'Uuendamine...' : 'Vali see pakett'}
+                {isCurrent ? 'Aktiivne' : upgrading ? 'Uuendamine...' : !canChangePlan ? 'Kontakteeru adminiga' : 'Vali see pakett'}
               </button>
             </div>
           );

@@ -80,10 +80,18 @@ router.get('/plans', (req: AuthRequest, res) => {
 
 /**
  * POST /api/billing/upgrade
- * Upgrade/change plan
+ * Upgrade/change plan (SUPER_ADMIN only)
  */
 router.post('/upgrade', async (req: AuthRequest, res) => {
   try {
+    // Only SUPER_ADMIN can change plans
+    if (req.user?.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only Super Admin can change account plans',
+      });
+    }
+
     const account = req.account!;
     const { planId } = req.body as { planId: PlanId };
 
