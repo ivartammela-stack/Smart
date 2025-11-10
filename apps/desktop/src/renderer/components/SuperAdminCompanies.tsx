@@ -12,6 +12,7 @@ import {
   formatStatusEE,
   getStatusColor,
 } from '../types/superAdmin';
+import api from '../utils/api';
 
 interface SuperAdminCompaniesProps {
   onBack: () => void;
@@ -32,27 +33,8 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Not authenticated');
-      }
-
-      const response = await fetch('http://localhost:3000/api/super-admin/companies', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error('Ligipääs keelatud. Ainult SUPER_ADMIN saab seda lehte vaadata.');
-        }
-        throw new Error('Ettevõtete laadimine ebaõnnestus');
-      }
-
-      const result = await response.json();
+      const result = await api.get('/super-admin/companies');
+      
       if (result.success && result.data) {
         setData(result.data);
       } else {
