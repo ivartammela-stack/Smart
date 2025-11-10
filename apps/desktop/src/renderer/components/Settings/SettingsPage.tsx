@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import BillingPage from './BillingPage';
 import UsersPage from './UsersPage';
-import { useAccountContext } from '../context/AccountContext';
+import { useAccountContext } from '../../context/AccountContext';
 
 type SettingsTab = 'plan' | 'users';
 

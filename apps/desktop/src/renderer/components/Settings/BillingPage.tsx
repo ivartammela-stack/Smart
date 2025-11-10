@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import type { PlanId } from '../../hooks/useCurrentPlan';
-import { useAccountContext } from '../context/AccountContext';
+import { useAccountContext } from '../../context/AccountContext';
 
 interface PlanConfig {
   id: PlanId;
