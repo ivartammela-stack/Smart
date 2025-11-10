@@ -42,7 +42,7 @@ router.get('/users', async (req: AuthRequest, res) => {
 
     const users = await User.findAll({
       where: { account_id: accountId },
-      attributes: ['id', 'username', 'email', 'role', 'plan', 'created_at', 'updated_at'],
+      attributes: ['id', 'username', 'email', 'role', 'is_active', 'last_login_at', 'created_at', 'updated_at'],
       order: [['created_at', 'ASC']],
     });
 
@@ -112,7 +112,6 @@ router.post('/users', async (req: AuthRequest, res) => {
       email,
       password: hashedPassword,
       role: role || 'USER',
-      plan: 'TRIAL', // Inherit from account? or default
       account_id: accountId,
     });
 
