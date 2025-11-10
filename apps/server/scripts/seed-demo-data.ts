@@ -1,43 +1,58 @@
 import sequelize from '../src/config/database';
 import { Op } from 'sequelize';
-import { User, Company, Contact, Deal, Task } from '../src/models';
+import { User, Company, Contact, Deal, Task, Account } from '../src/models';
 import bcrypt from 'bcrypt';
 
 async function seedDemoData() {
   try {
-    console.log('🌱 Starting demo data seeding...');
+    console.log('🌱 Starting demo data seeding (multi-tenant)...');
 
-    // 1. Delete all users except admin
-    console.log('🗑️  Deleting non-admin users...');
-    const adminUser = await User.findOne({ where: { email: 'admin@smartfollow.ee' } });
-    
-    if (!adminUser) {
-      console.log('⚠️  Admin user not found. Creating admin user...');
-      const hashedPassword = await bcrypt.hash('admin123', 10);
-      await User.create({
-        username: 'admin',
-        email: 'admin@smartfollow.ee',
-        password: hashedPassword,
-        role: 'admin',
-      });
-      console.log('✅ Admin user created');
-    }
-
-    // Delete all users except admin
-    await User.destroy({
-      where: {
-        email: { [Op.ne]: 'admin@smartfollow.ee' }
-      }
-    });
-    console.log('✅ Non-admin users deleted');
-
-    // 2. Delete all existing data
+    // 1. Clean existing data
     console.log('🗑️  Cleaning existing data...');
     await Task.destroy({ where: {} });
     await Deal.destroy({ where: {} });
     await Contact.destroy({ where: {} });
     await Company.destroy({ where: {} });
+    await User.destroy({ where: { email: { [Op.ne]: 'admin@smartfollow.ee' } } });
+    await Account.destroy({ where: {} });
     console.log('✅ Old data cleaned');
+
+    // 2. Create accounts
+    console.log('🏢 Creating accounts...');
+    const demoAccount = await Account.create({
+      name: 'Demo Account',
+      billing_plan: 'ENTERPRISE',
+      is_active: true,
+      plan_locked: false,
+    });
+    console.log(`✅ Demo Account created (ID: ${demoAccount.id})`);
+
+    // 3. Setup SUPER_ADMIN user
+    console.log('👤 Setting up SUPER_ADMIN...');
+    let adminUser = await User.findOne({ where: { email: 'admin@smartfollow.ee' } });
+    
+    if (!adminUser) {
+      console.log('⚠️  Admin user not found. Creating SUPER_ADMIN...');
+      const hashedPassword = await bcrypt.hash('Passw0rd', 10);
+      adminUser = await User.create({
+        username: 'admin',
+        email: 'admin@smartfollow.ee',
+        password: hashedPassword,
+        role: 'SUPER_ADMIN',
+        plan: 'ENTERPRISE',
+        account_id: null, // SUPER_ADMIN has no specific account
+        is_active: true,
+      });
+      console.log('✅ SUPER_ADMIN created');
+    } else {
+      // Update existing admin to correct role and account_id
+      await adminUser.update({
+        role: 'SUPER_ADMIN',
+        account_id: null,
+        is_active: true,
+      });
+      console.log('✅ Existing admin updated to SUPER_ADMIN');
+    }
 
     // 3. Create demo companies
     console.log('🏢 Creating demo companies...');
@@ -52,7 +67,7 @@ async function seedDemoData() {
       website: 'https://acme.ee',
       industry: 'IT teenused',
       notes: 'Suur IT ettevõte, mis pakub tarkvaraarendust ja konsultatsiooni',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     const techSolutions = await Company.create({
@@ -65,7 +80,7 @@ async function seedDemoData() {
       website: 'https://techsolutions.ee',
       industry: 'Tehnoloogia',
       notes: 'Keskendub tarkvara testimisele ja kvaliteedile',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     const marketingPro = await Company.create({
@@ -78,7 +93,7 @@ async function seedDemoData() {
       website: 'https://marketingpro.ee',
       industry: 'Turundus',
       notes: 'Digitaalturunduse agentuur',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     console.log('✅ 3 demo companies created');
@@ -94,7 +109,7 @@ async function seedDemoData() {
       email: 'juri.tamm@acme.ee',
       phone: '+372 5123 4567',
       notes: 'Otsustaja, sõbralik ja avatud uutele ideedele',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Contact.create({
@@ -105,7 +120,7 @@ async function seedDemoData() {
       email: 'kadri.kask@acme.ee',
       phone: '+372 5123 4568',
       notes: 'Vastutab tehniliste projektide eest',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Contact.create({
@@ -116,7 +131,7 @@ async function seedDemoData() {
       email: 'marten.magi@techsolutions.ee',
       phone: '+372 5234 5679',
       notes: 'Tehniline juht, huvitatud uutest tehnoloogiatest',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Contact.create({
@@ -127,7 +142,7 @@ async function seedDemoData() {
       email: 'liisa.lepp@marketingpro.ee',
       phone: '+372 5345 6790',
       notes: 'Aktiivne ja energiline, otsib pidevalt uusi võimalusi',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Contact.create({
@@ -138,7 +153,7 @@ async function seedDemoData() {
       email: 'peeter.poom@marketingpro.ee',
       phone: '+372 5345 6791',
       notes: 'Loominguline juht, nõuab kvaliteetti',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     console.log('✅ 5 demo contacts created');
@@ -152,7 +167,7 @@ async function seedDemoData() {
       value: 25000,
       status: 'new',
       notes: 'ACME soovib uut CRM lahendust. Esimene kohtumine 15. novembril.',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Deal.create({
@@ -161,7 +176,7 @@ async function seedDemoData() {
       value: 15000,
       status: 'new',
       notes: 'TechSolutions vajab automatiseeritud testimise lahendust',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Deal.create({
@@ -170,7 +185,7 @@ async function seedDemoData() {
       value: 8500,
       status: 'won',
       notes: 'Projekt võidetud! Alustame detsembris.',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Deal.create({
@@ -179,7 +194,7 @@ async function seedDemoData() {
       value: 3500,
       status: 'lost',
       notes: 'Klient valis teise pakkuja',
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     console.log('✅ 4 demo deals created');
@@ -201,7 +216,7 @@ async function seedDemoData() {
       description: 'Kinnita esimese kohtumise aeg ja arutle CRM vajaduste üle',
       due_date: today,
       completed: false,
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Task.create({
@@ -212,7 +227,7 @@ async function seedDemoData() {
       description: 'Koosta detailne pakkumine testimise automatiseerimise kohta',
       due_date: today,
       completed: false,
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Task.create({
@@ -223,7 +238,7 @@ async function seedDemoData() {
       description: 'Ettevalmistus projektiga alustamiseks',
       due_date: tomorrow,
       completed: false,
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Task.create({
@@ -234,7 +249,7 @@ async function seedDemoData() {
       description: 'Arutelu tehniliste nõuete üle',
       due_date: nextWeek,
       completed: false,
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     await Task.create({
@@ -245,19 +260,23 @@ async function seedDemoData() {
       description: 'Tänan projekti võitmise eest',
       due_date: today,
       completed: true,
-      account_id: 1,
+      account_id: demoAccount.id,
     });
 
     console.log('✅ 5 demo tasks created');
 
     console.log('\n🎉 Demo data seeding completed successfully!');
     console.log('\n📊 Summary:');
-    console.log('   - Users: 1 (admin)');
-    console.log('   - Companies: 3');
+    console.log('   - Accounts: 1 (Demo Account)');
+    console.log('   - Users: 1 (SUPER_ADMIN with account_id = NULL)');
+    console.log('   - Companies: 3 (all in Demo Account)');
     console.log('   - Contacts: 5');
     console.log('   - Deals: 4 (1 new, 1 won, 1 lost)');
     console.log('   - Tasks: 5 (3 pending today, 1 tomorrow, 1 completed)');
-    console.log('\n✅ Ready to demo!');
+    console.log('\n🎯 Multi-tenant setup:');
+    console.log(`   - Demo data in Account ID: ${demoAccount.id}`);
+    console.log('   - SUPER_ADMIN can access all accounts (account_id = NULL)');
+    console.log('   - Ready for testing!');
 
   } catch (error) {
     console.error('❌ Error seeding demo data:', error);
