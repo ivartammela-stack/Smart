@@ -12,6 +12,8 @@ export class User extends Model {
   public role!: UserRole;
   public plan!: UserPlan;
   public account_id!: number | null; // SUPER_ADMIN can have null
+  public is_active!: boolean;
+  public last_login_at!: Date | null;
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -54,6 +56,15 @@ User.init(
         model: 'accounts',
         key: 'id',
       },
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+    last_login_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {
