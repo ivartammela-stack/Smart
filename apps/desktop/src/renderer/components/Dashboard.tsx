@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Resp
 import type { ReportsData } from '../types/reports';
 
 interface DashboardProps {
-  onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users') => void;
+  onNavigate: (view: 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'settings' | 'super-admin-companies') => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {

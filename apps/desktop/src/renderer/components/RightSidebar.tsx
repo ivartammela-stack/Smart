@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../utils/api';
 import type { ReportsData } from '../types/reports';
 
-type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users';
+type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'settings' | 'super-admin-companies';
 
 interface User {
   id?: number;
