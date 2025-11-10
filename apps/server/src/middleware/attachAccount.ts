@@ -67,6 +67,15 @@ export async function attachAccount(req: AuthRequest, res: Response, next: NextF
       });
     }
 
+    // Check if account is active
+    if (!account.is_active) {
+      return res.status(403).json({
+        success: false,
+        code: 'ACCOUNT_INACTIVE',
+        message: 'This account is deactivated. Please contact support.',
+      });
+    }
+
     // Attach account to request
     req.account = account;
 

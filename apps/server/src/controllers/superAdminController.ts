@@ -224,3 +224,83 @@ export const createCompany = async (req: AuthRequest, res: Response) => {
   }
 };
 
+/**
+ * PATCH /api/super-admin/companies/:id/deactivate
+ * Deactivate account (soft delete)
+ */
+export const deactivateAccount = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    const account = await Account.findByPk(id);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: 'Account not found',
+      });
+    }
+
+    if (!account.is_active) {
+      return res.json({
+        success: true,
+        message: 'Account already inactive',
+        data: { account },
+      });
+    }
+
+    await account.update({ is_active: false });
+
+    res.json({
+      success: true,
+      message: 'Account deactivated successfully',
+      data: { account },
+    });
+  } catch (error) {
+    console.error('Error deactivating account:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to deactivate account',
+    });
+  }
+};
+
+/**
+ * PATCH /api/super-admin/companies/:id/activate
+ * Activate account (restore)
+ */
+export const activateAccount = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    const account = await Account.findByPk(id);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: 'Account not found',
+      });
+    }
+
+    if (account.is_active) {
+      return res.json({
+        success: true,
+        message: 'Account already active',
+        data: { account },
+      });
+    }
+
+    await account.update({ is_active: true });
+
+    res.json({
+      success: true,
+      message: 'Account activated successfully',
+      data: { account },
+    });
+  } catch (error) {
+    console.error('Error activating account:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to activate account',
+    });
+  }
+};
+

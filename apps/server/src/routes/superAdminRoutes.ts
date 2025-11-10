@@ -27,5 +27,17 @@ router.get('/companies', superAdminController.getCompanies);
  */
 router.post('/companies', superAdminController.createCompany);
 
+/**
+ * PATCH /api/super-admin/companies/:id/deactivate
+ * Deactivate account (soft delete)
+ */
+router.patch('/companies/:id/deactivate', superAdminController.deactivateAccount);
+
+/**
+ * PATCH /api/super-admin/companies/:id/activate
+ * Activate account (restore)
+ */
+router.patch('/companies/:id/activate', superAdminController.activateAccount);
+
 export default router;
 

@@ -19,23 +19,53 @@ const AccountSwitcher: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ fontSize: 12, color: '#94a3b8', padding: '4px 8px' }}>
-        Laen ettevõtteid...
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ 
+          fontSize: 11, 
+          textTransform: 'uppercase', 
+          letterSpacing: '0.06em',
+          color: '#94a3b8',
+          marginBottom: 6 
+        }}>
+          Aktiivne konto
+        </div>
+        <div style={{ fontSize: 12, color: '#94a3b8' }}>
+          Laen ettevõtteid...
+        </div>
       </div>
     );
   }
 
   if (!accounts.length) {
     return (
-      <div style={{ fontSize: 12, color: '#94a3b8', padding: '4px 8px' }}>
-        Ettevõtteid pole
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ 
+          fontSize: 11, 
+          textTransform: 'uppercase', 
+          letterSpacing: '0.06em',
+          color: '#94a3b8',
+          marginBottom: 6 
+        }}>
+          Aktiivne konto
+        </div>
+        <div style={{ fontSize: 12, color: '#94a3b8' }}>
+          Ettevõtteid pole
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ fontSize: 12, color: '#94a3b8' }}>Aktiivne konto:</span>
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ 
+        fontSize: 11, 
+        textTransform: 'uppercase', 
+        letterSpacing: '0.06em',
+        color: '#94a3b8',
+        marginBottom: 6 
+      }}>
+        Aktiivne konto
+      </div>
       <select
         value={currentAccountId ?? ''}
         onChange={(e) => {
@@ -47,14 +77,16 @@ const AccountSwitcher: React.FC = () => {
           }
         }}
         style={{
-          padding: '6px 12px',
-          borderRadius: 6,
-          border: '1px solid #cbd5e1',
-          backgroundColor: '#fff',
+          width: '100%',
+          borderRadius: 9999,  // pill style
+          padding: '8px 12px',
+          border: '1px solid #e2e8f0',
+          backgroundColor: '#ffffff',
+          color: '#0f172a',
           fontSize: 13,
           fontWeight: 500,
+          outline: 'none',
           cursor: 'pointer',
-          minWidth: 180,
         }}
       >
         <option value="">-- Vali account --</option>

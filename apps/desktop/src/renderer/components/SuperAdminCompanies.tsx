@@ -77,6 +77,40 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
     // TODO: Implement account switcher in v1.8.0
   };
 
+  const handleDeactivate = async (accountId: number) => {
+    if (!window.confirm('Kas oled kindel, et soovid selle konto deaktiveerida? Kasutajad ei saa enam sellesse kontosse sisse logida.')) {
+      return;
+    }
+
+    try {
+      const result = await api.patch(`/super-admin/companies/${accountId}/deactivate`, {});
+      if (result.success) {
+        alert('Konto deaktiveeritud edukalt!');
+        await fetchCompanies(); // Refresh list
+      }
+    } catch (err: any) {
+      console.error('Error deactivating account:', err);
+      alert(err.message || 'Deaktiveerimine ebaõnnestus');
+    }
+  };
+
+  const handleActivate = async (accountId: number) => {
+    if (!window.confirm('Kas oled kindel, et soovid selle konto uuesti aktiveerida?')) {
+      return;
+    }
+
+    try {
+      const result = await api.patch(`/super-admin/companies/${accountId}/activate`, {});
+      if (result.success) {
+        alert('Konto aktiveeritud edukalt!');
+        await fetchCompanies(); // Refresh list
+      }
+    } catch (err: any) {
+      console.error('Error activating account:', err);
+      alert(err.message || 'Aktiveerimine ebaõnnestus');
+    }
+  };
+
   const handleCreateCompany = async () => {
     if (!createForm.name || !createForm.admin.email) {
       alert('Ettevõtte nimi ja admini email on kohustuslikud');
@@ -377,20 +411,53 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
                     {new Date(company.created_at).toLocaleDateString('et-EE')}
                   </td>
                   <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                    <button
-                      onClick={() => handleOpenCompany(company.id)}
-                      style={{
-                        padding: '6px 12px',
-                        fontSize: 12,
-                        backgroundColor: '#6366f1',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 6,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Ava
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                      <button
+                        onClick={() => handleOpenCompany(company.id)}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: 12,
+                          backgroundColor: '#6366f1',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Ava
+                      </button>
+                      {company.is_active ? (
+                        <button
+                          onClick={() => handleDeactivate(company.id)}
+                          style={{
+                            padding: '6px 12px',
+                            fontSize: 12,
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Deaktiveeri
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleActivate(company.id)}
+                          style={{
+                            padding: '6px 12px',
+                            fontSize: 12,
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Taasta
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
