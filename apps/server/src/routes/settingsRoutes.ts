@@ -42,7 +42,7 @@ router.get('/users', async (req: AuthRequest, res) => {
 
     const users = await User.findAll({
       where: { account_id: accountId },
-      attributes: ['id', 'username', 'email', 'role', 'is_active', 'last_login_at', 'created_at', 'updated_at'],
+      attributes: ['id', 'username', 'email', 'role', 'created_at', 'updated_at'],
       order: [['created_at', 'ASC']],
     });
 
