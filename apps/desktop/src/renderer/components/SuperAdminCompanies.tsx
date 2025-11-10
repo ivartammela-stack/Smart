@@ -18,11 +18,31 @@ interface SuperAdminCompaniesProps {
   onBack: () => void;
 }
 
+interface NewCompanyForm {
+  name: string;
+  billing_plan: 'STARTER' | 'PRO' | 'ENTERPRISE';
+  admin: {
+    email: string;
+  };
+}
+
 const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => {
   const [data, setData] = useState<SuperAdminCompaniesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Create company modal state
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createForm, setCreateForm] = useState<NewCompanyForm>({
+    name: '',
+    billing_plan: 'STARTER',
+    admin: {
+      email: '',
+    },
+  });
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCompanies();
@@ -55,6 +75,46 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
   const handleOpenCompany = (companyId: number) => {
     console.log('Open company:', companyId);
     // TODO: Implement account switcher in v1.8.0
+  };
+
+  const handleCreateCompany = async () => {
+    if (!createForm.name || !createForm.admin.email) {
+      alert('Ettevõtte nimi ja admini email on kohustuslikud');
+      return;
+    }
+
+    setCreateLoading(true);
+    setTempPassword(null);
+
+    try {
+      const result = await api.post('/super-admin/companies', createForm);
+      
+      if (result.success) {
+        // Show temporary password
+        if (result.data?.tempPassword) {
+          setTempPassword(result.data.tempPassword);
+        }
+        
+        // Refresh companies list
+        await fetchCompanies();
+        
+        // Reset form after showing password
+        setTimeout(() => {
+          setIsCreateOpen(false);
+          setCreateForm({
+            name: '',
+            billing_plan: 'STARTER',
+            admin: { email: '' },
+          });
+          setTempPassword(null);
+        }, 5000); // Give admin 5 seconds to copy password
+      }
+    } catch (err: any) {
+      console.error('Error creating company:', err);
+      alert(err.message || 'Ettevõtte loomine ebaõnnestus');
+    } finally {
+      setCreateLoading(false);
+    }
   };
 
   if (loading) {
@@ -115,7 +175,24 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
         >
           ← Tagasi
         </button>
-        <h1 style={{ fontSize: 28, fontWeight: 600, marginBottom: 8 }}>Ettevõtted</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 600 }}>Ettevõtted</h1>
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            + Loo uus ettevõte
+          </button>
+        </div>
         <p style={{ color: '#64748b' }}>Kõigi accountide ülevaade ja statistika</p>
       </div>
 
@@ -321,6 +398,190 @@ const SuperAdminCompanies: React.FC<SuperAdminCompaniesProps> = ({ onBack }) => 
           </tbody>
         </table>
       </div>
+
+      {/* Create Company Modal */}
+      {isCreateOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => !tempPassword && setIsCreateOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: 12,
+              padding: 32,
+              maxWidth: 500,
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 20 }}>
+              Loo uus ettevõte
+            </h2>
+
+            {tempPassword ? (
+              <div
+                style={{
+                  backgroundColor: '#d1fae5',
+                  border: '2px solid #10b981',
+                  borderRadius: 8,
+                  padding: 20,
+                  marginBottom: 20,
+                }}
+              >
+                <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: '#065f46' }}>
+                  ✅ Ettevõte loodud!
+                </h3>
+                <p style={{ marginBottom: 12, color: '#047857' }}>
+                  Ajutine parool:
+                </p>
+                <div
+                  style={{
+                    backgroundColor: 'white',
+                    padding: 12,
+                    borderRadius: 6,
+                    fontFamily: 'monospace',
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: '#1e293b',
+                    marginBottom: 12,
+                  }}
+                >
+                  {tempPassword}
+                </div>
+                <p style={{ fontSize: 14, color: '#047857' }}>
+                  Salvesta see parool ja saada ettevõtte adminile. Modal sulgub 5 sekundi pärast.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
+                    Ettevõtte nimi *
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.name}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, name: e.target.value })
+                    }
+                    placeholder="Nt. Test OÜ"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #cbd5e1',
+                      fontSize: 14,
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
+                    Pakett
+                  </label>
+                  <select
+                    value={createForm.billing_plan}
+                    onChange={(e) =>
+                      setCreateForm({
+                        ...createForm,
+                        billing_plan: e.target.value as 'STARTER' | 'PRO' | 'ENTERPRISE',
+                      })
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #cbd5e1',
+                      fontSize: 14,
+                    }}
+                  >
+                    <option value="STARTER">Starter</option>
+                    <option value="PRO">Pro</option>
+                    <option value="ENTERPRISE">Enterprise</option>
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: 20, paddingTop: 12, borderTop: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
+                    Ettevõtte admin
+                  </h3>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>
+                      E-post *
+                    </label>
+                    <input
+                      type="email"
+                      value={createForm.admin.email}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          admin: { ...createForm.admin, email: e.target.value },
+                        })
+                      }
+                      placeholder="admin@ettevote.ee"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: 6,
+                        border: '1px solid #cbd5e1',
+                        fontSize: 14,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => setIsCreateOpen(false)}
+                    disabled={createLoading}
+                    style={{
+                      padding: '10px 20px',
+                      borderRadius: 6,
+                      border: '1px solid #cbd5e1',
+                      backgroundColor: 'white',
+                      cursor: createLoading ? 'not-allowed' : 'pointer',
+                      fontSize: 14,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Tühista
+                  </button>
+                  <button
+                    onClick={handleCreateCompany}
+                    disabled={createLoading}
+                    style={{
+                      padding: '10px 20px',
+                      borderRadius: 6,
+                      border: 'none',
+                      backgroundColor: '#10b981',
+                      color: 'white',
+                      cursor: createLoading ? 'not-allowed' : 'pointer',
+                      fontSize: 14,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {createLoading ? 'Loome...' : 'Loo ettevõte'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

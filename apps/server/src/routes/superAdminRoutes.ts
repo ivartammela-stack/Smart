@@ -21,5 +21,11 @@ router.use(requireSuperAdmin); // Only SUPER_ADMIN
  */
 router.get('/companies', superAdminController.getCompanies);
 
+/**
+ * POST /api/super-admin/companies
+ * Create new account with COMPANY_ADMIN user
+ */
+router.post('/companies', superAdminController.createCompany);
+
 export default router;
 

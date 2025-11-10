@@ -11,6 +11,7 @@ import { User } from '../models/userModel';
 import { resolveAccountStatus } from '../utils/accountStatus';
 import sequelize from '../config/database';
 import { Op } from 'sequelize';
+import bcrypt from 'bcrypt';
 
 interface SuperAdminCompanyItem {
   id: number;
@@ -140,6 +141,85 @@ export const getCompanies = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch companies',
+    });
+  }
+};
+
+/**
+ * POST /api/super-admin/companies
+ * Create new account with COMPANY_ADMIN user
+ */
+export const createCompany = async (req: AuthRequest, res: Response) => {
+  try {
+    const { name, reg_code, billing_plan, admin } = req.body;
+
+    // Validate required fields
+    if (!name || !admin?.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Company name and admin email are required',
+      });
+    }
+
+    // Validate billing plan
+    const validPlans = ['TRIAL', 'STARTER', 'PRO', 'ENTERPRISE'];
+    const plan = billing_plan && validPlans.includes(billing_plan) ? billing_plan : 'STARTER';
+
+    // Create account
+    const account = await Account.create({
+      name,
+      billing_plan: plan,
+      is_active: true,
+      plan_locked: false,
+    });
+
+    // Generate temporary password
+    const tempPassword = 'ChangeMe123!';
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    // Create COMPANY_ADMIN user
+    const adminUser = await User.create({
+      username: admin.email.split('@')[0], // Use email prefix as username
+      email: admin.email,
+      password: hashedPassword,
+      role: 'COMPANY_ADMIN',
+      account_id: account.id,
+      plan: plan,
+      is_active: true,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Company and admin created successfully',
+      data: {
+        account: {
+          id: account.id,
+          name: account.name,
+          billing_plan: account.billing_plan,
+        },
+        admin: {
+          id: adminUser.id,
+          username: adminUser.username,
+          email: adminUser.email,
+          role: adminUser.role,
+        },
+        tempPassword, // Show only once - in production, send via email
+      },
+    });
+  } catch (error: any) {
+    console.error('Error creating company:', error);
+
+    // Handle unique constraint violations
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create company',
     });
   }
 };
