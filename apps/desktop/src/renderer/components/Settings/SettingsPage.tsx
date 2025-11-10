@@ -10,7 +10,13 @@ import UsersPage from './UsersPage';
 type SettingsTab = 'plan' | 'users';
 
 const SettingsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('plan');
+  // Get user role from localStorage
+  const userRole = JSON.parse(localStorage.getItem('user') || '{}')?.role || 'USER';
+  const isSuperAdmin = userRole === 'SUPER_ADMIN';
+  
+  // SUPER_ADMIN starts with 'users' tab (no account context for billing)
+  // Others start with 'plan' tab
+  const [activeTab, setActiveTab] = useState<SettingsTab>(isSuperAdmin ? 'users' : 'plan');
 
   return (
     <div style={{ 
@@ -33,22 +39,25 @@ const SettingsPage: React.FC = () => {
           maxWidth: 1200,
           margin: '0 auto',
         }}>
-          <button
-            onClick={() => setActiveTab('plan')}
-            style={{
-              padding: '16px 24px',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: activeTab === 'plan' ? '3px solid #3b82f6' : '3px solid transparent',
-              color: activeTab === 'plan' ? '#3b82f6' : '#6b7280',
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            📊 Plaan
-          </button>
+          {/* Hide Plan tab for SUPER_ADMIN (no account context) */}
+          {!isSuperAdmin && (
+            <button
+              onClick={() => setActiveTab('plan')}
+              style={{
+                padding: '16px 24px',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: activeTab === 'plan' ? '3px solid #3b82f6' : '3px solid transparent',
+                color: activeTab === 'plan' ? '#3b82f6' : '#6b7280',
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              📊 Plaan
+            </button>
+          )}
           
           <button
             onClick={() => setActiveTab('users')}
