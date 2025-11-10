@@ -5,7 +5,6 @@ import Companies from './Companies';
 import Contacts from './Contacts';
 import Deals from './Deals';
 import TasksToday from './TasksToday';
-import AdminUsers from './AdminUsers';
 import SettingsPage from './Settings/SettingsPage';
 import SuperAdminCompanies from './SuperAdminCompanies';
 import ErrorBoundary from './ErrorBoundary';
@@ -14,7 +13,7 @@ import PlanBanner from './PlanBanner';
 import UpdateNotification from './UpdateNotification';
 import type { ReportsData } from '../types/reports';
 
-type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'admin-users' | 'settings' | 'super-admin-companies';
+type View = 'dashboard' | 'companies' | 'contacts' | 'deals' | 'tasks-today' | 'settings' | 'super-admin-companies';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -139,16 +138,6 @@ const App: React.FC = () => {
                     <span>Ülesanded</span>
                   </button>
 
-                  {(user?.role === 'COMPANY_ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                    <button
-                      className={'sf-nav-item ' + (currentView === 'admin-users' ? 'sf-nav-item-active' : '')}
-                      onClick={() => setCurrentView('admin-users')}
-                    >
-                      <span className="sf-nav-item-icon">🛡️</span>
-                      <span>Admin</span>
-                    </button>
-                  )}
-
                   {user?.role === 'SUPER_ADMIN' && (
                     <button
                       className={'sf-nav-item ' + (currentView === 'super-admin-companies' ? 'sf-nav-item-active' : '')}
@@ -209,9 +198,6 @@ const App: React.FC = () => {
               )}
               {currentView === 'tasks-today' && (
                 <TasksToday onBack={() => setCurrentView('dashboard')} />
-              )}
-              {currentView === 'admin-users' && (
-                <AdminUsers onBack={() => setCurrentView('dashboard')} />
               )}
               {currentView === 'super-admin-companies' && (
                 <SuperAdminCompanies onBack={() => setCurrentView('dashboard')} />
