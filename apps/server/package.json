@@ -12,6 +12,7 @@
     "migrate:user-roles": "ts-node scripts/migrate-user-roles.ts",
     "billing:maintenance": "ts-node scripts/billing-maintenance.ts",
     "seed:demo": "ts-node scripts/seed-demo-data.ts",
+    "reset:clean": "ts-node scripts/reset-clean.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "echo 'No tests yet' && exit 0"
   },
